@@ -1048,7 +1048,12 @@ function update(dt){
  else if(timeRunning){const next=simMinute+dt*timeSpeed;simDay+=Math.floor(next/1440);simMinute=next%1440;}
  syncRoutine();
 }
-function draw(){g.clearRect(0,0,c.width,c.height);if(scene==='town')drawScheduledTown();else drawScheduledInterior(scene);}
+function draw(){g.clearRect(0,0,c.width,c.height);if(scene==='town')drawScheduledTown();else drawScheduledInterior(scene);updateTownButton();}
+// "Back to town" button: shown whenever an interior is on screen.
+const townBtn=document.getElementById('backToTown');
+function updateTownButton(){if(!townBtn)return;const show=scene!=='town';if(townBtn.hidden===show)townBtn.hidden=!show;}
+function goToTown(){viewMode='town';const vs=document.getElementById('viewSelect');if(vs)vs.value='town';syncRoutine();draw();c.focus&&c.focus();}
+if(townBtn)townBtn.onclick=goToTown;
 let lastFrame=0;function routineLoop(ts){const dt=Math.min((ts-lastFrame)/1000||0,.1);lastFrame=ts;update(dt);draw();requestAnimationFrame(routineLoop);}
 document.getElementById('timeSlider').addEventListener('input',e=>setTime(e.target.value));
 document.getElementById('toggleTime').onclick=()=>{if(clockMode==='live'){readCentralClock(true);clockMode='preview';timeRunning=false;}else timeRunning=!timeRunning;refreshUI();};

@@ -138,3 +138,5 @@ Admin (Settings → 🔒 Admin): unlocked with the Headquarters password (`EtsyH
 Headquarters dashboard = Option 2 "Cottage Bulletin Board" (`headquarters-board.js/.css`), fed by `etsy-hq.js`. See INTEGRATION-HQ-BOARD.md.
 
 Headquarters dashboard (current): `hq-art-board.js` places live text directly on the illustrated background `assets/hq-board.png` (1536×1024, unmodified). Element positions are image-pixel boxes in `BOX`/`NAV` converted to %; text sizes use container units (cqw) so everything scales with the picture. On phones the board keeps its proportions at ≥720px wide and scrolls sideways. Lock = the heart note on the wall; Refresh = the ⟳ on the small panel. Sidebar: Dashboard (stay), Orders/Analytics/Messages (Etsy pages in a new tab), Products (Books catalog), Settings (game settings). The earlier Option 2 bulletin-board files were removed (still in git history).
+
+Interiors: a "← Back to town" button (`#backToTown`) appears top-right whenever an interior is on screen (`updateTownButton()` runs in `draw()`); it does the same as Esc.
