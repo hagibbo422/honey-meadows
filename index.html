@@ -111,7 +111,7 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp.settings.overlay{position:absolute;z-index:6;left:1.6%;right:1.6%;top:calc(1.6% + clamp(70px,8.6vw,96px));margin:0;max-height:calc(100% - 110px);overflow:auto}
 @media(max-width:600px){.signBoard{min-width:0;padding:5px 9px}.pp.settings.overlay{position:static;margin:70px 6px 6px;max-height:none}}
 .pp .adminWrap{flex-basis:100%;border-top:3px solid var(--frame);padding-top:10px;display:flex;flex-direction:column;gap:10px}
-.pp .adminToggle{align-self:flex-start}.pp .adminBody{background:var(--card);border:3px solid var(--frame-out);padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.pp .adminToggle{align-self:flex-start}.pp .adminBody[hidden]{display:none}.pp .adminBody{background:var(--card);border:3px solid var(--frame-out);padding:10px 12px;display:flex;flex-direction:column;gap:10px}
 .pp .adminLock,.pp .adminRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .snote{font-family:var(--font-body);font-size:18px;color:var(--ink-soft)}
 .pp #bgPicker{width:44px;height:34px;padding:0;border:3px solid var(--frame-out);background:none;cursor:pointer}.pp #bgText{width:min(260px,100%)}
 /* Headquarters: live text placed on the illustrated board (assets/hq-board.png) */
@@ -269,17 +269,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301846"></script>
-<script src="assets-embedded.js?v=202610301846"></script>
-<script src="game.js?v=202610301846"></script>
-<script src="thunder-feed.js?v=202610301846"></script>
-<script src="etsy-hq.js?v=202610301846"></script>
-<script src="catalog-data.js?v=202610301846"></script>
-<script src="hq-art-board.js?v=202610301846"></script>
-<script src="research-data.js?v=202610301846"></script>
-<script src="research-board.js?v=202610301846"></script>
-<script src="admin.js?v=202610301846"></script>
-<script src="books-catalog.js?v=202610301846"></script>
+<script src="game-data.js?v=202610301940"></script>
+<script src="assets-embedded.js?v=202610301940"></script>
+<script src="game.js?v=202610301940"></script>
+<script src="thunder-feed.js?v=202610301940"></script>
+<script src="etsy-hq.js?v=202610301940"></script>
+<script src="catalog-data.js?v=202610301940"></script>
+<script src="hq-art-board.js?v=202610301940"></script>
+<script src="research-data.js?v=202610301940"></script>
+<script src="research-board.js?v=202610301940"></script>
+<script src="admin.js?v=202610301940"></script>
+<script src="books-catalog.js?v=202610301940"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
