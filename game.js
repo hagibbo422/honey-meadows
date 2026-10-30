@@ -1036,6 +1036,7 @@ function refreshUI(){
  document.getElementById('routineDetail').textContent=p.detail;
  document.getElementById('petStatus').textContent='Riley: '+(householdState.dog.scene==='town'?'walking around town':'at home')+' • Theo: always at home';
  document.getElementById('toggleTime').textContent=clockMode==='live'?'Pause':(timeRunning?'Pause':'Play');
+ const sd=document.getElementById('signDate'),st=document.getElementById('signTime');if(sd)sd.textContent=clockMode==='live'?centralDateLabel:'Preview';if(st)st.textContent=formatTime(simMinute)+(clockMode==='live'?' '+centralZoneLabel:'');
  statusEl.textContent=(clockMode==='live'?centralDateLabel+' • '+formatTime(simMinute)+' '+centralZoneLabel:'Preview • '+formatTime(simMinute))+' • '+p.label;
  tipEl.textContent=viewMode==='auto'?'Following Hayden and Annie\'s daily routine • Use the time slider below to test any moment':'Viewing '+(scene==='town'?'the town':interiors[scene].name)+' • Hayden and Annie\'s routine continues automatically';
 }

@@ -130,3 +130,5 @@ Headquarters: clicking it in town opens the Headquarters interior again. The big
 Updates & caching: run `node tools/stamp-version.cjs` before every push so browsers load the new scripts instead of cached ones. GitHub Pages can still serve the old index.html for up to ~10 minutes after a push.
 
 Header & settings: the logo (`assets/logo.png`, also the browser-tab icon `assets/favicon.png`) sits next to the title. The View menu, routine info and time controls live in a collapsible **⚙ Settings** panel (`#settingsPanel`) opened by the tab next to the title. The illustrated "Honey Meadows" sign in the town art was painted over with scenery (original is in git history).
+
+Village sign: the date/time sign and settings gear float over the top-left of the town (`#villageSign`, filled in `refreshUI`). The Settings panel opens as an overlay over the town (inline on phones). Page entrance: `#intro` shows the shop logo, then shrinks it while a circle opens onto the town (click to skip; fades for reduced-motion users).
