@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&display=swap">
 <link rel="icon" href="assets/favicon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -44,25 +46,75 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .shake{animation:shake .35s}@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 #tip{display:none!important}
 .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.logo{width:58px;height:58px;border-radius:50%;box-shadow:0 0 0 3px #a47849,0 4px 0 #634329;background:#f7ece9}
-.settingsTab{font:bold 14px Georgia,serif;padding:7px 12px}.settingsTab[aria-expanded="true"]{background:#ffdfa4;box-shadow:inset 0 2px 0 #c49a5c}
-.settingsPanel{margin-top:12px;border:3px solid #a47849;border-radius:8px;background:#1d3a30;padding:6px 14px 14px;box-shadow:0 6px 0 #634329}.settingsPanel #actions{margin-top:10px}
 @media(max-width:700px){.logo{width:44px;height:44px}}
+
+:root{--pp-night:#16200f;--frame-out:#4a1f08;--frame:#b4561e;--frame-hi:#f0a64a;--frame-lo:#7a3410;--parchment:#fbe1a8;--parchment-2:#f2c983;--card:#fff1cf;--ink:#3b1e08;--ink-soft:#7a4a22;--gold:#ffd15c;--good:#3f8a2f;--warn:#d07a16;--bad:#b5452f;--font-display:"Pixelify Sans","Courier New",monospace;--font-body:"VT323","Courier New",monospace}
+.bevel{background:var(--parchment);color:var(--ink);border:3px solid var(--frame-out);box-shadow:inset 0 0 0 3px var(--frame-hi),inset 0 0 0 6px var(--frame),inset 0 0 0 8px var(--frame-lo),inset 0 0 0 10px var(--frame-out),4px 5px 0 rgba(0,0,0,.4)}
+.top h1{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4.4vw,44px);margin:0;letter-spacing:.02em;color:var(--gold);text-shadow:3px 0 0 var(--frame-out),-3px 0 0 var(--frame-out),0 3px 0 var(--frame-out),0 -3px 0 var(--frame-out),4px 5px 0 #000}
+.pill{font-family:var(--font-display);font-size:15px;background:var(--parchment);color:var(--ink);border:3px solid var(--frame-out);border-radius:0;box-shadow:inset 0 0 0 2px var(--frame-hi),3px 4px 0 rgba(0,0,0,.4);padding:8px 12px}
+.gearbtn{width:58px;height:58px;padding:0;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:var(--gold);border-radius:0}
+.gearbtn:hover{background:var(--gold);filter:brightness(1.05)}
+.gearbtn svg{width:32px;height:32px;transition:transform .3s ease}.gearbtn:hover svg{transform:rotate(45deg)}
+.gearbtn[aria-expanded="true"]{background:var(--frame);color:#fff7e2}.gearbtn[aria-expanded="true"] svg{transform:rotate(90deg)}
+.gearbtn:focus-visible{outline:3px dashed var(--gold);outline-offset:3px}
+.pp.settings{margin-top:14px;padding:22px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;font-family:var(--font-display);animation:sdrop .18s ease-out}
+.pp.settings[hidden]{display:none!important}
+@keyframes sdrop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pp.settings{animation:none}.gearbtn svg{transition:none}}
+.pp .stitle{flex-basis:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:3px solid var(--frame);padding-bottom:6px}
+.pp .stitle h2{margin:0;font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.pp .x{font-family:var(--font-display);font-weight:700;font-size:15px;background:var(--bad);color:#fff7e2;border:3px solid var(--frame-out);border-radius:0;box-shadow:inset 0 3px 0 #e07a5a,inset 0 -3px 0 #6e1d0b;width:32px;height:32px;padding:0;cursor:pointer}
+.pp .sgroup{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}
+.pp .sgroup.grow{flex:1 1 100%;flex-wrap:nowrap}
+.pp .slabel{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.pp input[type=range]{flex:1;min-width:120px;accent-color:var(--frame);height:24px;margin:0;cursor:ew-resize}
+.pp input[type=range]:focus-visible{outline:3px dashed var(--ink);outline-offset:2px}
+.pp .timeLbl{font-family:var(--font-display);font-size:24px;font-weight:700;min-width:100px;color:var(--ink);font-variant-numeric:tabular-nums}
+.pp .liveTag{font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border:3px solid var(--frame-out);background:var(--good);color:#fff7e2;white-space:nowrap}
+.pp .liveTag.pv{background:var(--warn)}
+.pp .btn{font-family:var(--font-display);font-weight:700;font-size:16px;padding:6px 14px;border:3px solid var(--frame-out);border-radius:0;background:var(--parchment-2);color:var(--ink);cursor:pointer;box-shadow:inset 0 3px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.18)}
+.pp .btn:hover{filter:brightness(1.05);background:var(--parchment-2)}.pp .btn[disabled]{opacity:.5;cursor:default}
+.pp .btn:focus-visible,.pp .segbtn:focus-visible,.pp .pfield:focus-visible{outline:3px dashed var(--ink);outline-offset:2px}
+.pp .seg{display:flex;gap:4px;flex-wrap:wrap;margin:0}
+.pp .segbtn{font-family:var(--font-display);font-weight:700;font-size:14px;padding:4px 10px;border:3px solid var(--frame-out);border-radius:0;background:var(--parchment-2);color:var(--ink);cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+.pp .segbtn:hover{background:var(--frame);color:#fff7e2}
+.pp .pfield{font-family:var(--font-body);font-size:19px;color:var(--ink);background:#fffaf0;border:3px solid var(--frame-out);border-radius:0;padding:2px 8px}
+.pp .pfield:disabled{opacity:.55}
+.pp .who{flex-basis:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px}
+.pp .who span{font-family:var(--font-body);font-size:19px;line-height:1.2;color:var(--ink);background:var(--parchment-2);border:3px solid var(--frame-out);padding:5px 10px;min-width:0}
+.pp .who b{font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.06em;display:block;color:var(--ink-soft);text-transform:uppercase}
+#settingsPanel #timeReadout{color:var(--ink);font-size:24px;min-width:110px}#settingsPanel #timeSlider{width:auto;margin:0;flex:1;accent-color:var(--frame)}#settingsPanel #currentTime{background:var(--parchment-2)}#settingsPanel #speedSelect:disabled{opacity:.55}
+@media(max-width:600px){.pp .sgroup.grow{flex-wrap:wrap}.pp.settings{padding:18px}}
 </style>
 </head>
 <body>
 <div id="shell">
   <div class="top">
-    <div class="brand"><img class="logo" src="assets/logo.png" alt="Honey Meadows Nails Co. logo"><h1>Honey Meadows</h1><button id="settingsTab" class="settingsTab" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button></div>
+    <div class="brand"><img class="logo" src="assets/logo.png" alt="Honey Meadows Nails Co. logo"><h1>Honey Meadows</h1><button class="gearbtn bevel" id="settingsTab" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M19.07 9.81 L22.05 10.27 L22.05 13.73 L19.07 14.19 L18.55 15.45 L20.33 17.89 L17.89 20.33 L15.45 18.55 L14.19 19.07 L13.73 22.05 L10.27 22.05 L9.81 19.07 L8.55 18.55 L6.11 20.33 L3.67 17.89 L5.45 15.45 L4.93 14.19 L1.95 13.73 L1.95 10.27 L4.93 9.81 L5.45 8.55 L3.67 6.11 L6.11 3.67 L8.55 5.45 L9.81 4.93 L10.27 1.95 L13.73 1.95 L14.19 4.93 L15.45 5.45 L17.89 3.67 L20.33 6.11 L18.55 8.55 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></button></div>
     <div class="pill" id="status">🌤️ Spring • Day 3 • Honey Meadows</div>
   </div>
-  <section id="settingsPanel" class="settingsPanel" hidden aria-label="Settings">
-  <div id="actions">
- <label class="control">View <select id="viewSelect"><option value="town" selected>Town · Main view</option><option value="farm">Farmhouse</option><option value="auto">Follow routine (optional)</option><option value="nails">Nail Shop · Annie's workplace</option><option value="research">Research · Hayden's workplace</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select></label>
- <div class="routineInfo"><strong id="routineTitle">Hayden &amp; Annie · Breakfast</strong><span id="routineDetail">At the kitchen table.</span><small id="petStatus"></small></div>
- </div>
- <section class="timePanel" aria-label="Time controls"><div class="timeHeading"><label for="timeSlider">Time of day</label><span id="clockModeLabel" class="clockMode" role="status">● Live</span><output id="timeReadout" for="timeSlider">Syncing…</output><button id="currentTime">↻ Back to live</button><button id="toggleTime">⏸ Pause clock</button><label class="control">Preview speed <select id="speedSelect" disabled><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1× · 1 minute / second</option><option value="5">5×</option></select></label></div>
- <input id="timeSlider" aria-label="Time of day" type="range" min="0" max="1439" step="1" value="480"><div class="ticks"><span>12 AM</span><span>6 AM</span><span>Noon</span><span>6 PM</span><span>11:59 PM</span></div>
- <div class="jumpTimes"><button data-time="480">8 AM · Breakfast</button><button data-time="603">10:03 · Commute</button><button data-time="720">Noon · Work</button><button data-time="1083">6:03 · Homeward</button><button data-time="1140">7 PM · Dinner</button><button data-time="1260">9 PM · Couch</button><button data-time="1380">11 PM · Sleep</button></div></section>
+  <section id="settingsPanel" class="pp settings bevel" hidden aria-label="Settings">
+    <div class="stitle"><h2>Settings</h2><button class="x small" id="settingsClose" aria-label="Close settings">X</button></div>
+    <div class="sgroup grow">
+      <span id="clockModeLabel" class="liveTag" role="status">Live</span>
+      <label for="timeSlider" class="slabel">Time of day</label>
+      <input id="timeSlider" type="range" min="0" max="1439" step="1" value="480">
+      <output id="timeReadout" class="timeLbl" for="timeSlider">—</output>
+      <button id="currentTime" class="btn small">Now</button>
+    </div>
+    <div class="sgroup">
+      <span class="slabel">Preview</span>
+      <button id="toggleTime" class="btn small">Pause</button>
+      <label class="slabel" for="speedSelect">Speed</label>
+      <select id="speedSelect" class="pfield" disabled><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="5">5×</option></select>
+      <div class="seg jumpTimes"><button class="segbtn" data-time="480">Breakfast</button><button class="segbtn" data-time="603">Commute</button><button class="segbtn" data-time="720">Work</button><button class="segbtn" data-time="1083">Home</button><button class="segbtn" data-time="1140">Dinner</button><button class="segbtn" data-time="1260">Couch</button><button class="segbtn" data-time="1380">Sleep</button></div>
+    </div>
+    <div class="sgroup">
+      <label class="slabel" for="viewSelect">View</label>
+      <select id="viewSelect" class="pfield"><option value="town" selected>Town</option><option value="farm">Farmhouse</option><option value="auto">Follow routine</option><option value="nails">Nail Shop</option><option value="research">Research</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select>
+    </div>
+    <div class="who" id="who" aria-live="polite"></div>
+    <div class="hiddenInfo" hidden><strong id="routineTitle"></strong><span id="routineDetail"></span><small id="petStatus"></small></div>
   </section>
   <div id="frame">
     <canvas id="game" width="1152" height="768" tabindex="0" aria-label="Honey Meadows daily routine simulation"></canvas>
@@ -72,16 +124,18 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301612"></script>
-<script src="assets-embedded.js?v=202610301612"></script>
-<script src="game.js?v=202610301612"></script>
-<script src="thunder-feed.js?v=202610301612"></script>
-<script src="etsy-hq.js?v=202610301612"></script>
-<script src="catalog-data.js?v=202610301612"></script>
-<script src="books-catalog.js?v=202610301612"></script>
+<script src="game-data.js?v=202610301618"></script>
+<script src="assets-embedded.js?v=202610301618"></script>
+<script src="game.js?v=202610301618"></script>
+<script src="thunder-feed.js?v=202610301618"></script>
+<script src="etsy-hq.js?v=202610301618"></script>
+<script src="catalog-data.js?v=202610301618"></script>
+<script src="books-catalog.js?v=202610301618"></script>
 <script>
-(()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel');
- t.onclick=()=>{const open=p.hidden;p.hidden=!open;t.setAttribute('aria-expanded',String(open));};})();
+(()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
+ const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
+ t.onclick=()=>set(p.hidden);x.onclick=()=>set(false);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden&&p.contains(document.activeElement)){e.stopImmediatePropagation();set(false);}},true);})();
 </script>
 </body></html>
 

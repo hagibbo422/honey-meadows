@@ -1012,16 +1012,30 @@ function drawScheduledTown(){
  drawCourtLightFixtures();
  drawBuildingGlow();
 }
+// "Who's doing what" cards in Settings.
+function renderWho(p){
+ const el=document.getElementById('who');if(!el)return;
+ const id=p.id,dog=householdState.dog,catRest=((simMinute%90)<65)||id==='sleep';
+ const at={breakfast:'Breakfast at the farmhouse',dinner:'Dinner at the farmhouse',couch:'Snuggled on the couch',sleep:'Asleep at the farmhouse'};
+ const hayden=at[id]||({outbound:'Walking to Research',work:'Working at Research',return:'Walking home'}[id]);
+ const annie=at[id]||({outbound:'Walking to the Nail Shop',work:'Working at the Nail Shop',return:'Walking home'}[id]);
+ const riley=dog.scene==='town'?'Walking around town':id==='couch'?'Resting by the couch':id==='sleep'?'Asleep at home':'Hanging out at home';
+ const theo=id==='sleep'?'Asleep with the family':catRest?'Napping at home':'Wandering the farmhouse';
+ const html=[['Hayden',hayden],['Annie',annie],['Riley',riley],['Theo',theo]].map(([n,t])=>`<span><b>${n}</b>${t}</span>`).join('');
+ if(el._h!==html){el.innerHTML=html;el._h=html;}
+}
 function refreshUI(){
  const p=householdState.period;
- document.getElementById('timeReadout').textContent=formatTime(simMinute)+(clockMode==='live'?' '+centralZoneLabel:'');
- document.getElementById('clockModeLabel').textContent=clockMode==='live'?'● Live':'Preview time • '+(timeRunning?'playing':'paused');
+ document.getElementById('timeReadout').textContent=formatTime(simMinute);
+ const tag=document.getElementById('clockModeLabel');tag.textContent=clockMode==='live'?'Live':'Preview';tag.className='liveTag'+(clockMode!=='live'?' pv':'');
+ document.getElementById('currentTime').disabled=clockMode==='live';
+ renderWho(p);
  document.getElementById('speedSelect').disabled=clockMode==='live';
  const slider=document.getElementById('timeSlider');slider.value=String(Math.floor(simMinute));slider.setAttribute('aria-valuetext',formatTime(simMinute));
  document.getElementById('routineTitle').textContent=p.label;
  document.getElementById('routineDetail').textContent=p.detail;
  document.getElementById('petStatus').textContent='Riley: '+(householdState.dog.scene==='town'?'walking around town':'at home')+' • Theo: always at home';
- document.getElementById('toggleTime').textContent=clockMode==='live'?'⏸ Pause clock':(timeRunning?'⏸ Pause preview':'▶ Play preview');
+ document.getElementById('toggleTime').textContent=clockMode==='live'?'Pause':(timeRunning?'Pause':'Play');
  statusEl.textContent=(clockMode==='live'?centralDateLabel+' • '+formatTime(simMinute)+' '+centralZoneLabel:'Preview • '+formatTime(simMinute))+' • '+p.label;
  tipEl.textContent=viewMode==='auto'?'Following Hayden and Annie\'s daily routine • Use the time slider below to test any moment':'Viewing '+(scene==='town'?'the town':interiors[scene].name)+' • Hayden and Annie\'s routine continues automatically';
 }
