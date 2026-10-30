@@ -19,8 +19,58 @@ async function load(){try{const db=await idb();const v=await new Promise((res,re
 async function persist(){try{const db=await idb();await new Promise((res,rej)=>{const t=db.transaction(STORE,'readwrite');t.objectStore(STORE).put(saved,KEY);t.oncomplete=res;t.onerror=()=>rej(t.error);});}catch(e){storageNote='Couldn’t save to this browser — export a backup so you don’t lose changes.';}}
 let storageNote='';const ready=load();
 
+// ---------- shared catalog sheet ----------
+// When catalogSheetId is set (game-data.js), the "Honey Meadows Catalog" Google Sheet is the
+// shared source for everyone: edit the sheet and every copy of the game shows the change.
+// The sheet must be shared "Anyone with the link → Viewer". catalog-data.js is the offline fallback.
+const GCFG=window.HONEY_MEADOWS_GAME||{};
+const SHEET=String(GCFG.catalogSheetId||'').trim();
+const SHEET_EDIT=SHEET?`https://docs.google.com/spreadsheets/d/${SHEET}/edit`:'';
+const SHEET_CACHE='honeyMeadows.catalogSheet.v1';
+let sheetItems=null,sheetError='',sheetUpdated=null;
+try{const c=JSON.parse(localStorage.getItem(SHEET_CACHE)||'null');if(c&&Array.isArray(c.items)){sheetItems=c.items;sheetUpdated=c.at;}}catch(e){}
+// Google Drive share links -> a direct image link the page can show.
+function photoUrl(u){
+ u=String(u||'').trim();
+ const m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/)||u.match(/drive\.google\.com\/thumbnail\?id=([\w-]{20,})/);
+ return m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w1000`:u;
+}
+const num=v=>{const n=parseFloat(String(v??'').replace(/[^0-9.\-]/g,''));return Number.isFinite(n)?n:'';};
+function sheetCell(c){return c&&c.v!=null?(c.f&&typeof c.v==='number'&&/[$]/.test(c.f)?c.v:c.v):'';}
+function loadSheet(){
+ return new Promise((resolve,reject)=>{
+  const cb='__hmCat'+Date.now()+Math.floor(Math.random()*1e6),sc=document.createElement('script');
+  const done=()=>{delete window[cb];sc.remove();clearTimeout(t);};
+  const t=setTimeout(()=>{done();reject(new Error('The Catalog sheet didn’t answer.'));},15000);
+  window[cb]=d=>{done();
+   if(!d||d.status==='error'){const w=d&&d.errors&&d.errors[0];reject(new Error(w&&w.reason==='access_denied'?'The Catalog sheet isn’t shared yet (Share → Anyone with the link → Viewer).':'Catalog sheet error: '+(w&&w.message||'unknown')));return;}
+   const cols=d.table.cols.map(c=>String(c.label||'').trim().toLowerCase());
+   const at=(...n)=>cols.findIndex(c=>n.includes(c));
+   const ix={show:at('show'),name:at('name','set name'),title:at('title'),price:at('price'),orig:at('original price','was'),desc:at('description'),photo:at('photo','photo url','image'),url:at('etsy link','link','url'),id:at('id')};
+   const get=(r,i)=>i>=0?sheetCell(r.c&&r.c[i]):'';
+   const items=d.table.rows.map((r,n)=>({
+    show:String(get(r,ix.show)).trim().toLowerCase(),
+    id:String(get(r,ix.id)||'row'+(n+2)),name:String(get(r,ix.name)).trim(),title:String(get(r,ix.title)).trim(),
+    price:num(get(r,ix.price)),originalPrice:num(get(r,ix.orig)),description:String(get(r,ix.desc)),
+    image:photoUrl(get(r,ix.photo)),url:String(get(r,ix.url)).trim(),source:'sheet'
+   })).filter(i=>(i.name||i.title)&&!['no','n','false','hide','hidden','0'].includes(i.show));
+   resolve(items);
+  };
+  sc.onerror=()=>{done();reject(new Error('Couldn’t reach Google Sheets (offline?).'));};
+  sc.src=`https://docs.google.com/spreadsheets/d/${encodeURIComponent(SHEET)}/gviz/tq?headers=1&tqx=responseHandler:${cb}&_=${Date.now()}`;
+  document.head.appendChild(sc);
+ });
+}
+async function refreshSheet(){
+ if(!SHEET)return;
+ try{sheetItems=await loadSheet();sheetUpdated=new Date().toISOString();sheetError='';try{localStorage.setItem(SHEET_CACHE,JSON.stringify({items:sheetItems,at:sheetUpdated}));}catch(e){}}
+ catch(e){sheetError=String(e.message||e);}
+ if(isOpen&&mode==='grid')render();
+}
+
 // ---------- data ----------
 function allItems(){
+ if(SHEET&&sheetItems)return sheetItems;
  const etsy=DATA.items.filter(i=>!saved.hidden.includes(i.id)).map(i=>({...i,...(saved.overrides[i.id]||{}),source:'etsy',edited:!!saved.overrides[i.id]}));
  const manual=saved.manual.map(i=>({...i,source:'manual'}));
  return [...manual,...etsy];
@@ -55,17 +105,18 @@ function renderGrid(){
  const total=allItems().length,manualN=saved.manual.length;
  body.innerHTML=`<div class="rowFlex catBar">
    <input id="catSearch" class="catSearch" type="search" placeholder="Search sets…" value="${esc(query)}" aria-label="Search the catalog">
-   <button id="catAdd">＋ Add nails</button>
-   <span class="smallDim catCount">${total} set${total===1?'':'s'} • ${total-manualN} from Etsy${manualN?` • ${manualN} added by you`:''}</span>
+   ${SHEET?`<a class="catLink" href="${esc(SHEET_EDIT)}" target="_blank" rel="noopener">✎ Add / edit in the Catalog sheet ↗</a><button id="catRefresh" class="secondary">↻ Refresh</button>`:'<button id="catAdd">＋ Add nails</button>'}
+   <span class="smallDim catCount">${total} set${total===1?'':'s'}${SHEET?'':` • ${total-manualN} from Etsy${manualN?` • ${manualN} added by you`:''}`}</span>
   </div>
-  ${storageNote?`<p class="helpText">⚠ ${esc(storageNote)}</p>`:''}
+  ${SHEET&&sheetError?`<p class="helpText">⚠ ${esc(sheetError)}${sheetItems?' Showing the last copy it loaded.':' Showing the built-in list.'}</p>`:''}${!SHEET&&storageNote?`<p class="helpText">⚠ ${esc(storageNote)}</p>`:''}
   <div class="catGrid">${items.map(i=>`<button class="catCard" data-id="${esc(i.id)}">${photoHtml(i,'catPhoto')}<span class="catName">${esc(shortTitle(i))}</span><span class="catPrice">${priceHtml(i)}</span>${i.source==='manual'?'<span class="catTag">Added by you</span>':''}</button>`).join('')||'<p class="helpText">No sets match that search.</p>'}</div>
-  <p class="smallDim catFoot">Etsy listings as of ${esc(DATA.updated||'—')} • <a href="${esc(DATA.shopUrl||'#')}" target="_blank" rel="noopener">Open the shop on Etsy</a> • <button id="catExport" class="linkBtn">Export backup</button> • <label class="linkBtn">Import backup<input id="catImport" type="file" accept="application/json" hidden></label></p>`;
+  <p class="smallDim catFoot">${SHEET?`From the shared Catalog sheet${sheetUpdated?' • loaded '+esc(new Date(sheetUpdated).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})):''}`:`Etsy listings as of ${esc(DATA.updated||'—')}`} • <a href="${esc(DATA.shopUrl||'#')}" target="_blank" rel="noopener">Open the shop on Etsy</a>${SHEET?'':' • <button id="catExport" class="linkBtn">Export backup</button> • <label class="linkBtn">Import backup<input id="catImport" type="file" accept="application/json" hidden></label>'}</p>`;
  const s=body.querySelector('#catSearch');s.oninput=e=>{query=e.target.value;const pos=s.selectionStart;renderGrid();const n=body.querySelector('#catSearch');n.focus();n.setSelectionRange(pos,pos);};
- body.querySelector('#catAdd').onclick=()=>{mode='edit';current=null;render();};
+ const add=body.querySelector('#catAdd');if(add)add.onclick=()=>{mode='edit';current=null;render();};
+ const rf=body.querySelector('#catRefresh');if(rf)rf.onclick=async()=>{rf.disabled=true;rf.textContent='Refreshing…';await refreshSheet();render();};
  body.querySelectorAll('.catCard').forEach(b=>b.onclick=()=>{mode='detail';current=b.dataset.id;render();});
- body.querySelector('#catExport').onclick=exportBackup;
- body.querySelector('#catImport').onchange=e=>importBackup(e.target.files[0]);
+ const ex=body.querySelector('#catExport');if(ex)ex.onclick=exportBackup;
+ const im=body.querySelector('#catImport');if(im)im.onchange=e=>importBackup(e.target.files[0]);
 }
 
 function renderDetail(){
@@ -74,17 +125,17 @@ function renderDetail(){
   <div class="catDetail">
    <div>${photoHtml(i,'catBig')}</div>
    <div class="dashCard">
-    <p class="eyebrow" style="color:#7a6a4e">${i.source==='manual'?'ADDED BY YOU':'ETSY LISTING'}${i.edited?' • EDITED':''}</p>
+    <p class="eyebrow" style="color:#7a6a4e">${i.source==='manual'?'ADDED BY YOU':i.source==='sheet'?'CATALOG':'ETSY LISTING'}${i.edited?' • EDITED':''}</p>
     <h3 style="font-size:24px">${esc(shortTitle(i))}</h3>
     <p class="catPriceBig">${priceHtml(i)}</p>
     <p><b>Title</b><br>${esc(i.title||'')}</p>
     <p><b>Description</b><br>${esc(i.description||'No description yet.').replace(/\n/g,'<br>')}</p>
-    <p class="rowFlex">${i.url?`<a class="catLink" href="${esc(i.url)}" target="_blank" rel="noopener">View on Etsy ↗</a>`:''}<button id="catEdit">✎ Edit</button>
+    <p class="rowFlex">${i.url?`<a class="catLink" href="${esc(i.url)}" target="_blank" rel="noopener">View on Etsy ↗</a>`:''}${SHEET?`<a class="catLink" style="background:#e7c687;border-color:#89603a" href="${esc(SHEET_EDIT)}" target="_blank" rel="noopener">✎ Edit in sheet ↗</a>`:'<button id="catEdit">✎ Edit</button>'}
      ${i.source==='manual'?'<button id="catDelete" class="danger">Delete</button>':i.edited?'<button id="catReset" class="secondary">Undo my edits</button>':''}</p>
    </div>
   </div>`;
  body.querySelector('#catBack').onclick=()=>{mode='grid';render();};
- body.querySelector('#catEdit').onclick=()=>{mode='edit';render();};
+ const ed=body.querySelector('#catEdit');if(ed)ed.onclick=()=>{mode='edit';render();};
  const del=body.querySelector('#catDelete');if(del)del.onclick=async()=>{saved.manual=saved.manual.filter(m=>m.id!==i.id);await persist();mode='grid';render();};
  const rst=body.querySelector('#catReset');if(rst)rst.onclick=async()=>{delete saved.overrides[i.id];await persist();render();};
 }
@@ -140,7 +191,7 @@ async function open(){
  const tip=document.getElementById('tip');if(tip)tip.style.display='none';
  backBtn.textContent='← Back to town';backBtn.onclick=close;
  header();body.innerHTML='<p class="helpText">Opening the catalog…</p>';
- await ready;render();backBtn.focus();
+ await ready;render();backBtn.focus();refreshSheet();
 }
 function close(){
  isOpen=false;view.classList.add('hidden');

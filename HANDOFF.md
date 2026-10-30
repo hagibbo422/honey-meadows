@@ -120,3 +120,7 @@ Clicking Books opens `books-catalog.js`: a searchable grid of every nail set wit
 
 Headquarters asks for a password before showing sales. The sales sheet links are stored in `game-data.js` only in encrypted form (`etsySecret`, AES-256-GCM with a key derived from the password by PBKDF2-SHA256, 600,000 rounds), so the public code doesn't reveal the sheet. A correct password decrypts the links in the browser; unlocking is remembered for the tab session, or on the device with "Remember me". The 🔒 Lock button forgets it. To change the password: `node tools/encrypt-sheet.cjs "<new password>" "<sheetId>" "<csvUrl>"` and paste the output as `etsySecret`.
 Note: a short password can be guessed by someone determined who copies the code; a longer one is much stronger.
+
+## Shared Books catalog (Google Sheet)
+
+Books reads the **Honey Meadows Catalog** Google Sheet (`catalogSheetId` in `game-data.js`), so edits there show up for everyone. Columns (matched by header): `Show` (type `no` to hide a set), `Name`, `Title`, `Price`, `Original Price`, `Description`, `Photo`, `Etsy Link`, `ID`. A new row = a new set. `Photo` can be any image link or a Google Drive share link (converted automatically); Drive photos must be shared "Anyone with the link". Suggested photo folder: "Honey Meadows Catalog Photos" in Drive. The sheet must be shared **Anyone with the link → Viewer**. If the sheet can't be reached, Books shows the last copy it loaded, then `catalog-data.js`. In-game editing/backup buttons only appear when no sheet is set.
