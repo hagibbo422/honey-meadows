@@ -185,16 +185,71 @@ async function importBackup(file){
  render();
 }
 
-function render(){if(!isOpen)return;header();({grid:renderGrid,detail:renderDetail,edit:renderEdit}[mode]||renderGrid)();view.scrollTop=0;}
+
+// ---------- Bookshelf view (assets/books-shelf.png) ----------
+// The illustrated shelf is shown untouched; live content sits in transparent boxes placed on
+// its 8 frames. Boxes are in the image's own pixels (1536 × 1024) and converted to %, so the
+// layout scales with the picture. 8 sets per page; search filters the whole catalog.
+const SHELF={w:1536,h:1024,
+ title:[540,58,460,92],search:[345,213,468,44],edit:[884,213,200,44],refresh:[1160,213,116,44],
+ frames:[295,550,800,1052],rows:[{img:306,imgH:172,plate:489},{img:596,imgH:182,plate:788}],
+ prev:[452,926,222,58],page:[682,926,172,58],next:[862,926,222,58]};
+const PER_PAGE=8;let page=0;
+const pct=([x,y,w,h])=>`left:${x/SHELF.w*100}%;top:${y/SHELF.h*100}%;width:${w/SHELF.w*100}%;height:${h/SHELF.h*100}%`;
+function filtered(){const q=query.trim().toLowerCase();return allItems().filter(i=>!q||[i.title,i.name,i.description].join(' ').toLowerCase().includes(q));}
+function renderShelf(keepFocus){
+ view.classList.add('booksArt');
+ const items=filtered(),pages=Math.max(1,Math.ceil(items.length/PER_PAGE));
+ page=Math.min(Math.max(0,page),pages-1);
+ const shown=items.slice(page*PER_PAGE,page*PER_PAGE+PER_PAGE);
+ const status=SHEET&&sheetError?`⚠ ${sheetError}`:(query.trim()?`${items.length} match${items.length===1?'':'es'} for “${query.trim()}”`:`${allItems().length} sets${SHEET?' • shared Catalog sheet':''}`);
+ let slots='';
+ for(let n=0;n<PER_PAGE;n++){
+  const it=shown[n],row=SHELF.rows[n<4?0:1],x=SHELF.frames[n%4];
+  if(!it){continue;}
+  slots+=`<button class="bkSlot" data-id="${esc(it.id)}" style="${pct([x+10,row.img,208,row.imgH])}" aria-label="${esc(shortTitle(it))}">${photoHtml(it,'bkPhoto')}</button>`+
+   `<button class="bkPlate" data-id="${esc(it.id)}" tabindex="-1" style="${pct([x+27,row.plate,176,38])}"><span class="bkName">${esc(shortTitle(it))}</span><span class="bkPrice">${priceHtml(it)}</span></button>`;
+ }
+ const editBtn=SHEET?`<a class="bkEdit" href="${esc(SHEET_EDIT)}" target="_blank" rel="noopener" style="${pct(SHELF.edit)}">Edit sheet ↗</a>`:`<button class="bkEdit" id="catAdd" style="${pct(SHELF.edit)}">Add nails</button>`;
+ body.innerHTML=`<div class="bkShelf">
+   <div class="bkTitle" style="${pct(SHELF.title)}"><b>Books • Nail Catalog</b><span class="bkStatus${SHEET&&sheetError?' bkErr':''}">${esc(status)}</span></div>
+   <input id="catSearch" class="bkSearch" type="search" placeholder="Search sets…" value="${esc(query)}" aria-label="Search the catalog" style="${pct(SHELF.search)}">
+   ${editBtn}
+   ${SHEET?`<button class="bkRefresh" id="catRefresh" style="${pct(SHELF.refresh)}">Refresh</button>`:''}
+   ${slots}
+   ${!items.length?`<div class="bkEmpty" style="${pct([295,380,985,60])}">No sets match that search.</div>`:''}
+   <button class="bkNav" id="bkPrev" style="${pct(SHELF.prev)}" ${page===0?'disabled':''}>← Previous Page</button>
+   <div class="bkPage" style="${pct(SHELF.page)}">Page ${page+1} of ${pages}</div>
+   <button class="bkNav" id="bkNext" style="${pct(SHELF.next)}" ${page>=pages-1?'disabled':''}>Next Page →</button>
+  </div>`;
+ const sInp=body.querySelector('#catSearch');
+ sInp.oninput=e=>{query=e.target.value;page=0;const pos=sInp.selectionStart;renderShelf();const n=body.querySelector('#catSearch');n.focus();n.setSelectionRange(pos,pos);};
+ if(keepFocus==='search'){sInp.focus();}
+ const add=body.querySelector('#catAdd');if(add)add.onclick=()=>{mode='edit';current=null;render();};
+ const rf=body.querySelector('#catRefresh');if(rf)rf.onclick=async()=>{rf.disabled=true;rf.textContent='Loading…';await refreshSheet();render();};
+ body.querySelectorAll('.bkSlot,.bkPlate').forEach(b=>b.onclick=()=>{mode='detail';current=b.dataset.id;render();});
+ body.querySelector('#bkPrev').onclick=()=>turn(-1);body.querySelector('#bkNext').onclick=()=>turn(1);
+}
+function turn(d){
+ const pages=Math.max(1,Math.ceil(filtered().length/PER_PAGE)),next=Math.min(Math.max(0,page+d),pages-1);
+ if(next===page)return;page=next;renderShelf();
+ const sh=body.querySelector('.bkShelf');if(sh){sh.classList.remove('flipL','flipR');void sh.offsetWidth;sh.classList.add(d>0?'flipR':'flipL');}
+ const b=body.querySelector(d>0?'#bkNext':'#bkPrev');if(b&&!b.disabled)b.focus();
+}
+document.addEventListener('keydown',e=>{
+ if(!isOpen||mode!=='grid'||e.target.matches('input,textarea,select'))return;
+ if(e.key==='ArrowRight'){turn(1);e.preventDefault();}else if(e.key==='ArrowLeft'){turn(-1);e.preventDefault();}
+});
+function render(){if(!isOpen)return;header();view.classList.remove('booksArt');({grid:renderShelf,detail:renderDetail,edit:renderEdit}[mode]||renderShelf)();view.scrollTop=0;}
 async function open(){
- isOpen=true;mode='grid';current=null;view.classList.remove('hidden');
+ isOpen=true;mode='grid';current=null;page=0;view.classList.remove('hidden');
  const tip=document.getElementById('tip');if(tip)tip.style.display='none';
  backBtn.textContent='← Back to town';backBtn.onclick=close;
  header();body.innerHTML='<p class="helpText">Opening the catalog…</p>';
  await ready;render();backBtn.focus();refreshSheet();
 }
 function close(){
- isOpen=false;view.classList.add('hidden');
+ isOpen=false;view.classList.add('hidden');view.classList.remove('booksArt');
  const tip=document.getElementById('tip');if(tip)tip.style.display='';
  document.getElementById('game')?.focus();
 }

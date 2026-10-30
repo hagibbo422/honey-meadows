@@ -144,3 +144,7 @@ Interiors: a "← Back to town" button (`#backToTown`) appears top-right wheneve
 ## Research building (TikTok / Pinterest / Marketing)
 
 Inside Research, three outlined spots open the research boards: the produce stand = **TikTok**, the shelf on the right = **Pinterest**, the two aisles = **Marketing** (`INTERIOR_HOTSPOTS.research` in `game.js`; Headquarters' sales table uses the same system). All three use one layout (`research-board.js`) with tabs to switch between them. Content lives in `research-data.js`: per section `title`, `subtitle`, `icon`, `accent` (colour), optional `blocks` (order + headings of Trending now / What's selling / Ideas to try / Sources), and the lists `trends` (name, what, inShop, source index), `selling`, `ideas`, `sources`. Ideas are checkboxes remembered per browser. Research gathered Oct 30, 2026 — ask Claude to refresh it.
+
+## Books bookshelf (paginated)
+
+Books shows `assets/books-shelf.png` (1536×1024, unmodified) with live overlays from `renderShelf()` in `books-catalog.js`. 8 sets per page in the 8 frames (photo in the frame, name + price on its plaque); ← Previous / Next → buttons and "Page X of Y" under the shelf (arrow keys also turn pages). Page count = filtered results ÷ 8; search filters the whole catalog and resets to page 1. Frame/button positions are image-pixel boxes in `SHELF`. Clicking a set opens its detail page; Esc returns to the shelf. Data still comes from the Honey Meadows Catalog sheet.

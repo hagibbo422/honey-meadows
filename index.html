@@ -182,6 +182,40 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .rb-ideas li.done span{text-decoration:line-through;color:var(--ink-soft)}
 .rb-sources a{color:var(--ink);font-size:17px}
 @media(max-width:700px){.rb-cols{grid-template-columns:1fr}.rb-head{flex-wrap:wrap}.rb-date{margin-left:0}}
+/* Books: bookshelf background (assets/books-shelf.png) with live overlays */
+#stationView.booksArt{padding:0;background:#2a1a12;display:flex;align-items:center;justify-content:center}
+#stationView.booksArt .stationFrame{max-width:none;min-height:0;padding:0;border:0;box-shadow:none;background:none;width:100%;margin:0;position:relative}
+#stationView.booksArt .stationTop{position:absolute;z-index:3;top:1.2%;right:1.2%;border:0;padding:0}
+#stationView.booksArt .stationTop>div{display:none}
+#stationView.booksArt #backHQ{font:700 clamp(11px,1.2vw,15px) var(--font-display);padding:6px 10px}
+.bkShelf{position:relative;width:100%;aspect-ratio:1536/1024;background:url(assets/books-shelf.png) center/100% 100% no-repeat;container-type:inline-size;font-family:var(--font-display);color:#4a2a14}
+.bkShelf>*{position:absolute;box-sizing:border-box;margin:0}
+.bkShelf button,.bkShelf a{all:unset;box-sizing:border-box;cursor:pointer;position:absolute}
+.bkShelf :focus-visible{outline:.25cqw dashed #4a2a14!important;outline-offset:.15cqw}
+ .bkShelf .bkTitle{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.3cqw}
+ .bkShelf .bkTitle b{font-size:2.3cqw;white-space:nowrap;line-height:1;color:#54321a;text-shadow:.12cqw .12cqw 0 rgba(255,240,205,.9)}
+ .bkShelf .bkStatus{font-family:var(--font-body);font-size:1.4cqw;color:#7a4a22;line-height:1} .bkShelf .bkStatus.bkErr{color:#9f382c}
+.bkSearch{all:unset;box-sizing:border-box;position:absolute;font-family:var(--font-body);font-size:1.75cqw;color:#3b1e08;padding:0 .6cqw}
+.bkSearch::placeholder{color:#8a6a48}
+ .bkShelf .bkEdit{display:flex!important;align-items:center;justify-content:center;font-weight:700;font-size:1.25cqw;color:#fff7e2!important;text-decoration:none;text-shadow:.1cqw .1cqw 0 rgba(0,0,0,.35)}
+ .bkShelf .bkRefresh{display:flex!important;align-items:center;justify-content:center;font-weight:700;font-size:1.25cqw;color:#5a3418}
+ .bkShelf .bkEdit:hover, .bkShelf .bkRefresh:hover{background:rgba(255,255,255,.18)}
+ .bkShelf .bkSlot{display:flex!important;align-items:center;justify-content:center;padding:.35cqw!important}
+ .bkShelf .bkSlot:hover{background:rgba(255,226,140,.25)}
+ .bkShelf .bkPhoto{width:100%;height:100%;object-fit:cover;display:block;box-shadow:0 0 0 .15cqw rgba(122,74,34,.55),.2cqw .25cqw 0 rgba(59,30,8,.25)}
+ .bkShelf .bkPhoto.noPhoto{display:flex;align-items:center;justify-content:center;font-size:4cqw;background:rgba(242,201,131,.4)}
+ .bkShelf .bkPlate{display:flex!important;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 .6cqw!important;line-height:1.05}
+ .bkShelf .bkName{font-weight:700;font-size:.98cqw;color:#4a2a14;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .bkShelf .bkPrice{font-family:var(--font-body);font-size:1.15cqw;color:#2f5a3c} .bkShelf .bkPrice b{font-weight:400} .bkShelf .bkPrice s{color:#8a6a48;font-size:.9em}
+ .bkShelf .bkEmpty{display:flex;align-items:center;justify-content:center;font-size:2cqw;color:#fbe1a8;text-shadow:.15cqw .15cqw 0 #2b1408}
+ .bkShelf .bkNav{display:flex!important;align-items:center;justify-content:center;font-weight:700;font-size:1.45cqw;color:#3b1e08;background:#ffd15c;border:.22cqw solid #2b1408;box-shadow:inset 0 0 0 .15cqw #f0a64a,inset 0 -.25cqw 0 rgba(0,0,0,.18),.25cqw .3cqw 0 rgba(0,0,0,.5)}
+ .bkShelf .bkNav:hover:not([disabled]){filter:brightness(1.07)}
+ .bkShelf .bkNav[disabled]{opacity:.45;cursor:default;filter:grayscale(.4)}
+ .bkShelf .bkPage{display:flex;white-space:nowrap;align-items:center;justify-content:center;font-weight:700;font-size:1.35cqw;color:#fbe1a8;background:rgba(59,30,8,.72);border:.18cqw solid #2b1408;text-shadow:.1cqw .1cqw 0 #000}
+.bkShelf.flipR .bkSlot,.bkShelf.flipR .bkPlate{animation:bkInR .28s ease-out}.bkShelf.flipL .bkSlot,.bkShelf.flipL .bkPlate{animation:bkInL .28s ease-out}
+@keyframes bkInR{from{opacity:0;transform:translateX(1.5cqw)}to{opacity:1;transform:none}}@keyframes bkInL{from{opacity:0;transform:translateX(-1.5cqw)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.bkShelf  .bkShelf .bkSlot,.bkShelf  .bkShelf .bkPlate{animation:none!important}}
+@media(max-width:700px){#stationView.booksArt{position:fixed;inset:0;z-index:50;display:block;overflow:auto}#stationView.booksArt .stationFrame{width:max(100%,720px)}#stationView.booksArt .stationTop{position:fixed;top:8px;right:8px}}
 </style>
 </head>
 <body>
@@ -222,17 +256,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301731"></script>
-<script src="assets-embedded.js?v=202610301731"></script>
-<script src="game.js?v=202610301731"></script>
-<script src="thunder-feed.js?v=202610301731"></script>
-<script src="etsy-hq.js?v=202610301731"></script>
-<script src="catalog-data.js?v=202610301731"></script>
-<script src="hq-art-board.js?v=202610301731"></script>
-<script src="research-data.js?v=202610301731"></script>
-<script src="research-board.js?v=202610301731"></script>
-<script src="admin.js?v=202610301731"></script>
-<script src="books-catalog.js?v=202610301731"></script>
+<script src="game-data.js?v=202610301738"></script>
+<script src="assets-embedded.js?v=202610301738"></script>
+<script src="game.js?v=202610301738"></script>
+<script src="thunder-feed.js?v=202610301738"></script>
+<script src="etsy-hq.js?v=202610301738"></script>
+<script src="catalog-data.js?v=202610301738"></script>
+<script src="hq-art-board.js?v=202610301738"></script>
+<script src="research-data.js?v=202610301738"></script>
+<script src="research-board.js?v=202610301738"></script>
+<script src="admin.js?v=202610301738"></script>
+<script src="books-catalog.js?v=202610301738"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
