@@ -891,7 +891,7 @@ function drawScheduledInterior(id){
  text(interiors[id].name,576,35,23,'#ffe4ac');
  if(id==='farm'){text(householdState.girl.scene==='farm'?householdState.period.label:'A quiet house • Theo at home'+(householdState.dog.scene==='farm'?' • Riley at home':''),576,724,17,'#f3d99b');}
  else if(id==='nails'||id==='research')text(householdState.period.id==='work'?'Working until 6:00 PM':'The workday has finished',576,724,17,'#f3d99b');
- if(id==='headquarters'){drawHqTableHotspot();}
+ if(INTERIOR_HOTSPOTS[id])drawInteriorHotspots(id);
 }
 function drawWorkDetails(actor,kind){
  const image=assets['room_'+kind];if(!image?.naturalWidth)return;
@@ -1075,24 +1075,35 @@ window.HoneyMeadows={
   draw();return true;
  }
 };
-// Headquarters interior: the big table in the middle opens the sales dashboard.
-const HQ_TABLE={x:494,y:346,w:166,h:134};
-let hqTableHover=false;
-const inHqTable=(x,y)=>scene==='headquarters'&&x>=HQ_TABLE.x&&x<=HQ_TABLE.x+HQ_TABLE.w&&y>=HQ_TABLE.y&&y<=HQ_TABLE.y+HQ_TABLE.h;
-function drawHqTableHotspot(){
- const {x,y,w,h}=HQ_TABLE,pulse=.5+.5*Math.sin(clock*3);
- g.save();
- if(hqTableHover){g.fillStyle='rgba(255,226,140,.14)';g.fillRect(x,y,w,h);}
- g.strokeStyle=hqTableHover?'#fff1a8':`rgba(255,226,140,${.35+.35*pulse})`;g.lineWidth=hqTableHover?3:2;
- g.setLineDash(hqTableHover?[]:[6,5]);g.strokeRect(x+.5,y+.5,w,h);g.setLineDash([]);
- g.restore();
- const label='📊 SALES DASHBOARD',lw=150;
- fill(x+w/2-lw/2,y-30,lw,22,hqTableHover?'#f6e0a5':'#5b381f');
- text(label,x+w/2,y-14,11,hqTableHover?'#422d20':'#ffe7a4');
+// Clickable spots inside buildings. Boxes are in canvas pixels (the 768px room art is drawn at
+// x=256, y=52, scale 640/768). Add a spot here to make a new interior dashboard.
+const INTERIOR_HOTSPOTS={
+ headquarters:[{id:'sales',label:'📊 SALES DASHBOARD',box:{x:494,y:346,w:166,h:134},open:()=>window.EtsyHQ&&window.EtsyHQ.open()}],
+ research:[
+  {id:'tiktok',label:'🎵 TIKTOK',box:{x:335,y:214,w:254,h:125},open:()=>window.ResearchBoard&&window.ResearchBoard.open('tiktok')},
+  {id:'pinterest',label:'📌 PINTEREST',box:{x:627,y:240,w:204,h:104},open:()=>window.ResearchBoard&&window.ResearchBoard.open('pinterest')},
+  {id:'marketing',label:'📣 MARKETING',box:{x:381,y:373,w:146,h:175},open:()=>window.ResearchBoard&&window.ResearchBoard.open('marketing')}
+ ]
+};
+let hotspotHover=null;
+function hotspotAt(x,y){return (INTERIOR_HOTSPOTS[scene]||[]).find(h=>x>=h.box.x&&x<=h.box.x+h.box.w&&y>=h.box.y&&y<=h.box.y+h.box.h)||null;}
+function drawInteriorHotspots(id){
+ const pulse=.5+.5*Math.sin(clock*3);
+ for(const h of INTERIOR_HOTSPOTS[id]||[]){
+  const {x,y,w,h:hh}=h.box,on=hotspotHover===h.id;
+  g.save();
+  if(on){g.fillStyle='rgba(255,226,140,.14)';g.fillRect(x,y,w,hh);}
+  g.strokeStyle=on?'#fff1a8':`rgba(255,226,140,${.35+.35*pulse})`;g.lineWidth=on?3:2;
+  g.setLineDash(on?[]:[6,5]);g.strokeRect(x+.5,y+.5,w,hh);g.setLineDash([]);
+  g.restore();
+  g.font='bold 11px Georgia';const lw=Math.max(110,g.measureText(h.label).width+26);
+  fill(x+w/2-lw/2,y-30,lw,22,on?'#f6e0a5':'#5b381f');
+  text(h.label,x+w/2,y-14,11,on?'#422d20':'#ffe7a4');
+ }
 }
 c.addEventListener('click',e=>{
  const r=c.getBoundingClientRect(),x=(e.clientX-r.left)*c.width/r.width,y=(e.clientY-r.top)*c.height/r.height;
- if(inHqTable(x,y)&&window.EtsyHQ){hqTableHover=false;c.style.cursor='';window.EtsyHQ.open();return;}
+ const spot=hotspotAt(x,y);if(spot){hotspotHover=null;c.style.cursor='';spot.open();return;}
  if(scene!=='town')return;
  const b=buildingAt(x,y);
  if(b&&b.id==='books'&&window.BooksCatalog){hover=null;c.style.cursor='';window.BooksCatalog.open();return;}
@@ -1100,13 +1111,13 @@ c.addEventListener('click',e=>{
 });
 c.addEventListener('mousemove',e=>{
  const r=c.getBoundingClientRect(),x=(e.clientX-r.left)*c.width/r.width,y=(e.clientY-r.top)*c.height/r.height;
- if(scene==='headquarters'){hqTableHover=inHqTable(x,y);c.style.cursor=hqTableHover?'pointer':'default';return;}
- hqTableHover=false;
+ if(INTERIOR_HOTSPOTS[scene]){const sp=hotspotAt(x,y);hotspotHover=sp?sp.id:null;c.style.cursor=sp?'pointer':'default';return;}
+ hotspotHover=null;
  if(scene!=='town'){if(hover){hover=null;c.style.cursor='';}return;}
  const b=buildingAt(x,y);hover=b?b.id:null;c.style.cursor=b?'pointer':'default';
 });
-c.addEventListener('mouseleave',()=>{hover=null;hqTableHover=false;c.style.cursor='';});
-window.addEventListener('keydown',e=>{if(e.key==='Escape'&&window.BooksCatalog&&window.BooksCatalog.isOpen){window.BooksCatalog.back();return;}if(e.key==='Escape'&&window.EtsyHQ&&window.EtsyHQ.isOpen){window.EtsyHQ.close();return;}if(e.key==='Escape'){viewMode='town';document.getElementById('viewSelect').value='town';syncRoutine();draw();}});
+c.addEventListener('mouseleave',()=>{hover=null;hotspotHover=null;c.style.cursor='';});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&window.ResearchBoard&&window.ResearchBoard.isOpen){window.ResearchBoard.close();return;}if(e.key==='Escape'&&window.BooksCatalog&&window.BooksCatalog.isOpen){window.BooksCatalog.back();return;}if(e.key==='Escape'&&window.EtsyHQ&&window.EtsyHQ.isOpen){window.EtsyHQ.close();return;}if(e.key==='Escape'){viewMode='town';document.getElementById('viewSelect').value='town';syncRoutine();draw();}});
 window.HM_DEBUG={
  get clockMode(){return clockMode;},get timeZone(){return CENTRAL_ZONE;},get centralDate(){return centralDateLabel;},get centralZone(){return centralZoneLabel;},centralTimeAt,useCurrentCentralTime,
  get minute(){return simMinute;},get day(){return simDay;},get scene(){return scene;},get period(){return householdState.period.id;},
