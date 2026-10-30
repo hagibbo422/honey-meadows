@@ -216,6 +216,19 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 @keyframes bkInR{from{opacity:0;transform:translateX(1.5cqw)}to{opacity:1;transform:none}}@keyframes bkInL{from{opacity:0;transform:translateX(-1.5cqw)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.bkShelf  .bkShelf .bkSlot,.bkShelf  .bkShelf .bkPlate{animation:none!important}}
 @media(max-width:700px){#stationView.booksArt{position:fixed;inset:0;z-index:50;display:block;overflow:auto}#stationView.booksArt .stationFrame{width:max(100%,720px)}#stationView.booksArt .stationTop{position:fixed;top:8px;right:8px}}
+/* Books detail page on assets/books-detail.png */
+.bkShelf.bkDetail{background-image:url(assets/books-detail.png)}
+.bkShelf .bdBack,.bkShelf .bdEtsy,.bkShelf .bdEdit{border-radius:.3cqw}
+.bkShelf .bdBack:hover,.bkShelf .bdEtsy:hover,.bkShelf .bdEdit:hover{background:rgba(255,255,255,.2)}
+.bkShelf .bdOff{cursor:not-allowed;background:rgba(242,201,131,.65)}
+.bkShelf .bdPhoto{display:flex;align-items:center;justify-content:center;padding:.2cqw}
+.bkShelf .bdImg{width:100%;height:100%;object-fit:contain;display:block}
+.bkShelf .bdImg.noPhoto{display:flex;align-items:center;justify-content:center;font-size:8cqw}
+.bkShelf .bdName{margin:0;display:flex;align-items:center;padding:0 .8cqw;font-weight:700;font-size:1.75cqw;color:#3b1e08;line-height:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bkShelf .bdPrice{display:flex;align-items:center;padding-left:.6cqw;font-weight:700;font-size:1.75cqw;color:#2f5a3c}
+.bkShelf .bdOrig{display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:1.45cqw;color:#8a6a48}
+.bkShelf .bdTitle{padding:.3cqw .8cqw;font-family:var(--font-body);font-size:1.15cqw;line-height:1.05;color:#3b1e08;overflow:auto}
+.bkShelf .bdDesc{padding:.4cqw .8cqw;font-family:var(--font-body);font-size:1.3cqw;line-height:1.1;color:#3b1e08;overflow:auto}
 </style>
 </head>
 <body>
@@ -256,17 +269,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301738"></script>
-<script src="assets-embedded.js?v=202610301738"></script>
-<script src="game.js?v=202610301738"></script>
-<script src="thunder-feed.js?v=202610301738"></script>
-<script src="etsy-hq.js?v=202610301738"></script>
-<script src="catalog-data.js?v=202610301738"></script>
-<script src="hq-art-board.js?v=202610301738"></script>
-<script src="research-data.js?v=202610301738"></script>
-<script src="research-board.js?v=202610301738"></script>
-<script src="admin.js?v=202610301738"></script>
-<script src="books-catalog.js?v=202610301738"></script>
+<script src="game-data.js?v=202610301822"></script>
+<script src="assets-embedded.js?v=202610301822"></script>
+<script src="game.js?v=202610301822"></script>
+<script src="thunder-feed.js?v=202610301822"></script>
+<script src="etsy-hq.js?v=202610301822"></script>
+<script src="catalog-data.js?v=202610301822"></script>
+<script src="hq-art-board.js?v=202610301822"></script>
+<script src="research-data.js?v=202610301822"></script>
+<script src="research-board.js?v=202610301822"></script>
+<script src="admin.js?v=202610301822"></script>
+<script src="books-catalog.js?v=202610301822"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};

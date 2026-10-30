@@ -148,3 +148,5 @@ Inside Research, three outlined spots open the research boards: the produce stan
 ## Books bookshelf (paginated)
 
 Books shows `assets/books-shelf.png` (1536×1024, unmodified) with live overlays from `renderShelf()` in `books-catalog.js`. 8 sets per page in the 8 frames (photo in the frame, name + price on its plaque); ← Previous / Next → buttons and "Page X of Y" under the shelf (arrow keys also turn pages). Page count = filtered results ÷ 8; search filters the whole catalog and resets to page 1. Frame/button positions are image-pixel boxes in `SHELF`. Clicking a set opens its detail page; Esc returns to the shelf. Data still comes from the Honey Meadows Catalog sheet.
+
+Books detail page: drawn on `assets/books-detail.png` (unmodified) by `renderDetail()`; overlay boxes in `DETAIL` (image pixels). The painted "View on Etsy" / "Edit in sheet" / "← All sets" buttons are made clickable with transparent links; a set with no Etsy link greys out that button. Long titles/descriptions scroll inside their fields.

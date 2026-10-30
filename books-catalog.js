@@ -119,25 +119,28 @@ function renderGrid(){
  const im=body.querySelector('#catImport');if(im)im.onchange=e=>importBackup(e.target.files[0]);
 }
 
+// Detail page drawn on assets/books-detail.png (1536 × 1024, unmodified). Boxes are image pixels.
+const DETAIL={back:[216,232,150,54],photo:[240,316,484,426],name:[803,366,483,44],price:[818,428,165,35],orig:[1000,428,90,35],
+ title:[803,514,483,45],desc:[803,608,483,81],etsy:[801,711,205,55],edit:[1024,711,216,55]};
 function renderDetail(){
- const i=findItem(current);if(!i){mode='grid';return renderGrid();}
- body.innerHTML=`<p><button id="catBack" class="secondary">← All sets</button></p>
-  <div class="catDetail">
-   <div>${photoHtml(i,'catBig')}</div>
-   <div class="dashCard">
-    <p class="eyebrow" style="color:#7a6a4e">${i.source==='manual'?'ADDED BY YOU':i.source==='sheet'?'CATALOG':'ETSY LISTING'}${i.edited?' • EDITED':''}</p>
-    <h3 style="font-size:24px">${esc(shortTitle(i))}</h3>
-    <p class="catPriceBig">${priceHtml(i)}</p>
-    <p><b>Title</b><br>${esc(i.title||'')}</p>
-    <p><b>Description</b><br>${esc(i.description||'No description yet.').replace(/\n/g,'<br>')}</p>
-    <p class="rowFlex">${i.url?`<a class="catLink" href="${esc(i.url)}" target="_blank" rel="noopener">View on Etsy ↗</a>`:''}${SHEET?`<a class="catLink" style="background:#e7c687;border-color:#89603a" href="${esc(SHEET_EDIT)}" target="_blank" rel="noopener">✎ Edit in sheet ↗</a>`:'<button id="catEdit">✎ Edit</button>'}
-     ${i.source==='manual'?'<button id="catDelete" class="danger">Delete</button>':i.edited?'<button id="catReset" class="secondary">Undo my edits</button>':''}</p>
-   </div>
+ const i=findItem(current);if(!i){mode='grid';return renderShelf();}
+ view.classList.add('booksArt');
+ const p=money(i.price),o=+i.originalPrice>+i.price?money(i.originalPrice):'';
+ const editBtn=SHEET?`<a class="bdEdit" href="${esc(SHEET_EDIT)}" target="_blank" rel="noopener" style="${pct(DETAIL.edit)}" aria-label="Edit in sheet (opens Google Sheets)"></a>`
+  :`<button class="bdEdit" id="catEdit" style="${pct(DETAIL.edit)}" aria-label="Edit this set"></button>`;
+ body.innerHTML=`<div class="bkShelf bkDetail">
+   <button class="bdBack" id="catBack" style="${pct(DETAIL.back)}" aria-label="Return to all nail sets"></button>
+   <div class="bdPhoto" style="${pct(DETAIL.photo)}">${photoHtml(i,'bdImg')}</div>
+   <h3 class="bdName" style="${pct(DETAIL.name)}">${esc(shortTitle(i))}</h3>
+   <div class="bdPrice" style="${pct(DETAIL.price)}">${p?(i.priceFrom?'from ':'')+esc(p.replace(/^\$/,'')):'—'}</div>
+   <div class="bdOrig" style="${pct(DETAIL.orig)}">${o?`<s>${esc(o)}</s>`:''}</div>
+   <div class="bdTitle" tabindex="0" style="${pct(DETAIL.title)}">${esc(i.title||'')}</div>
+   <div class="bdDesc" style="${pct(DETAIL.desc)}" tabindex="0">${esc(i.description||'No description yet.').replace(/\n/g,'<br>')}</div>
+   ${i.url?`<a class="bdEtsy" href="${esc(i.url)}" target="_blank" rel="noopener" style="${pct(DETAIL.etsy)}" aria-label="View on Etsy (opens Etsy)"></a>`:`<span class="bdEtsy bdOff" style="${pct(DETAIL.etsy)}" title="No Etsy link for this set"></span>`}
+   ${editBtn}
   </div>`;
  body.querySelector('#catBack').onclick=()=>{mode='grid';render();};
  const ed=body.querySelector('#catEdit');if(ed)ed.onclick=()=>{mode='edit';render();};
- const del=body.querySelector('#catDelete');if(del)del.onclick=async()=>{saved.manual=saved.manual.filter(m=>m.id!==i.id);await persist();mode='grid';render();};
- const rst=body.querySelector('#catReset');if(rst)rst.onclick=async()=>{delete saved.overrides[i.id];await persist();render();};
 }
 
 function renderEdit(){
