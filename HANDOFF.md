@@ -124,3 +124,5 @@ Note: a short password can be guessed by someone determined who copies the code;
 ## Shared Books catalog (Google Sheet)
 
 Books reads the **Honey Meadows Catalog** Google Sheet (`catalogSheetId` in `game-data.js`), so edits there show up for everyone. Columns (matched by header): `Show` (type `no` to hide a set), `Name`, `Title`, `Price`, `Original Price`, `Description`, `Photo`, `Etsy Link`, `ID`. A new row = a new set. `Photo` can be any image link or a Google Drive share link (converted automatically); Drive photos must be shared "Anyone with the link". Suggested photo folder: "Honey Meadows Catalog Photos" in Drive. The sheet must be shared **Anyone with the link → Viewer**. If the sheet can't be reached, Books shows the last copy it loaded, then `catalog-data.js`. In-game editing/backup buttons only appear when no sheet is set.
+
+Headquarters: clicking it in town opens the Headquarters interior again. The big table in the middle (`HQ_TABLE` in `game.js`) is a hotspot labelled "Sales Dashboard"; clicking it opens the password prompt / Etsy dashboard. Closing the dashboard returns to the interior; Esc again returns to town.
