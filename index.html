@@ -9,9 +9,9 @@
 <title>Honey Meadows V20 — A Day Together</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f8efed;color:#3b1e08;font-family:Georgia,serif}
-#shell{max-width:min(1380px,calc((100vh - 48px) * 1.5 + 42px));max-width:min(1380px,calc((100dvh - 48px) * 1.5 + 42px));margin:12px auto;padding:0 14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#shell{max-width:1380px;margin:18px auto;padding:0 14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .top h1{margin:0;font-size:31px;color:#ffe9a9;text-shadow:2px 3px #5b3d29}.pill{background:#2d4a3f;border:2px solid #a79f70;border-radius:8px;padding:7px 12px}
-#frame{position:relative;border:7px solid var(--map-border,#7b4fa0);box-shadow:0 8px 0 var(--map-border-dark,#4c3163),0 18px 35px #0008;margin-top:0;background:#294c36}
+#frame{position:relative;border:7px solid var(--map-border,#7b4fa0);box-shadow:0 8px 0 var(--map-border-dark,#4c3163),0 18px 35px #0008;margin-top:16px;background:#294c36}
 canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair}#tip{position:absolute;left:12px;bottom:12px;background:#2d392de8;border:2px solid #e3c487;padding:8px 12px;font-size:14px;pointer-events:none;max-width:70%}
 #actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:18px}button{background:#e8c78b;color:#3e2c20;border:3px solid #8d603c;border-radius:5px;font:bold 15px Georgia;padding:9px 13px;cursor:pointer}button:hover{background:#ffdfa4}button:disabled{opacity:.5}small{color:#c7d5c2}#legend{margin-top:9px;color:#c8d9c2;line-height:1.5}.mobile{display:none}@media(max-width:700px){.top h1{font-size:23px}.mobile{display:flex;gap:6px;justify-content:center;margin-top:12px}.mobile button{min-width:52px}}
 
@@ -228,18 +228,13 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .bkShelf .bdOrig{display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:1.45cqw;color:#8a6a48}
 .bkShelf .bdTitle{padding:.3cqw .8cqw;font-family:var(--font-body);font-size:1.15cqw;line-height:1.05;color:#3b1e08;overflow:auto}
 .bkShelf .bdDesc{padding:.4cqw .8cqw;font-family:var(--font-body);font-size:1.3cqw;line-height:1.1;color:#3b1e08;overflow:auto}
-/* Date sign + gear: outside the town on the left when there is room, else on the town */
-#shell{position:relative}
-.villageSign.outside{position:fixed;left:auto;top:auto;flex-direction:column;align-items:flex-end;gap:10px}
-.villageSign.outside .signBoard{min-width:0;padding:9px 12px 10px}.villageSign.outside .signDate{font-size:15px}.villageSign.outside .signTime{font-size:23px}.villageSign.outside .signGear{width:48px;height:48px}
-#shell>.villageSign:not(.outside){position:absolute;left:calc(14px + 7px + 1.2%);top:calc(7px + 1.2%)}
 </style>
 </head>
 <body>
 <div id="intro" aria-hidden="true"><img src="assets/logo-large.png" alt=""></div>
 <div id="shell">
-    <div class="villageSign" id="villageSign"><div class="signBoard"><div class="signDate" id="signDate">—</div><div class="signTime" id="signTime">—</div></div><button class="gearbtn signGear" id="settingsTab" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M19.07 9.81 L22.05 10.27 L22.05 13.73 L19.07 14.19 L18.55 15.45 L20.33 17.89 L17.89 20.33 L15.45 18.55 L14.19 19.07 L13.73 22.05 L10.27 22.05 L9.81 19.07 L8.55 18.55 L6.11 20.33 L3.67 17.89 L5.45 15.45 L4.93 14.19 L1.95 13.73 L1.95 10.27 L4.93 9.81 L5.45 8.55 L3.67 6.11 L6.11 3.67 L8.55 5.45 L9.81 4.93 L10.27 1.95 L13.73 1.95 L14.19 4.93 L15.45 5.45 L17.89 3.67 L20.33 6.11 L18.55 8.55 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></button></div>
   <div id="frame">
+    <div class="villageSign" id="villageSign"><div class="signBoard"><div class="signDate" id="signDate">—</div><div class="signTime" id="signTime">—</div></div><button class="gearbtn signGear" id="settingsTab" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M19.07 9.81 L22.05 10.27 L22.05 13.73 L19.07 14.19 L18.55 15.45 L20.33 17.89 L17.89 20.33 L15.45 18.55 L14.19 19.07 L13.73 22.05 L10.27 22.05 L9.81 19.07 L8.55 18.55 L6.11 20.33 L3.67 17.89 L5.45 15.45 L4.93 14.19 L1.95 13.73 L1.95 10.27 L4.93 9.81 L5.45 8.55 L3.67 6.11 L6.11 3.67 L8.55 5.45 L9.81 4.93 L10.27 1.95 L13.73 1.95 L14.19 4.93 L15.45 5.45 L17.89 3.67 L20.33 6.11 L18.55 8.55 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></button></div>
     <button class="townBtn" id="backToTown" hidden>← Back to town</button>
     <div class="pill" id="status" hidden></div>
   <section id="settingsPanel" class="pp settings bevel overlay" hidden aria-label="Settings">
@@ -273,17 +268,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610302055"></script>
-<script src="assets-embedded.js?v=202610302055"></script>
-<script src="game.js?v=202610302055"></script>
-<script src="thunder-feed.js?v=202610302055"></script>
-<script src="etsy-hq.js?v=202610302055"></script>
-<script src="catalog-data.js?v=202610302055"></script>
-<script src="hq-art-board.js?v=202610302055"></script>
-<script src="research-data.js?v=202610302055"></script>
-<script src="research-board.js?v=202610302055"></script>
-<script src="admin.js?v=202610302055"></script>
-<script src="books-catalog.js?v=202610302055"></script>
+<script src="game-data.js?v=202610302058"></script>
+<script src="assets-embedded.js?v=202610302058"></script>
+<script src="game.js?v=202610302058"></script>
+<script src="thunder-feed.js?v=202610302058"></script>
+<script src="etsy-hq.js?v=202610302058"></script>
+<script src="catalog-data.js?v=202610302058"></script>
+<script src="hq-art-board.js?v=202610302058"></script>
+<script src="research-data.js?v=202610302058"></script>
+<script src="research-board.js?v=202610302058"></script>
+<script src="admin.js?v=202610302058"></script>
+<script src="books-catalog.js?v=202610302058"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
@@ -303,16 +298,6 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  intro.addEventListener('click',end);
  setTimeout(end,6000);
 })();
-</script>
-<script>
-// Put the date sign + gear in the empty space left of the town when it fits.
-(()=>{const sign=document.getElementById('villageSign'),frame=document.getElementById('frame');if(!sign||!frame)return;
- const place=()=>{sign.classList.remove('outside');sign.style.left=sign.style.top='';
-  const f=frame.getBoundingClientRect(),w=Math.max(sign.scrollWidth,160)+24;
-  sign.classList.add('outside');const sw=sign.getBoundingClientRect().width;
-  if(f.left>=sw+20){sign.style.left=Math.round(f.left-sw-12)+'px';sign.style.top=Math.round(f.top)+'px';}
-  else{sign.classList.remove('outside');}};
- addEventListener('resize',place);addEventListener('load',place);document.fonts&&document.fonts.ready.then(place);place();})();
 </script>
 </body></html>
 
