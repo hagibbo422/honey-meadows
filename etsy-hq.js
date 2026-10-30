@@ -227,5 +227,12 @@ function close(){
  const tip=document.getElementById('tip');if(tip)tip.style.display='';
  document.getElementById('game')?.focus();
 }
-window.EtsyHQ={open,close,refresh,lock:lockNow,get unlocked(){return unlocked;},parseCSV,summarize,get isOpen(){return isOpen;},get state(){return state;}};
+// Shared password check (used by the Admin area too). Same password as Headquarters.
+async function checkPassword(pw,remember){
+ if(!SECRET)return true;
+ try{const links=await decryptSecret(pw);applyLinks(links);const rec=JSON.stringify({data:SECRET.data,links});try{sessionStorage.setItem(UNLOCK_KEY,rec);if(remember)localStorage.setItem(UNLOCK_KEY,rec);}catch(e){}return true;}
+ catch(e){return false;}
+}
+function isUnlocked(){restoreUnlock();return unlocked;}
+window.EtsyHQ={open,close,refresh,lock:lockNow,checkPassword,isUnlocked,get unlocked(){return unlocked;},parseCSV,summarize,get isOpen(){return isOpen;},get state(){return state;}};
 })();

@@ -110,6 +110,10 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .signGear svg{width:62%;height:62%}
 .pp.settings.overlay{position:absolute;z-index:6;left:1.6%;right:1.6%;top:calc(1.6% + clamp(70px,8.6vw,96px));margin:0;max-height:calc(100% - 110px);overflow:auto}
 @media(max-width:600px){.signBoard{min-width:0;padding:5px 9px}.pp.settings.overlay{position:static;margin:70px 6px 6px;max-height:none}}
+.pp .adminWrap{flex-basis:100%;border-top:3px solid var(--frame);padding-top:10px;display:flex;flex-direction:column;gap:10px}
+.pp .adminToggle{align-self:flex-start}.pp .adminBody{background:var(--card);border:3px solid var(--frame-out);padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.pp .adminLock,.pp .adminRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .snote{font-family:var(--font-body);font-size:18px;color:var(--ink-soft)}
+.pp #bgPicker{width:44px;height:34px;padding:0;border:3px solid var(--frame-out);background:none;cursor:pointer}.pp #bgText{width:min(260px,100%)}
 </style>
 </head>
 <body>
@@ -139,6 +143,7 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
       <select id="viewSelect" class="pfield"><option value="town" selected>Town</option><option value="farm">Farmhouse</option><option value="auto">Follow routine</option><option value="nails">Nail Shop</option><option value="research">Research</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select>
     </div>
     <div class="who" id="who" aria-live="polite"></div>
+    <div class="adminWrap"><button id="adminToggle" class="btn small adminToggle" aria-expanded="false" aria-controls="adminBody">🔒 Admin ▾</button><div id="adminBody" class="adminBody" hidden></div></div>
     <div class="hiddenInfo" hidden><strong id="routineTitle"></strong><span id="routineDetail"></span><small id="petStatus"></small></div>
   </section>
     <canvas id="game" width="1152" height="768" tabindex="0" aria-label="Honey Meadows daily routine simulation"></canvas>
@@ -148,13 +153,14 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301641"></script>
-<script src="assets-embedded.js?v=202610301641"></script>
-<script src="game.js?v=202610301641"></script>
-<script src="thunder-feed.js?v=202610301641"></script>
-<script src="etsy-hq.js?v=202610301641"></script>
-<script src="catalog-data.js?v=202610301641"></script>
-<script src="books-catalog.js?v=202610301641"></script>
+<script src="game-data.js?v=202610301646"></script>
+<script src="assets-embedded.js?v=202610301646"></script>
+<script src="game.js?v=202610301646"></script>
+<script src="thunder-feed.js?v=202610301646"></script>
+<script src="etsy-hq.js?v=202610301646"></script>
+<script src="catalog-data.js?v=202610301646"></script>
+<script src="admin.js?v=202610301646"></script>
+<script src="books-catalog.js?v=202610301646"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
