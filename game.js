@@ -891,7 +891,7 @@ function drawScheduledInterior(id){
  text(interiors[id].name,576,35,23,'#ffe4ac');
  if(id==='farm'){text(householdState.girl.scene==='farm'?householdState.period.label:'A quiet house • Theo at home'+(householdState.dog.scene==='farm'?' • Riley at home':''),576,724,17,'#f3d99b');}
  else if(id==='nails'||id==='research')text(householdState.period.id==='work'?'Working until 6:00 PM':'The workday has finished',576,724,17,'#f3d99b');
- if(id==='headquarters'){drawHqTableHotspot();text('Click the table to open the sales dashboard • Esc returns to town',576,724,15,'#f3d99b');}
+ if(id==='headquarters'){drawHqTableHotspot();}
 }
 function drawWorkDetails(actor,kind){
  const image=assets['room_'+kind];if(!image?.naturalWidth)return;

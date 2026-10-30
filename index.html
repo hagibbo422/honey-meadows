@@ -41,12 +41,13 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .lockBox input[type=password]{padding:11px;background:#fff7e5;border:2px solid #9a815e;border-radius:2px;color:#382f25;font:16px Georgia,serif;text-align:center}
 .lockRemember{font-size:13px;color:#5c4832;display:flex;gap:6px;align-items:center;justify-content:center}.lockMsg{min-height:18px;margin:0;color:#a33f2c;font-weight:bold;font-size:14px}
 .shake{animation:shake .35s}@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#tip{display:none!important}
 </style>
 </head>
 <body>
 <div id="shell">
   <div class="top">
-    <h1>🍯 Honey Meadows <small style="font-size:13px;color:#c9d8b7">V20 • A Day Together · Town View</small></h1>
+    <h1>🍯 Honey Meadows</h1>
     <div class="pill" id="status">🌤️ Spring • Day 3 • Honey Meadows</div>
   </div>
   <div id="frame">
@@ -59,19 +60,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  </div>
  <section class="timePanel" aria-label="Time controls"><div class="timeHeading"><label for="timeSlider">Time of day</label><span id="clockModeLabel" class="clockMode" role="status">● Live</span><output id="timeReadout" for="timeSlider">Syncing…</output><button id="currentTime">↻ Back to live</button><button id="toggleTime">⏸ Pause clock</button><label class="control">Preview speed <select id="speedSelect" disabled><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1× · 1 minute / second</option><option value="5">5×</option></select></label></div>
  <input id="timeSlider" aria-label="Time of day" type="range" min="0" max="1439" step="1" value="480"><div class="ticks"><span>12 AM</span><span>6 AM</span><span>Noon</span><span>6 PM</span><span>11:59 PM</span></div>
- <div class="jumpTimes"><button data-time="480">8 AM · Breakfast</button><button data-time="603">10:03 · Commute</button><button data-time="720">Noon · Work</button><button data-time="1083">6:03 · Homeward</button><button data-time="1140">7 PM · Dinner</button><button data-time="1260">9 PM · Couch</button><button data-time="1380">11 PM · Sleep</button></div>
- <p class="quiet">Live follows the real clock. Drag the slider to preview another time; Back to live returns to the real time. Preview speed affects testing only.</p></section>
+ <div class="jumpTimes"><button data-time="480">8 AM · Breakfast</button><button data-time="603">10:03 · Commute</button><button data-time="720">Noon · Work</button><button data-time="1083">6:03 · Homeward</button><button data-time="1140">7 PM · Dinner</button><button data-time="1260">9 PM · Couch</button><button data-time="1380">11 PM · Sleep</button></div></section>
  
   
-  <div id="legend">V21 • Hayden &amp; Annie's daily life • Riley the goldendoodle outside 10 AM–6 PM • Theo the cat at home • Day and night lighting</div>
 </div>
-<script src="game-data.js?v=202610301559"></script>
-<script src="assets-embedded.js?v=202610301559"></script>
-<script src="game.js?v=202610301559"></script>
-<script src="thunder-feed.js?v=202610301559"></script>
-<script src="etsy-hq.js?v=202610301559"></script>
-<script src="catalog-data.js?v=202610301559"></script>
-<script src="books-catalog.js?v=202610301559"></script>
+<script src="game-data.js?v=202610301602"></script>
+<script src="assets-embedded.js?v=202610301602"></script>
+<script src="game.js?v=202610301602"></script>
+<script src="thunder-feed.js?v=202610301602"></script>
+<script src="etsy-hq.js?v=202610301602"></script>
+<script src="catalog-data.js?v=202610301602"></script>
+<script src="books-catalog.js?v=202610301602"></script>
 </body></html>
 
 
