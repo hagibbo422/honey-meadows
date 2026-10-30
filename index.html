@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="icon" href="assets/favicon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Honey Meadows V20 — A Day Together</title>
@@ -42,18 +43,19 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .lockRemember{font-size:13px;color:#5c4832;display:flex;gap:6px;align-items:center;justify-content:center}.lockMsg{min-height:18px;margin:0;color:#a33f2c;font-weight:bold;font-size:14px}
 .shake{animation:shake .35s}@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 #tip{display:none!important}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.logo{width:58px;height:58px;border-radius:50%;box-shadow:0 0 0 3px #a47849,0 4px 0 #634329;background:#f7ece9}
+.settingsTab{font:bold 14px Georgia,serif;padding:7px 12px}.settingsTab[aria-expanded="true"]{background:#ffdfa4;box-shadow:inset 0 2px 0 #c49a5c}
+.settingsPanel{margin-top:12px;border:3px solid #a47849;border-radius:8px;background:#1d3a30;padding:6px 14px 14px;box-shadow:0 6px 0 #634329}.settingsPanel #actions{margin-top:10px}
+@media(max-width:700px){.logo{width:44px;height:44px}}
 </style>
 </head>
 <body>
 <div id="shell">
   <div class="top">
-    <h1>🍯 Honey Meadows</h1>
+    <div class="brand"><img class="logo" src="assets/logo.png" alt="Honey Meadows Nails Co. logo"><h1>Honey Meadows</h1><button id="settingsTab" class="settingsTab" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button></div>
     <div class="pill" id="status">🌤️ Spring • Day 3 • Honey Meadows</div>
   </div>
-  <div id="frame">
-    <canvas id="game" width="1152" height="768" tabindex="0" aria-label="Honey Meadows daily routine simulation"></canvas>
-    <div id="tip">WASD / arrows to walk • E near doors to enter • Click buildings to walk inside</div><section id="stationView" class="hidden" aria-label="Headquarters dashboard"><div class="stationFrame"><div class="stationTop"><div><div class="eyebrow">🍯 HONEY MEADOWS • HEADQUARTERS</div><h2 id="stationTitle">Work Board</h2><p id="stationSubtitle">Your village command center</p></div><button id="backHQ">← Back to Headquarters</button></div><div id="stationBody"></div></div></section>
-  </div>
+  <section id="settingsPanel" class="settingsPanel" hidden aria-label="Settings">
   <div id="actions">
  <label class="control">View <select id="viewSelect"><option value="town" selected>Town · Main view</option><option value="farm">Farmhouse</option><option value="auto">Follow routine (optional)</option><option value="nails">Nail Shop · Annie's workplace</option><option value="research">Research · Hayden's workplace</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select></label>
  <div class="routineInfo"><strong id="routineTitle">Hayden &amp; Annie · Breakfast</strong><span id="routineDetail">At the kitchen table.</span><small id="petStatus"></small></div>
@@ -61,16 +63,26 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  <section class="timePanel" aria-label="Time controls"><div class="timeHeading"><label for="timeSlider">Time of day</label><span id="clockModeLabel" class="clockMode" role="status">● Live</span><output id="timeReadout" for="timeSlider">Syncing…</output><button id="currentTime">↻ Back to live</button><button id="toggleTime">⏸ Pause clock</button><label class="control">Preview speed <select id="speedSelect" disabled><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1× · 1 minute / second</option><option value="5">5×</option></select></label></div>
  <input id="timeSlider" aria-label="Time of day" type="range" min="0" max="1439" step="1" value="480"><div class="ticks"><span>12 AM</span><span>6 AM</span><span>Noon</span><span>6 PM</span><span>11:59 PM</span></div>
  <div class="jumpTimes"><button data-time="480">8 AM · Breakfast</button><button data-time="603">10:03 · Commute</button><button data-time="720">Noon · Work</button><button data-time="1083">6:03 · Homeward</button><button data-time="1140">7 PM · Dinner</button><button data-time="1260">9 PM · Couch</button><button data-time="1380">11 PM · Sleep</button></div></section>
+  </section>
+  <div id="frame">
+    <canvas id="game" width="1152" height="768" tabindex="0" aria-label="Honey Meadows daily routine simulation"></canvas>
+    <div id="tip">WASD / arrows to walk • E near doors to enter • Click buildings to walk inside</div><section id="stationView" class="hidden" aria-label="Headquarters dashboard"><div class="stationFrame"><div class="stationTop"><div><div class="eyebrow">🍯 HONEY MEADOWS • HEADQUARTERS</div><h2 id="stationTitle">Work Board</h2><p id="stationSubtitle">Your village command center</p></div><button id="backHQ">← Back to Headquarters</button></div><div id="stationBody"></div></div></section>
+  </div>
+
  
   
 </div>
-<script src="game-data.js?v=202610301602"></script>
-<script src="assets-embedded.js?v=202610301602"></script>
-<script src="game.js?v=202610301602"></script>
-<script src="thunder-feed.js?v=202610301602"></script>
-<script src="etsy-hq.js?v=202610301602"></script>
-<script src="catalog-data.js?v=202610301602"></script>
-<script src="books-catalog.js?v=202610301602"></script>
+<script src="game-data.js?v=202610301612"></script>
+<script src="assets-embedded.js?v=202610301612"></script>
+<script src="game.js?v=202610301612"></script>
+<script src="thunder-feed.js?v=202610301612"></script>
+<script src="etsy-hq.js?v=202610301612"></script>
+<script src="catalog-data.js?v=202610301612"></script>
+<script src="books-catalog.js?v=202610301612"></script>
+<script>
+(()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel');
+ t.onclick=()=>{const open=p.hidden;p.hidden=!open;t.setAttribute('aria-expanded',String(open));};})();
+</script>
 </body></html>
 
 

@@ -1010,9 +1010,6 @@ function drawScheduledTown(){
  if(showGrid){g.fillStyle='rgba(255,100,70,.2)';pathBoxes.forEach(r=>g.fillRect(r.x,r.y,r.w,r.h));}
  drawTownLighting();
  drawCourtLightFixtures();
- // Replace the static clock printed into the town's illustrated sign.
- fill(50,78,150,17,'#68462d');text(clockMode==='live'?centralDateLabel:'Preview • Day '+simDay,125,90,12,'#ffedc1');
- fill(60,96,132,20,'#68462d');text(formatTime(simMinute)+(clockMode==='live'?' '+centralZoneLabel:''),126,109,13,'#ffedc1');
  drawBuildingGlow();
 }
 function refreshUI(){

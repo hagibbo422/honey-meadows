@@ -128,3 +128,5 @@ Books reads the **Honey Meadows Catalog** Google Sheet (`catalogSheetId` in `gam
 Headquarters: clicking it in town opens the Headquarters interior again. The big table in the middle (`HQ_TABLE` in `game.js`) is a hotspot labelled "Sales Dashboard"; clicking it opens the password prompt / Etsy dashboard. Closing the dashboard returns to the interior; Esc again returns to town.
 
 Updates & caching: run `node tools/stamp-version.cjs` before every push so browsers load the new scripts instead of cached ones. GitHub Pages can still serve the old index.html for up to ~10 minutes after a push.
+
+Header & settings: the logo (`assets/logo.png`, also the browser-tab icon `assets/favicon.png`) sits next to the title. The View menu, routine info and time controls live in a collapsible **⚙ Settings** panel (`#settingsPanel`) opened by the tab next to the title. The illustrated "Honey Meadows" sign in the town art was painted over with scenery (original is in git history).
