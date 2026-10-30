@@ -11,7 +11,7 @@
 *{box-sizing:border-box}body{margin:0;background:#f8efed;color:#3b1e08;font-family:Georgia,serif}
 #shell{max-width:min(1380px,calc((100vh - 48px) * 1.5 + 42px));max-width:min(1380px,calc((100dvh - 48px) * 1.5 + 42px));margin:12px auto;padding:0 14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .top h1{margin:0;font-size:31px;color:#ffe9a9;text-shadow:2px 3px #5b3d29}.pill{background:#2d4a3f;border:2px solid #a79f70;border-radius:8px;padding:7px 12px}
-#frame{position:relative;border:7px solid #a47849;box-shadow:0 8px 0 #634329,0 18px 35px #0008;margin-top:0;background:#294c36}
+#frame{position:relative;border:7px solid var(--map-border,#7b4fa0);box-shadow:0 8px 0 var(--map-border-dark,#4c3163),0 18px 35px #0008;margin-top:0;background:#294c36}
 canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair}#tip{position:absolute;left:12px;bottom:12px;background:#2d392de8;border:2px solid #e3c487;padding:8px 12px;font-size:14px;pointer-events:none;max-width:70%}
 #actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:18px}button{background:#e8c78b;color:#3e2c20;border:3px solid #8d603c;border-radius:5px;font:bold 15px Georgia;padding:9px 13px;cursor:pointer}button:hover{background:#ffdfa4}button:disabled{opacity:.5}small{color:#c7d5c2}#legend{margin-top:9px;color:#c8d9c2;line-height:1.5}.mobile{display:none}@media(max-width:700px){.top h1{font-size:23px}.mobile{display:flex;gap:6px;justify-content:center;margin-top:12px}.mobile button{min-width:52px}}
 
@@ -113,7 +113,7 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp .adminWrap{flex-basis:100%;border-top:3px solid var(--frame);padding-top:10px;display:flex;flex-direction:column;gap:10px}
 .pp .adminToggle{align-self:flex-start}.pp .adminBody[hidden]{display:none}.pp .adminBody{background:var(--card);border:3px solid var(--frame-out);padding:10px 12px;display:flex;flex-direction:column;gap:10px}
 .pp .adminLock,.pp .adminRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .snote{font-family:var(--font-body);font-size:18px;color:var(--ink-soft)}
-.pp #bgPicker{width:44px;height:34px;padding:0;border:3px solid var(--frame-out);background:none;cursor:pointer}.pp #bgText{width:min(260px,100%)}
+.pp .adminPick{width:44px;height:34px;padding:0;border:3px solid var(--frame-out);background:none;cursor:pointer}.pp .adminText{width:min(260px,100%)}
 /* Headquarters: live text placed on the illustrated board (assets/hq-board.png) */
 #stationView.hqBoard{padding:0;background:#2a1a12;display:flex;align-items:center;justify-content:center}
 #stationView.hqBoard .stationFrame{max-width:none;min-height:0;padding:0;border:0;box-shadow:none;background:none;width:100%;margin:0;position:relative}
@@ -273,17 +273,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610302050"></script>
-<script src="assets-embedded.js?v=202610302050"></script>
-<script src="game.js?v=202610302050"></script>
-<script src="thunder-feed.js?v=202610302050"></script>
-<script src="etsy-hq.js?v=202610302050"></script>
-<script src="catalog-data.js?v=202610302050"></script>
-<script src="hq-art-board.js?v=202610302050"></script>
-<script src="research-data.js?v=202610302050"></script>
-<script src="research-board.js?v=202610302050"></script>
-<script src="admin.js?v=202610302050"></script>
-<script src="books-catalog.js?v=202610302050"></script>
+<script src="game-data.js?v=202610302053"></script>
+<script src="assets-embedded.js?v=202610302053"></script>
+<script src="game.js?v=202610302053"></script>
+<script src="thunder-feed.js?v=202610302053"></script>
+<script src="etsy-hq.js?v=202610302053"></script>
+<script src="catalog-data.js?v=202610302053"></script>
+<script src="hq-art-board.js?v=202610302053"></script>
+<script src="research-data.js?v=202610302053"></script>
+<script src="research-board.js?v=202610302053"></script>
+<script src="admin.js?v=202610302053"></script>
+<script src="books-catalog.js?v=202610302053"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};

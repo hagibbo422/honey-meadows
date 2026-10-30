@@ -156,3 +156,5 @@ Research boards now draw on illustrated backgrounds (`assets/research-tiktok.png
 Page fit: `#shell` max-width is tied to the window height (`(100dvh − 48px) × 1.5`), so the whole 3:2 game frame fits on screen without scrolling; on wide/short windows it centers with side margins.
 
 Date sign + gear: `#villageSign` sits in the empty space left of the town when there is room (≥ ~170px; compact stacked style, `.outside`), otherwise on the town top-left as before. Placement script at the bottom of index.html, re-run on resize.
+
+Map border: purple by default (`--map-border` #7b4fa0, darker edge `--map-border-dark`). Admin has a "Map border color" control next to Background color; colour controls are entries in `COLORS` in `admin.js` (saved per browser).
