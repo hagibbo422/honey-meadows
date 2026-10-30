@@ -1,6 +1,7 @@
 // Research building content. Edit this file to change what each board shows — no code changes needed.
 // Every section uses the same layout (research-board.js). Per section you can change:
 //   title, subtitle, icon, accent (colour), blocks (which blocks show, in what order, and their headings),
+//   background (illustrated board image) + layout (which overlay map in research-board.js fits that image),
 //   and the content lists: trends, selling, ideas, sources.
 // "inShop" notes link a trend to a set already in the Honey Meadows Nails Co. catalog.
 window.HONEY_MEADOWS_RESEARCH={
@@ -16,7 +17,7 @@ window.HONEY_MEADOWS_RESEARCH={
  },
  sections:{
   tiktok:{
-   title:'TikTok',icon:'🎵',subtitle:'What nail videos are blowing up right now',
+   title:'TikTok',icon:'🎵',background:'assets/research-tiktok.png',layout:'wide',subtitle:'What nail videos are blowing up right now',
    trends:[
     {name:'Velvet cat-eye',what:'Magnetic gel with a soft, moving band of light, now in deep jewel tones and diffused “velvet” finishes.',inShop:'Cocoa Stardust, Smoky Moonstone',source:0},
     {name:'Glazed-donut & pearl chrome',what:'Pearlescent chrome over a milky sheer base for a soft glow.',inShop:'Golden Hour Pearl, Golden Hour Pearls',source:0},
@@ -47,7 +48,7 @@ window.HONEY_MEADOWS_RESEARCH={
    ]
   },
   pinterest:{
-   title:'Pinterest',icon:'📌',subtitle:'What people are searching and saving',
+   title:'Pinterest',icon:'📌',background:'assets/research-pinterest.png',layout:'wide',subtitle:'What people are searching and saving',
    trends:[
     {name:'Plum noir',what:'Deep purple, burnt burgundy and brown. Searches for dark plum / deep burgundy nails up 220%+.',inShop:'Winterberry Aura, Cherry Cola Crush',source:0},
     {name:'Cool blue chrome',what:'Icy blue chrome nails — searches up 235%+.',inShop:'Frosted Bluebell',source:0},
@@ -77,7 +78,7 @@ window.HONEY_MEADOWS_RESEARCH={
    ]
   },
   marketing:{
-   title:'Marketing',icon:'📣',subtitle:'What’s selling on Etsy and how to get seen',
+   title:'Marketing',icon:'📣',background:'assets/research-marketing.png',layout:'marketing',subtitle:'What’s selling on Etsy and how to get seen',
    trends:[
     {name:'Gothic glam & burgundy',what:'Dark burgundy, gold chrome and leopard sets show up among Etsy’s top-selling press-ons.',inShop:'Cherry Cola Crush, Winterberry Aura',source:0},
     {name:'Florals & nature',what:'3D floral, dragonfly and woodland designs are common among top sellers.',inShop:'Fawn in the Meadow',source:0},
