@@ -154,3 +154,5 @@ Books detail page: drawn on `assets/books-detail.png` (unmodified) by `renderDet
 Research boards now draw on illustrated backgrounds (`assets/research-tiktok.png`, `-pinterest.png`, `-marketing.png`, unmodified). Each section in `research-data.js` has `background` + `layout`; overlay maps (image-pixel boxes for the painted Back button, tabs, 8 trend frames and the 3 bottom panels) are `LAYOUTS` in `research-board.js` (`wide` fits TikTok/Pinterest, `marketing` fits Marketing). Trend frames show name, short description and "in your shop"; clicking one opens a note with the full text and source. Up to 8 trends show. Titles, subtitles and the "Researched" date are painted into the images.
 
 Page fit: `#shell` max-width is tied to the window height (`(100dvh − 48px) × 1.5`), so the whole 3:2 game frame fits on screen without scrolling; on wide/short windows it centers with side margins.
+
+Date sign + gear: `#villageSign` sits in the empty space left of the town when there is room (≥ ~170px; compact stacked style, `.outside`), otherwise on the town top-left as before. Placement script at the bottom of index.html, re-run on resize.
