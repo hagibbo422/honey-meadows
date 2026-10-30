@@ -48,7 +48,7 @@ function render(){
  const blocks=(sec.blocks||(DATA.defaults&&DATA.defaults.blocks)||[]).map(b=>b.type);
  titleEl.textContent='Research';subEl.textContent='';
  const root=el('section','rbArt');root.setAttribute('aria-label',(sec.title||current)+' research');
- root.style.backgroundImage=`url(${sec.background})`;root.style.aspectRatio=`${L.w}/${L.h}`;
+ root.style.backgroundImage=`url(${sec.background}?v=2)`;root.style.aspectRatio=`${L.w}/${L.h}`;
  const add=(n,box)=>{root.append(place(n,L,box));return n;};
 
  // Painted "Back to Research" and tabs become real buttons.
