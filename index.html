@@ -85,13 +85,28 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp .who b{font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.06em;display:block;color:var(--ink-soft);text-transform:uppercase}
 #settingsPanel #timeReadout{color:var(--ink);font-size:24px;min-width:110px}#settingsPanel #timeSlider{width:auto;margin:0;flex:1;accent-color:var(--frame)}#settingsPanel #currentTime{background:var(--parchment-2)}#settingsPanel #speedSelect:disabled{opacity:.55}
 @media(max-width:600px){.pp .sgroup.grow{flex-wrap:wrap}.pp.settings{padding:18px}}
+
+.top{justify-content:flex-end}.hud{display:flex;align-items:center;gap:12px;margin-left:auto}
+/* Entrance: logo pops in, then shrinks away while a circle opens onto the town */
+@property --hole{syntax:'<length>';inherits:false;initial-value:0px}
+#intro{position:fixed;inset:0;z-index:1000;background:#f8efed;display:grid;place-items:center;pointer-events:auto;cursor:pointer;
+ --cx:50vw;--cy:50vh;-webkit-mask:radial-gradient(circle at var(--cx) var(--cy),transparent var(--hole),#000 calc(var(--hole) + 1px));mask:radial-gradient(circle at var(--cx) var(--cy),transparent var(--hole),#000 calc(var(--hole) + 1px));
+}
+#intro.go{animation:introOpen 1.4s cubic-bezier(.45,0,.2,1) 1.75s forwards}
+#intro img{position:absolute;left:var(--cx);top:var(--cy);width:min(62vmin,420px);height:auto;translate:-50% -50%;border-radius:50%;filter:drop-shadow(0 10px 24px rgba(74,31,8,.18));opacity:0}
+#intro.go img{animation:introPop .8s cubic-bezier(.2,1.4,.4,1) both,introShrink 1s cubic-bezier(.6,0,.4,1) 1.6s forwards}
+@keyframes introPop{from{opacity:0;scale:.55}to{opacity:1;scale:1}}
+@keyframes introShrink{to{scale:0;rotate:-25deg;opacity:0}}
+@keyframes introOpen{to{--hole:var(--holeMax,110vmax)}}
+#intro.done{display:none}
+@media (prefers-reduced-motion:reduce){#intro.go{animation:introFade .4s ease .8s forwards}#intro.go img{animation:none;opacity:1}@keyframes introFade{to{opacity:0}}}
 </style>
 </head>
 <body>
+<div id="intro" aria-hidden="true"><img src="assets/logo-large.png" alt=""></div>
 <div id="shell">
   <div class="top">
-    <div class="brand"><img class="logo" src="assets/logo.png" alt="Honey Meadows Nails Co. logo"><h1>Honey Meadows</h1><button class="gearbtn bevel" id="settingsTab" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M19.07 9.81 L22.05 10.27 L22.05 13.73 L19.07 14.19 L18.55 15.45 L20.33 17.89 L17.89 20.33 L15.45 18.55 L14.19 19.07 L13.73 22.05 L10.27 22.05 L9.81 19.07 L8.55 18.55 L6.11 20.33 L3.67 17.89 L5.45 15.45 L4.93 14.19 L1.95 13.73 L1.95 10.27 L4.93 9.81 L5.45 8.55 L3.67 6.11 L6.11 3.67 L8.55 5.45 L9.81 4.93 L10.27 1.95 L13.73 1.95 L14.19 4.93 L15.45 5.45 L17.89 3.67 L20.33 6.11 L18.55 8.55 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></button></div>
-    <div class="pill" id="status">🌤️ Spring • Day 3 • Honey Meadows</div>
+    <div class="hud"><div class="pill" id="status">🌤️ Spring • Day 3 • Honey Meadows</div><button class="gearbtn bevel" id="settingsTab" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M19.07 9.81 L22.05 10.27 L22.05 13.73 L19.07 14.19 L18.55 15.45 L20.33 17.89 L17.89 20.33 L15.45 18.55 L14.19 19.07 L13.73 22.05 L10.27 22.05 L9.81 19.07 L8.55 18.55 L6.11 20.33 L3.67 17.89 L5.45 15.45 L4.93 14.19 L1.95 13.73 L1.95 10.27 L4.93 9.81 L5.45 8.55 L3.67 6.11 L6.11 3.67 L8.55 5.45 L9.81 4.93 L10.27 1.95 L13.73 1.95 L14.19 4.93 L15.45 5.45 L17.89 3.67 L20.33 6.11 L18.55 8.55 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></button></div>
   </div>
   <section id="settingsPanel" class="pp settings bevel" hidden aria-label="Settings">
     <div class="stitle"><h2>Settings</h2><button class="x small" id="settingsClose" aria-label="Close settings">X</button></div>
@@ -124,18 +139,32 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301632"></script>
-<script src="assets-embedded.js?v=202610301632"></script>
-<script src="game.js?v=202610301632"></script>
-<script src="thunder-feed.js?v=202610301632"></script>
-<script src="etsy-hq.js?v=202610301632"></script>
-<script src="catalog-data.js?v=202610301632"></script>
-<script src="books-catalog.js?v=202610301632"></script>
+<script src="game-data.js?v=202610301637"></script>
+<script src="assets-embedded.js?v=202610301637"></script>
+<script src="game.js?v=202610301637"></script>
+<script src="thunder-feed.js?v=202610301637"></script>
+<script src="etsy-hq.js?v=202610301637"></script>
+<script src="catalog-data.js?v=202610301637"></script>
+<script src="books-catalog.js?v=202610301637"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
  t.onclick=()=>set(p.hidden);x.onclick=()=>set(false);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden&&p.contains(document.activeElement)){e.stopImmediatePropagation();set(false);}},true);})();
+</script>
+<script>
+// Entrance animation: centre it on the town, then remove it when finished (click to skip).
+(()=>{const intro=document.getElementById('intro');if(!intro)return;
+ const f=document.getElementById('frame');
+ const place=()=>{if(!f)return;const r=f.getBoundingClientRect();intro.style.setProperty('--cx',(r.left+r.width/2)+'px');const cx=r.left+r.width/2,cy=Math.min(innerHeight/2,r.top+r.height/2);intro.style.setProperty('--cy',cy+'px');intro.style.setProperty('--holeMax',Math.ceil(Math.hypot(Math.max(cx,innerWidth-cx),Math.max(cy,innerHeight-cy)))+4+'px');};
+ place();
+ const img=intro.querySelector('img');let started=false;const go=()=>{if(started)return;started=true;place();intro.classList.add('go');};
+ if(img.complete&&img.naturalWidth)go();else{img.addEventListener('load',go);img.addEventListener('error',go);setTimeout(go,1500);}
+ const end=()=>{intro.classList.add('done');};
+ intro.addEventListener('animationend',e=>{if(e.animationName==='introOpen'||e.animationName==='introFade')end();});
+ intro.addEventListener('click',end);
+ setTimeout(end,6000);
+})();
 </script>
 </body></html>
 
