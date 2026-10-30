@@ -1,0 +1,182 @@
+[
+  {
+    "id": "ATL",
+    "name": "Atlanta Hawks",
+    "color": "#e03a3e",
+    "file": "assets/teams/ATL.png"
+  },
+  {
+    "id": "BOS",
+    "name": "Boston Celtics",
+    "color": "#008348",
+    "file": "assets/teams/BOS.png"
+  },
+  {
+    "id": "BKN",
+    "name": "Brooklyn Nets",
+    "color": "#111111",
+    "file": "assets/teams/BKN.png"
+  },
+  {
+    "id": "CHA",
+    "name": "Charlotte Hornets",
+    "color": "#1d1160",
+    "file": "assets/teams/CHA.png"
+  },
+  {
+    "id": "CHI",
+    "name": "Chicago Bulls",
+    "color": "#ce1141",
+    "file": "assets/teams/CHI.png"
+  },
+  {
+    "id": "CLE",
+    "name": "Cleveland Cavaliers",
+    "color": "#860038",
+    "file": "assets/teams/CLE.png"
+  },
+  {
+    "id": "DAL",
+    "name": "Dallas Mavericks",
+    "color": "#00538c",
+    "file": "assets/teams/DAL.png"
+  },
+  {
+    "id": "DEN",
+    "name": "Denver Nuggets",
+    "color": "#0e2240",
+    "file": "assets/teams/DEN.png"
+  },
+  {
+    "id": "DET",
+    "name": "Detroit Pistons",
+    "color": "#c8102e",
+    "file": "assets/teams/DET.png"
+  },
+  {
+    "id": "GSW",
+    "name": "Golden State Warriors",
+    "color": "#1d428a",
+    "file": "assets/teams/GSW.png"
+  },
+  {
+    "id": "HOU",
+    "name": "Houston Rockets",
+    "color": "#ce1141",
+    "file": "assets/teams/HOU.png"
+  },
+  {
+    "id": "IND",
+    "name": "Indiana Pacers",
+    "color": "#002d62",
+    "file": "assets/teams/IND.png"
+  },
+  {
+    "id": "LAC",
+    "name": "Los Angeles Clippers",
+    "color": "#1d428a",
+    "file": "assets/teams/LAC.png"
+  },
+  {
+    "id": "LAL",
+    "name": "Los Angeles Lakers",
+    "color": "#552583",
+    "file": "assets/teams/LAL.png"
+  },
+  {
+    "id": "MEM",
+    "name": "Memphis Grizzlies",
+    "color": "#5d76a9",
+    "file": "assets/teams/MEM.png"
+  },
+  {
+    "id": "MIA",
+    "name": "Miami Heat",
+    "color": "#98002e",
+    "file": "assets/teams/MIA.png"
+  },
+  {
+    "id": "MIL",
+    "name": "Milwaukee Bucks",
+    "color": "#00471b",
+    "file": "assets/teams/MIL.png"
+  },
+  {
+    "id": "MIN",
+    "name": "Minnesota Timberwolves",
+    "color": "#0c2340",
+    "file": "assets/teams/MIN.png"
+  },
+  {
+    "id": "NOP",
+    "name": "New Orleans Pelicans",
+    "color": "#0c2340",
+    "file": "assets/teams/NOP.png"
+  },
+  {
+    "id": "NYK",
+    "name": "New York Knicks",
+    "color": "#006bb6",
+    "file": "assets/teams/NYK.png"
+  },
+  {
+    "id": "OKC",
+    "name": "Oklahoma City Thunder",
+    "color": "#007ac1",
+    "file": "assets/teams/OKC.png"
+  },
+  {
+    "id": "ORL",
+    "name": "Orlando Magic",
+    "color": "#0077c0",
+    "file": "assets/teams/ORL.png"
+  },
+  {
+    "id": "PHI",
+    "name": "Philadelphia 76ers",
+    "color": "#006bb6",
+    "file": "assets/teams/PHI.png"
+  },
+  {
+    "id": "PHX",
+    "name": "Phoenix Suns",
+    "color": "#1d1160",
+    "file": "assets/teams/PHX.png"
+  },
+  {
+    "id": "POR",
+    "name": "Portland Trail Blazers",
+    "color": "#e03a3e",
+    "file": "assets/teams/POR.png"
+  },
+  {
+    "id": "SAC",
+    "name": "Sacramento Kings",
+    "color": "#5a2d81",
+    "file": "assets/teams/SAC.png"
+  },
+  {
+    "id": "SAS",
+    "name": "San Antonio Spurs",
+    "color": "#63666a",
+    "file": "assets/teams/SAS.png"
+  },
+  {
+    "id": "TOR",
+    "name": "Toronto Raptors",
+    "color": "#ce1141",
+    "file": "assets/teams/TOR.png"
+  },
+  {
+    "id": "UTA",
+    "name": "Utah Jazz",
+    "color": "#002b5c",
+    "file": "assets/teams/UTA.png"
+  },
+  {
+    "id": "WAS",
+    "name": "Washington Wizards",
+    "color": "#002b5c",
+    "file": "assets/teams/WAS.png"
+  }
+]

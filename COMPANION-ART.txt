@@ -1,0 +1,3 @@
+Companion sprite generated with the built-in image generation tool from the original reference photo and the V15 female animation sheet.
+Prompt: Brown shaggy-haired man with small mustache, taupe button shirt, beige shorts and white sneakers; matching cozy chibi pixel art; 4 columns of walking poses by 4 rows facing down, left, right and up; transparent background.
+Frames normalized to the existing 52 x 84 pixel cell format.

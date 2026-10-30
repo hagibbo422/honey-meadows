@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Startup uses current Central Time and keeps Town selected",
+    "result": "PASS"
+  },
+  {
+    "name": "Winter, summer, both DST transitions and Central midnight convert correctly",
+    "result": "PASS"
+  },
+  {
+    "name": "Live clock follows elapsed wall time, not simulated frame duration or preview speed",
+    "result": "PASS"
+  },
+  {
+    "name": "Slider preview freezes at the chosen minute and Current Central Time restores live sync",
+    "result": "PASS"
+  },
+  {
+    "name": "Pause clock enters preview; accelerated testing cannot accelerate live time",
+    "result": "PASS"
+  },
+  {
+    "name": "Focus and visibility restore wall-clock sync; preview stays untouched",
+    "result": "PASS"
+  },
+  {
+    "name": "Daily routine, pets and town camera still follow the selected clock",
+    "result": "PASS"
+  },
+  {
+    "name": "Future controller retains game data and exposes clock state",
+    "result": "PASS"
+  }
+]

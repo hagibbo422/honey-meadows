@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Honey Meadows Town Build Verification</title></head><body style="margin:0;background:#173a2c;color:#fff;font:15px system-ui"><header id="report"><h1>Updated project checks</h1><pre id="results">Loading…</pre></header><iframe id="game" src="../index.html" style="width:100%;height:2100px;border:0"></iframe><script>
+const frame=document.getElementById('game'),out=document.getElementById('results'),params=new URLSearchParams(location.search);if(params.has('preview'))document.getElementById('report').style.display='none';
+frame.onload=async()=>{
+ const w=frame.contentWindow,d=w.document,api=w.HM_DEBUG,controller=w.HoneyMeadows,checks=[];
+ const check=(ok,name)=>{if(!ok)throw Error(name);checks.push('PASS — '+name);out.textContent=checks.join('\n');};
+ const raf=()=>new Promise(resolve=>w.requestAnimationFrame(resolve));
+ try{
+  api.setRunning(false);const start=Date.now();while(!Object.values(api.assetReady).every(Boolean)||!Object.values(api.logoReady).every(Boolean)||!api.courtTextureReady){if(Date.now()-start>20000)throw Error('Assets timeout');await raf();}
+  check(api.scene==='town'&&d.getElementById('viewSelect').value==='town','Town is the initial page');
+  check(!d.getElementById('teamSelect')&&!d.getElementById('replaceBanner')&&!d.getElementById('resetBanner'),'Team-changing controls removed');
+  for(const m of [480,603,720,1083,1140,1260,1380,0]){const slider=d.getElementById('timeSlider');slider.value=m;slider.dispatchEvent(new w.Event('input'));check(api.scene==='town'&&api.minute===m,'Town stays selected at '+api.formatTime(m));}
+  check(api.teams.length===30&&Object.values(api.logoReady).every(Boolean),'All logo assets are retained');
+  api.setTime(720);await raf();const ctx=d.getElementById('game').getContext('2d'),before=ctx.getImageData(1028,264,70,68).data;
+  check(controller.setGameData({opponent:'BOS',scoreMode:'manual',score:{home:108,away:104},period:'Final',clock:'0:00'}),'Data API accepts future feed values');
+  await raf();const after=ctx.getImageData(1028,264,70,68).data;check(before.some((v,i)=>v!==after[i]),'Opponent emblem changes within the court artwork');
+  check(api.courtTextureReady,'Banner is built into the court texture');
+  api.advance(30);check(api.score.join(',')==='108,104','External score is preserved while basketball animation continues');
+  api.setView('farm');w.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));check(api.scene==='town','Escape returns to the town');
+  controller.setGameData({opponent:'SAS',scoreMode:'simulation',score:{home:20,away:16},period:'Q2',clock:'4:12'});api.setTime(720);
+  const requested=params.get('preview');if(requested&&requested!=='SAS')controller.setGameData({opponent:requested});await raf();
+  out.textContent=checks.join('\n')+'\n\nALL UPDATED PROJECT BROWSER CHECKS PASSED';
+ }catch(error){out.textContent+='\nFAIL — '+error.stack;}
+};
+</script></body></html>
+

@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Honey Meadows V20 Central Time Verification</title></head><body style="margin:0;background:#173a2c;color:#fff;font:15px system-ui"><header id="report"><h1>V20 clock checks</h1><pre id="results">Loading…</pre></header><iframe id="game" src="../index.html" style="width:100%;height:2100px;border:0"></iframe><script>
+const frame=document.getElementById('game'),out=document.getElementById('results'),params=new URLSearchParams(location.search);if(params.has('preview'))document.getElementById('report').style.display='none';
+frame.onload=async()=>{
+ const w=frame.contentWindow,d=w.document,api=w.HM_DEBUG,checks=[];
+ const check=(ok,name)=>{if(!ok)throw Error(name);checks.push('PASS — '+name);out.textContent=checks.join('\n');};
+ const raf=()=>new Promise(resolve=>w.requestAnimationFrame(resolve));
+ try{
+  check(api.clockMode==='live'&&api.scene==='town','Starts on Town with the live Central clock');
+  const started=Date.now();while(!Object.values(api.assetReady).every(Boolean)||!api.courtTextureReady){if(Date.now()-started>20000)throw Error('Images timeout');await raf();}
+  let actual=api.centralTimeAt(Date.now());check(Math.abs(api.minute-actual.minute)<.05,'Displayed time matches real America/Chicago time');
+  check(d.getElementById('speedSelect').disabled,'Preview speed cannot accelerate live time');
+  const slider=d.getElementById('timeSlider');slider.value=603;slider.dispatchEvent(new w.Event('input'));
+  check(api.clockMode==='preview'&&api.minute===603&&!api.timeRunning,'Slider enters paused preview');
+  check(api.scene==='town'&&api.period==='outbound','Preview updates the routine without moving the town camera');
+  d.getElementById('currentTime').click();actual=api.centralTimeAt(Date.now());
+  check(api.clockMode==='live'&&api.timeRunning&&Math.abs(api.minute-actual.minute)<.05,'Current Central Time button returns to live');
+  check(d.getElementById('timeReadout').textContent.includes(api.centralZone),'Readout identifies CST or CDT');
+  d.getElementById('toggleTime').click();check(api.clockMode==='preview'&&!api.timeRunning,'Pause clock preserves a preview time');
+  d.getElementById('currentTime').click();w.dispatchEvent(new w.Event('focus'));check(api.clockMode==='live','Focus preserves live synchronization');
+  const winter=api.centralTimeAt(Date.parse('2026-01-15T20:30:00Z')),summer=api.centralTimeAt(Date.parse('2026-07-15T20:30:00Z'));
+  check(winter.zone==='CST'&&summer.zone==='CDT'&&summer.minute-winter.minute===60,'Central daylight-saving conversion works');
+  check(!d.getElementById('teamSelect')&&api.teams.length===30,'Handoff build keeps logos without team-changing controls');
+  out.textContent=checks.join('\n')+'\n\nALL V20 BROWSER CHECKS PASSED';
+ }catch(error){out.textContent+='\nFAIL — '+error.stack;}
+};
+</script></body></html>
+

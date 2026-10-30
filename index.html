@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Honey Meadows V20 — A Day Together</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#142623;color:#fff4d0;font-family:Georgia,serif}
+#shell{max-width:1380px;margin:18px auto;padding:0 14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.top h1{margin:0;font-size:31px;color:#ffe9a9;text-shadow:2px 3px #5b3d29}.pill{background:#2d4a3f;border:2px solid #a79f70;border-radius:8px;padding:7px 12px}
+#frame{position:relative;border:7px solid #a47849;box-shadow:0 8px 0 #634329,0 18px 35px #0008;margin-top:13px;background:#294c36}
+canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair}#tip{position:absolute;left:12px;bottom:12px;background:#2d392de8;border:2px solid #e3c487;padding:8px 12px;font-size:14px;pointer-events:none;max-width:70%}
+#actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:18px}button{background:#e8c78b;color:#3e2c20;border:3px solid #8d603c;border-radius:5px;font:bold 15px Georgia;padding:9px 13px;cursor:pointer}button:hover{background:#ffdfa4}button:disabled{opacity:.5}small{color:#c7d5c2}#legend{margin-top:9px;color:#c8d9c2;line-height:1.5}.mobile{display:none}@media(max-width:700px){.top h1{font-size:23px}.mobile{display:flex;gap:6px;justify-content:center;margin-top:12px}.mobile button{min-width:52px}}
+
+#stationView{position:absolute;inset:0;z-index:10;overflow:auto;background:repeating-linear-gradient(0deg,#253f36 0px,#253f36 28px,#29463a 28px,#29463a 32px);padding:clamp(10px,3%,24px);font-family:Georgia,serif;color:#fceac7}
+#stationView.hidden{display:none}
+.stationFrame{max-width:960px;min-height:96%;margin:auto;padding:24px;border:8px solid #886143;box-shadow:inset 0 0 0 4px #d3a86e,0 8px 0 #3b2e26;background:#314b3d}
+.stationTop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:3px solid #ab9161}
+.stationTop h2{font-size:clamp(24px,3vw,38px);margin:6px 0;color:#ffdf93;text-shadow:2px 3px #483421}
+.stationTop p{margin:0;color:#dfd0b1}.eyebrow{font-size:11px;letter-spacing:.16em;color:#d4d8a4;font-weight:bold}
+#stationBody{padding-top:18px}.dashGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.dashCard{background:#f1deb8;color:#3b3227;border:4px solid #9a7653;box-shadow:4px 5px 0 #182f29;padding:14px;border-radius:3px}.dashCard h3{font-size:18px;margin:0 0 9px;color:#4d6042}.dashCard p{margin:6px 0;line-height:1.5}.dashCard.wide{grid-column:span 2}.dashCard.full{grid-column:1/-1}.bigNum{font-size:40px;font-weight:900;color:#326556}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:135px;color:#5c4832;font-size:14px;font-weight:bold}.field input,.field textarea,.field select{width:100%;padding:10px;background:#fff7e5;border:2px solid #9a815e;border-radius:2px;color:#382f25;font:15px Georgia,serif}.field textarea{min-height:190px;resize:vertical;line-height:1.5}
+.fieldRow{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}.dashCard button,.stationFrame button{cursor:pointer}.stationFrame button{font:700 14px Georgia,serif;padding:9px 13px;background:#e7c687;color:#3c3022;border:3px solid #89603a;box-shadow:2px 3px 0 #4c3424}.stationFrame button:hover{background:#fff0b4}.stationFrame button:focus-visible{outline:3px solid #4f9e97;outline-offset:3px}.stationFrame button.danger{background:#ad6352;color:#fff2df}.stationFrame button.secondary{background:#d5d9b6}
+.taskList{padding:0;margin:15px 0 0;list-style:none}.taskItem{display:flex;gap:10px;align-items:center;padding:10px 3px;border-top:1px dashed #b69a72}.taskItem input[type=checkbox]{width:20px;height:20px;accent-color:#44795a}.taskItem .name{flex:1;overflow-wrap:anywhere}.taskItem.done .name{text-decoration:line-through;color:#8a8477}.smallDim{color:#6f6556;font-size:13px}.weekdays,.monthGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.weekdays span{text-align:center;color:#63543f;font-size:12px}.monthGrid button{min-height:48px;border:2px solid #cab18a;background:#fff4db;box-shadow:none;padding:4px;font:14px Georgia,serif}.monthGrid button.selected{background:#91b88a;border-color:#397255}.monthGrid button.today{outline:2px solid #c9944f;outline-offset:-4px}.monthGrid button.hasEvent:after{content:'•';display:block;color:#a65146;font-size:14px;line-height:5px}.monthGrid span{min-height:40px}.rowFlex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.eventList{list-style:none;padding:0;margin:10px 0 0}.eventList li{display:flex;gap:12px;align-items:center;justify-content:space-between;border-top:1px dashed #bea685;padding:9px 0}.noteList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.noteTile{text-align:left;overflow-wrap:anywhere;background:#f7e7bf !important;box-shadow:none !important}.noteTile.active{outline:3px solid #5d9269}.townList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.townRow{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#fff3d9;border:2px solid #c2a17a;padding:10px;color:#3b3124}.townRow b{font-size:15px}.helpText{color:#d6c69e;margin-bottom:12px}
+@media(max-width:800px){.dashGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stationFrame{padding:14px}.dashCard.wide{grid-column:span 2}}
+@media(max-width:550px){.dashGrid{grid-template-columns:minmax(0,1fr)}.dashCard.wide,.dashCard.full{grid-column:1}.townList,.noteList{grid-template-columns:1fr}#stationView{padding:6px}.stationFrame{padding:10px;border-width:4px}.stationTop h2{font-size:24px}}
+select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid #a77a47;border-radius:5px;padding:9px;max-width:100%}.control{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.routineInfo{display:flex;flex-direction:column;gap:5px;flex:1;min-width:220px}.routineInfo strong{color:#ffe4a5;font-size:20px}.routineInfo span{font-size:15px}.timePanel,.bannerPanel{margin-top:18px;border:2px solid #9e8654;border-radius:9px;background:#243f34;padding:16px}.timeHeading{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.timeHeading>label:first-child{font-size:19px;font-weight:bold}#timeReadout{font-size:27px;color:#ffe5a4;min-width:130px}#timeSlider{width:100%;margin:20px 0 5px;accent-color:#e9c46b;height:24px;cursor:ew-resize}.ticks{display:flex;justify-content:space-between;color:#c8d5bc;font-size:12px}.jumpTimes{display:flex;flex-wrap:wrap;gap:6px;margin-top:17px}.jumpTimes button{font-size:12px;padding:8px}.quiet{font-size:13px;color:#c8d5bc;margin:13px 0 0}.bannerPanel{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.fileButton{display:flex;flex-direction:column;gap:7px;font-size:13px}#bannerMessage{font-size:13px;color:#d5dcbd;flex-basis:100%}canvas{cursor:pointer}#tip{max-width:85%}#frame{margin-bottom:6px}@media(max-width:600px){.bannerPanel,.timePanel{padding:12px}.timeHeading{gap:8px}.jumpTimes button{flex:1}.top h1{font-size:23px}#timeReadout{font-size:23px}.ticks{font-size:10px}}
+ .clockMode{font-size:12px;color:#d6edc1;background:#31563e;border:1px solid #88a77a;border-radius:14px;padding:5px 9px}#currentTime{background:#b7d5a0}#speedSelect:disabled{opacity:.55}#timeReadout{min-width:160px}
+.dashGrid.kpiGrid{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:800px){.dashGrid.kpiGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:550px){.dashGrid.kpiGrid{grid-template-columns:minmax(0,1fr)}}.eventList li span:last-child{white-space:nowrap}.dashGrid.kpi2{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:550px){.dashGrid.kpi2{grid-template-columns:minmax(0,1fr)}}
+.catBar{margin-bottom:14px}.catSearch{flex:1;min-width:180px;padding:10px;background:#fff7e5;border:2px solid #9a815e;border-radius:2px;color:#382f25;font:15px Georgia,serif}.catCount{color:#d6c69e}
+.catGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.stationFrame button.catCard{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:8px;text-align:left;background:#f1deb8;color:#3b3227;border:4px solid #9a7653;box-shadow:4px 5px 0 #182f29;font:14px Georgia,serif}
+.stationFrame button.catCard:hover{background:#fff3d6;transform:translateY(-2px)}
+.catPhoto{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#e3cfa6;border:2px solid #c2a17a}.noPhoto{display:flex;align-items:center;justify-content:center;font-size:40px;background:#e3cfa6;border:2px solid #c2a17a}
+.catName{font-weight:bold;font-size:15px;line-height:1.25}.catPrice{color:#326556}.catTag{font-size:11px;color:#7a4a8a;font-weight:bold}
+.catDetail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}.catBig{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;border:4px solid #9a7653;box-shadow:4px 5px 0 #182f29;background:#e3cfa6}.catBig.noPhoto{font-size:70px}
+.catPriceBig{font-size:22px;color:#326556}.catLink{display:inline-block;font:700 14px Georgia,serif;padding:9px 13px;background:#91b88a;color:#22301f;border:3px solid #397255;text-decoration:none}
+.catFoot{margin-top:16px;color:#d6c69e}.catFoot a{color:#ffe29a}.stationFrame button.linkBtn,.linkBtn{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;color:#ffe29a;font:inherit;text-decoration:underline;cursor:pointer}
+@media(max-width:650px){.catDetail{grid-template-columns:1fr}}
+.lockWrap{display:flex;justify-content:center;padding:30px 0}.lockBox{width:min(360px,100%);text-align:center;display:flex;flex-direction:column;gap:10px}.lockIcon{font-size:40px}.lockBox h3{margin:0}
+.lockBox input[type=password]{padding:11px;background:#fff7e5;border:2px solid #9a815e;border-radius:2px;color:#382f25;font:16px Georgia,serif;text-align:center}
+.lockRemember{font-size:13px;color:#5c4832;display:flex;gap:6px;align-items:center;justify-content:center}.lockMsg{min-height:18px;margin:0;color:#a33f2c;font-weight:bold;font-size:14px}
+.shake{animation:shake .35s}@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+</style>
+</head>
+<body>
+<div id="shell">
+  <div class="top">
+    <h1>🍯 Honey Meadows <small style="font-size:13px;color:#c9d8b7">V20 • A Day Together · Town View</small></h1>
+    <div class="pill" id="status">🌤️ Spring • Day 3 • Honey Meadows</div>
+  </div>
+  <div id="frame">
+    <canvas id="game" width="1152" height="768" tabindex="0" aria-label="Honey Meadows daily routine simulation"></canvas>
+    <div id="tip">WASD / arrows to walk • E near doors to enter • Click buildings to walk inside</div><section id="stationView" class="hidden" aria-label="Headquarters dashboard"><div class="stationFrame"><div class="stationTop"><div><div class="eyebrow">🍯 HONEY MEADOWS • HEADQUARTERS</div><h2 id="stationTitle">Work Board</h2><p id="stationSubtitle">Your village command center</p></div><button id="backHQ">← Back to Headquarters</button></div><div id="stationBody"></div></div></section>
+  </div>
+  <div id="actions">
+ <label class="control">View <select id="viewSelect"><option value="town" selected>Town · Main view</option><option value="farm">Farmhouse</option><option value="auto">Follow routine (optional)</option><option value="nails">Nail Shop · Annie's workplace</option><option value="research">Research · Hayden's workplace</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select></label>
+ <div class="routineInfo"><strong id="routineTitle">Hayden &amp; Annie · Breakfast</strong><span id="routineDetail">At the kitchen table.</span><small id="petStatus"></small></div>
+ </div>
+ <section class="timePanel" aria-label="Time controls"><div class="timeHeading"><label for="timeSlider">Time of day</label><span id="clockModeLabel" class="clockMode" role="status">● Live</span><output id="timeReadout" for="timeSlider">Syncing…</output><button id="currentTime">↻ Back to live</button><button id="toggleTime">⏸ Pause clock</button><label class="control">Preview speed <select id="speedSelect" disabled><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1× · 1 minute / second</option><option value="5">5×</option></select></label></div>
+ <input id="timeSlider" aria-label="Time of day" type="range" min="0" max="1439" step="1" value="480"><div class="ticks"><span>12 AM</span><span>6 AM</span><span>Noon</span><span>6 PM</span><span>11:59 PM</span></div>
+ <div class="jumpTimes"><button data-time="480">8 AM · Breakfast</button><button data-time="603">10:03 · Commute</button><button data-time="720">Noon · Work</button><button data-time="1083">6:03 · Homeward</button><button data-time="1140">7 PM · Dinner</button><button data-time="1260">9 PM · Couch</button><button data-time="1380">11 PM · Sleep</button></div>
+ <p class="quiet">Live follows the real clock. Drag the slider to preview another time; Back to live returns to the real time. Preview speed affects testing only.</p></section>
+ 
+  
+  <div id="legend">V21 • Hayden &amp; Annie's daily life • Riley the goldendoodle outside 10 AM–6 PM • Theo the cat at home • Day and night lighting</div>
+</div>
+<script src="game-data.js"></script>
+<script src="assets-embedded.js"></script>
+<script src="game.js"></script>
+<script src="thunder-feed.js"></script>
+<script src="etsy-hq.js"></script>
+<script src="catalog-data.js"></script>
+<script src="books-catalog.js"></script>
+</body></html>
+
+
+
+
+

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Town is the startup view and stays selected throughout the entire routine",
+    "result": "PASS"
+  },
+  {
+    "name": "No opponent selector, upload or reset controls remain",
+    "result": "PASS"
+  },
+  {
+    "name": "All 30 logo files and embedded fallbacks remain available",
+    "result": "PASS"
+  },
+  {
+    "name": "External data controller updates opponent and fixed scores without automatic overwrites",
+    "result": "PASS"
+  },
+  {
+    "name": "Optional interior views and Escape return to the town without changing the schedule",
+    "result": "PASS"
+  },
+  {
+    "name": "Project has separate editable code, data, and offline-image files",
+    "result": "PASS"
+  }
+]
