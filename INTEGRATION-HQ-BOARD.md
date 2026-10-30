@@ -1,4 +1,6 @@
-# Headquarters board — how it's wired in Honey Meadows
+# Headquarters board (superseded)
+
+The Option 2 bulletin board below was replaced by the illustrated board in `hq-art-board.js` (see HANDOFF.md). Kept for reference.
 
 - `headquarters-board.js` / `headquarters-board.css` are the Option 2 component files, unchanged. The CSS is loaded in `<head>`; a small `<script type="module">` imports the module and exposes `window.HMBoard`.
 - `etsy-hq.js` keeps the password lock and the Etsy Sales sheet pipeline. After unlocking, `renderBoard()` mounts the board into the Headquarters panel and `boardData()` maps `state.summary` to the data contract (totalSales = unique orders, totalRevenue = Price × Quantity, recentOrders = 8 newest, updatedAt = last successful sheet load).

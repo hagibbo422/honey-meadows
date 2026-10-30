@@ -148,7 +148,7 @@ function render(){
   <p class="smallDim">Anyone who has that link can read the sheet (dates, items, prices — no buyer names or addresses).</p></div></div>`;
   return;
  }
- if(window.HMBoard){renderBoard();return;}
+ if(window.HQArtBoard){renderBoard();return;}
  const s=state.summary;
  const pill=state.error?`<span class="clockMode" style="background:#7a3b2e;border-color:#c98a6b">⚠ ${esc(state.error)}${s?' • showing last saved numbers':''}</span>`
   :`<span class="clockMode">● Live from the Etsy Sales sheet • updated ${esc(fmtWhen(state.updatedAt))}${state.loading?' • refreshing…':''}</span>`;
@@ -168,10 +168,10 @@ function render(){
 }
 
 
-// ---------- Cottage Bulletin Board (headquarters-board.js) ----------
-// The Option 2 board replaces the old card layout. It gets its numbers from the same
+// ---------- Illustrated Headquarters board (hq-art-board.js) ----------
+// Live text drawn onto assets/hq-board.png. It gets its numbers from the same
 // Etsy Sales sheet pipeline (summarize → state.summary); the old layout stays as a fallback
-// if the board module can't load (e.g. some browsers opening index.html straight from a file).
+// if hq-art-board.js isn't loaded.
 let board=null;
 const ETSY_LINKS={orders:'https://www.etsy.com/your/orders/sold',analytics:'https://www.etsy.com/your/shops/me/stats',messages:'https://www.etsy.com/messages'};
 const centralYMD=iso=>{const d=new Date(iso);return isNaN(d)?String(iso||''):new Intl.DateTimeFormat('en-CA',{timeZone:ZONE,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);};
@@ -188,30 +188,29 @@ function boardData(){
  };
 }
 function destroyBoard(){if(board){board.destroy();board=null;}view.classList.remove('hqBoard');}
-function boardNavigate(section){
- const reset=()=>{const b=board&&board.element.querySelector('[data-hm-route="dashboard"]');if(b){board.element.querySelectorAll('[data-hm-route]').forEach(x=>x.setAttribute('aria-current','false'));b.setAttribute('aria-current','page');}};
- if(section==='dashboard'){view.scrollTop=0;return;}
- if(section==='orders'){const o=board&&board.element.querySelector('.hm-orders');if(o)o.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(reset,400);return;}
+function boardNavigate(section,reset){
+ reset=reset||(()=>{});
+ if(section==='dashboard')return;
  if(section==='products'){close();if(window.BooksCatalog)window.BooksCatalog.open();return;}
  if(section==='settings'){close();const g=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel');if(g&&p&&p.hidden)g.click();return;}
- if(ETSY_LINKS[section]){window.open(ETSY_LINKS[section],'_blank','noopener');reset();}
+ if(ETSY_LINKS[section]){window.open(ETSY_LINKS[section],'_blank','noopener');setTimeout(reset,300);}
 }
 function renderBoard(){
  view.classList.add('hqBoard');
  if(!board||!body.contains(board.element)){
   body.innerHTML='';
-  board=window.HMBoard.mountHeadquartersBoard({
-   target:body,data:boardData(),
+  board=window.HQArtBoard.mount({
+   target:body,data:boardData(),zone:ZONE,
    onRefresh:async()=>{await refresh();if(state.error)throw new Error(state.error);return boardData();},
    onNavigate:boardNavigate,
    onLock:lockNow
   });
  }else board.update(boardData());
  board.setLoading(!!state.loading);
- if(state.error)board.setError('⚠ '+state.error+(state.summary?' — showing the last saved numbers':''));
- else if(state.summary&&state.summary.warnings.length)board.setError(state.summary.warnings[0]);
- else board.setError('');
+ if(state.error)board.setStatus('⚠ '+state.error+(state.summary?' — showing the last saved numbers':''),true);
+ else if(state.summary&&state.summary.warnings.length)board.setStatus(state.summary.warnings[0]);
 }
+
 // ---------- password lock ----------
 // The sheet links in game-data.js are encrypted (AES-GCM, key from the password via PBKDF2).
 // The right password decrypts them; a wrong one can't. Unlocking is remembered until the tab

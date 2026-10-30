@@ -3,7 +3,6 @@
 <head>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&display=swap">
-<link rel="stylesheet" href="headquarters-board.css?v=202610301707">
 <link rel="icon" href="assets/favicon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -115,14 +114,44 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp .adminToggle{align-self:flex-start}.pp .adminBody{background:var(--card);border:3px solid var(--frame-out);padding:10px 12px;display:flex;flex-direction:column;gap:10px}
 .pp .adminLock,.pp .adminRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .snote{font-family:var(--font-body);font-size:18px;color:var(--ink-soft)}
 .pp #bgPicker{width:44px;height:34px;padding:0;border:3px solid var(--frame-out);background:none;cursor:pointer}.pp #bgText{width:min(260px,100%)}
-/* Headquarters board: give the bulletin board the full game window */
-#stationView.hqBoard{padding:clamp(6px,1.5%,16px);background:#2a1a12}
-#stationView.hqBoard .stationFrame{max-width:none;min-height:0;padding:0;border:0;box-shadow:none;background:none}
-#stationView.hqBoard .stationTop{border:0;padding:0 0 8px;justify-content:flex-end}
+/* Headquarters: live text placed on the illustrated board (assets/hq-board.png) */
+#stationView.hqBoard{padding:0;background:#2a1a12;display:flex;align-items:center;justify-content:center}
+#stationView.hqBoard .stationFrame{max-width:none;min-height:0;padding:0;border:0;box-shadow:none;background:none;width:100%;margin:0;position:relative}
+#stationView.hqBoard .stationTop{position:absolute;z-index:3;top:1.2%;right:1.2%;border:0;padding:0}
 #stationView.hqBoard .stationTop>div{display:none}
-#stationView.hqBoard .hm-orders th:first-child{width:80px}#stationView.hqBoard .hm-orders th:last-child{width:80px;text-align:right}
-#stationView.hqBoard .hm-sidebar,#stationView.hqBoard .hm-nav{min-width:0}
-@media(max-width:700px){#stationView.hqBoard{position:fixed;inset:0;z-index:50}}
+#stationView.hqBoard #backHQ{font:700 clamp(11px,1.2vw,15px) var(--font-display);padding:6px 10px}
+.hqArt{position:relative;width:100%;aspect-ratio:1536/1024;background:url(assets/hq-board.png) center/100% 100% no-repeat;container-type:inline-size;color:#4a2a14;font-family:var(--font-display)}
+.hqArt>*{position:absolute;box-sizing:border-box;margin:0}
+.hqArt-label{font-weight:700;font-size:1.75cqw;line-height:1;display:flex;align-items:center;color:#5a3418;letter-spacing:.02em}
+.hqArt-num{font-weight:700;font-size:4.6cqw;line-height:1;display:flex;align-items:center;justify-content:center;color:#2f5a3c;text-shadow:.12cqw .12cqw 0 rgba(255,240,200,.8)}
+.hqArt-note{font-family:var(--font-body);font-size:1.6cqw;color:#7a4a22;display:flex;align-items:center}
+.hqArt-updated{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.3cqw}
+.hqArt-small{font-weight:700;font-size:1.05cqw;color:#7a4a22;text-transform:uppercase;letter-spacing:.06em}
+.hqArt-when{font-family:var(--font-body);font-size:1.45cqw;line-height:1;color:#4a2a14}
+.hqArt button{background:transparent;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;border-radius:.4cqw}
+.hqArt button:focus-visible{outline:.25cqw dashed #4a2a14;outline-offset:.15cqw}
+.hqArt-refresh{display:flex;align-items:center;justify-content:flex-end;padding-right:.9cqw!important;font-weight:700;font-size:1.25cqw!important;color:#5a3418!important}
+.hqArt-refresh:hover,.hqArt-lock:hover,.hqArt-navBtn:hover{background:rgba(255,236,170,.35)}
+.hqArt-refresh:disabled{cursor:wait;opacity:.7}
+.hqArt-lock{display:flex;align-items:flex-end;justify-content:center;padding-bottom:.25cqw!important}
+.hqArt-lock span{font-weight:700;font-size:.95cqw;color:#7a2a1a;background:rgba(255,240,205,.85);padding:0 .4cqw}
+.hqArt-nav{position:static}
+.hqArt-navBtn{position:absolute;display:flex;align-items:center;padding-left:4.3cqw!important;text-align:left}
+.hqArt-navLabel{font-weight:700;font-size:1.3cqw;color:#5a3418}
+.hqArt-navBtn[aria-current="page"]{background:rgba(255,226,140,.45);box-shadow:inset 0 0 0 .18cqw rgba(122,74,34,.55)}
+.hqArt-status{font-family:var(--font-body);font-size:1.25cqw;color:#7a4a22;display:flex;align-items:center;justify-content:flex-end;text-align:right;line-height:1}
+.hqArt-status.is-error{color:#9f382c;font-weight:700}
+.hqArt-orders{overflow:auto;padding:0 .4cqw}
+.hqArt-orders table{width:100%;border-collapse:collapse;table-layout:fixed;font-family:var(--font-body);font-size:1.55cqw;line-height:1.1}
+.hqArt-orders th{font-family:var(--font-display);font-size:1.05cqw;text-transform:uppercase;letter-spacing:.06em;color:#7a4a22;text-align:left;padding:.3cqw .4cqw;border-bottom:.15cqw solid rgba(122,74,34,.55)}
+.hqArt-orders th:first-child,.hqArt-date{width:9%}.hqArt-orders th:last-child,.hqArt-amt{width:12%;text-align:right}
+.hqArt-orders td{padding:.45cqw .4cqw;border-bottom:.1cqw dashed rgba(122,74,34,.4);vertical-align:top}
+.hqArt-orders tr:last-child td{border-bottom:0}
+.hqArt-date,.hqArt-amt{font-family:var(--font-display);font-weight:700;font-size:1.2cqw;white-space:nowrap}
+.hqArt-item{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hqArt-empty{text-align:center;padding:2cqw!important;color:#7a4a22}
+.hqArt.is-loading .hqArt-num{opacity:.6}
+@media(max-width:700px){#stationView.hqBoard{position:fixed;inset:0;z-index:50;display:block;overflow:auto}#stationView.hqBoard .stationFrame{width:max(100%,720px)}#stationView.hqBoard .stationTop{position:fixed;top:8px;right:8px}}
 </style>
 </head>
 <body>
@@ -162,19 +191,15 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301707"></script>
-<script src="assets-embedded.js?v=202610301707"></script>
-<script src="game.js?v=202610301707"></script>
-<script src="thunder-feed.js?v=202610301707"></script>
-<script src="etsy-hq.js?v=202610301707"></script>
-<script src="catalog-data.js?v=202610301707"></script>
-<script type="module">
-// Cottage Bulletin Board for Headquarters (see INTEGRATION-HQ-BOARD.md). etsy-hq.js uses window.HMBoard when present.
-import {mountHeadquartersBoard} from './headquarters-board.js?v=202610301707';
-window.HMBoard={mountHeadquartersBoard};
-</script>
-<script src="admin.js?v=202610301707"></script>
-<script src="books-catalog.js?v=202610301707"></script>
+<script src="game-data.js?v=202610301717"></script>
+<script src="assets-embedded.js?v=202610301717"></script>
+<script src="game.js?v=202610301717"></script>
+<script src="thunder-feed.js?v=202610301717"></script>
+<script src="etsy-hq.js?v=202610301717"></script>
+<script src="catalog-data.js?v=202610301717"></script>
+<script src="hq-art-board.js?v=202610301717"></script>
+<script src="admin.js?v=202610301717"></script>
+<script src="books-catalog.js?v=202610301717"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
