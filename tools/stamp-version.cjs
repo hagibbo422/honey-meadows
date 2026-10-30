@@ -6,4 +6,6 @@ const file=path.join(__dirname,'..','index.html');
 const v=new Date().toISOString().replace(/[-:T]/g,'').slice(0,12);
 let html=fs.readFileSync(file,'utf8');
 html=html.replace(/<script src="([\w.-]+\.js)(?:\?v=\w+)?"><\/script>/g,(m,f)=>`<script src="${f}?v=${v}"></script>`);
+html=html.replace(/<link rel="stylesheet" href="([\w.-]+\.css)(?:\?v=\w+)?">/g,(m,f)=>`<link rel="stylesheet" href="${f}?v=${v}">`);
+html=html.replace(/from '\.\/([\w.-]+\.js)(?:\?v=\w+)?'/g,(m,f)=>`from './${f}?v=${v}'`);
 fs.writeFileSync(file,html);console.log('stamped',v);

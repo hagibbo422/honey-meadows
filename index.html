@@ -3,6 +3,7 @@
 <head>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&display=swap">
+<link rel="stylesheet" href="headquarters-board.css?v=202610301707">
 <link rel="icon" href="assets/favicon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -114,6 +115,14 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp .adminToggle{align-self:flex-start}.pp .adminBody{background:var(--card);border:3px solid var(--frame-out);padding:10px 12px;display:flex;flex-direction:column;gap:10px}
 .pp .adminLock,.pp .adminRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .snote{font-family:var(--font-body);font-size:18px;color:var(--ink-soft)}
 .pp #bgPicker{width:44px;height:34px;padding:0;border:3px solid var(--frame-out);background:none;cursor:pointer}.pp #bgText{width:min(260px,100%)}
+/* Headquarters board: give the bulletin board the full game window */
+#stationView.hqBoard{padding:clamp(6px,1.5%,16px);background:#2a1a12}
+#stationView.hqBoard .stationFrame{max-width:none;min-height:0;padding:0;border:0;box-shadow:none;background:none}
+#stationView.hqBoard .stationTop{border:0;padding:0 0 8px;justify-content:flex-end}
+#stationView.hqBoard .stationTop>div{display:none}
+#stationView.hqBoard .hm-orders th:first-child{width:80px}#stationView.hqBoard .hm-orders th:last-child{width:80px;text-align:right}
+#stationView.hqBoard .hm-sidebar,#stationView.hqBoard .hm-nav{min-width:0}
+@media(max-width:700px){#stationView.hqBoard{position:fixed;inset:0;z-index:50}}
 </style>
 </head>
 <body>
@@ -153,14 +162,19 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610301646"></script>
-<script src="assets-embedded.js?v=202610301646"></script>
-<script src="game.js?v=202610301646"></script>
-<script src="thunder-feed.js?v=202610301646"></script>
-<script src="etsy-hq.js?v=202610301646"></script>
-<script src="catalog-data.js?v=202610301646"></script>
-<script src="admin.js?v=202610301646"></script>
-<script src="books-catalog.js?v=202610301646"></script>
+<script src="game-data.js?v=202610301707"></script>
+<script src="assets-embedded.js?v=202610301707"></script>
+<script src="game.js?v=202610301707"></script>
+<script src="thunder-feed.js?v=202610301707"></script>
+<script src="etsy-hq.js?v=202610301707"></script>
+<script src="catalog-data.js?v=202610301707"></script>
+<script type="module">
+// Cottage Bulletin Board for Headquarters (see INTEGRATION-HQ-BOARD.md). etsy-hq.js uses window.HMBoard when present.
+import {mountHeadquartersBoard} from './headquarters-board.js?v=202610301707';
+window.HMBoard={mountHeadquartersBoard};
+</script>
+<script src="admin.js?v=202610301707"></script>
+<script src="books-catalog.js?v=202610301707"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};

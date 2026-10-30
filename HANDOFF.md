@@ -134,3 +134,5 @@ Header & settings: the logo (`assets/logo.png`, also the browser-tab icon `asset
 Village sign: the date/time sign and settings gear float over the top-left of the town (`#villageSign`, filled in `refreshUI`). The Settings panel opens as an overlay over the town (inline on phones). Page entrance: `#intro` shows the shop logo, then shrinks it while a circle opens onto the town (click to skip; fades for reduced-motion users).
 
 Admin (Settings → 🔒 Admin): unlocked with the Headquarters password (`EtsyHQ.checkPassword`; already unlocked if Headquarters is). Controls live in `admin.js`. Background color: picker or typed rgb(r, g, b) / r,g,b / #hex; saved per browser in localStorage (`honeyMeadows.admin.bg.v1`); Reset returns to #f8efed. Changing the site-wide default for everyone means editing `body{background}` in index.html.
+
+Headquarters dashboard = Option 2 "Cottage Bulletin Board" (`headquarters-board.js/.css`), fed by `etsy-hq.js`. See INTEGRATION-HQ-BOARD.md.
