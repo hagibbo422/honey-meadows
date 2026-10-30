@@ -120,7 +120,7 @@ function renderGrid(){
 }
 
 // Detail page drawn on assets/books-detail.png (1536 × 1024, unmodified). Boxes are image pixels.
-const DETAIL={back:[216,232,150,54],photo:[262,330,440,296],name:[803,366,483,44],price:[818,428,165,35],orig:[1000,428,90,35],
+const DETAIL={back:[216,232,150,54],photo:[298,320,420,348],name:[803,366,483,44],price:[818,428,165,35],orig:[1000,428,90,35],
  title:[803,514,483,45],desc:[803,608,483,81],etsy:[801,711,205,55],edit:[1024,711,216,55]};
 function renderDetail(){
  const i=findItem(current);if(!i){mode='grid';return renderShelf();}
