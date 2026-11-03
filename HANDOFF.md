@@ -164,3 +164,10 @@ Everything is under `@media (pointer:coarse)` at the end of the main `<style>` i
 - iPad portrait: town fills the width at the top; the Settings panel opens underneath the town instead of over it.
 - Phones: town fits the screen; the date sign shrinks; dashboards and the HQ password box open full-screen (upright phones scroll the illustrated boards sideways at ≥720px wide).
 - Bigger tap targets, no double-tap zoom delay, no long-press callout on the town; Add-to-Home-Screen metas (full-screen web app, logo as icon).
+
+## Older iPads (iPadOS 12 / Safari 12)
+
+- All scripts are converted for Safari 12 by `tools/build-compat.cjs` (esbuild, target safari12): it rewrites `?.` / `??` etc. in place, including inline `<script>` blocks. **Run it before every push** (after `node tools/stamp-version.cjs`): `ESBUILD=/path/to/esbuild node tools/build-compat.cjs`.
+- `compat.js` (loaded first) adds `replaceChildren`, `Object.fromEntries`, `Array.flat/flatMap`, and — where `cqw` / `aspect-ratio` aren't supported — sets `--cq` (1% of board width in px) and the height on the illustrated boards. CSS sizes use `calc(N * var(--cq,1cqw))`.
+- CSS avoids `inset`, individual `translate/scale/rotate`, and pairs every `dvh` with a `vh` fallback. The clock uses `hour12:false` (not `hourCycle`).
+- Known on Safari 12: flexbox `gap` is ignored (some rows sit closer together) and the intro's circle reveal doesn't animate (the town appears when the logo finishes).
