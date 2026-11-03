@@ -156,3 +156,11 @@ Research boards now draw on illustrated backgrounds (`assets/research-tiktok.png
 
 
 Map border: purple by default (`--map-border` #7b4fa0, darker edge `--map-border-dark`). Admin has a "Map border color" control next to Background color; colour controls are entries in `COLORS` in `admin.js` (saved per browser).
+
+## Touch screens (iPad / phones)
+
+Everything is under `@media (pointer:coarse)` at the end of the main `<style>` in index.html, so desktop is unchanged.
+- iPad landscape: the 3:2 town is sized to fit the screen (width = min(100%, screen height × 1.5)) and centred; safe-area insets respected. Dashboards (HQ, Books, Research) fill the town window exactly.
+- iPad portrait: town fills the width at the top; the Settings panel opens underneath the town instead of over it.
+- Phones: town fits the screen; the date sign shrinks; dashboards and the HQ password box open full-screen (upright phones scroll the illustrated boards sideways at ≥720px wide).
+- Bigger tap targets, no double-tap zoom delay, no long-press callout on the town; Add-to-Home-Screen metas (full-screen web app, logo as icon).

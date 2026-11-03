@@ -5,7 +5,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&display=swap">
 <link rel="icon" href="assets/favicon.png">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Honey Meadows">
+<meta name="theme-color" content="#f8efed"><link rel="apple-touch-icon" href="assets/logo.png">
 <title>Honey Meadows V20 — A Day Together</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f8efed;color:#3b1e08;font-family:Georgia,serif}
@@ -228,6 +231,57 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .bkShelf .bdOrig{display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:1.45cqw;color:#8a6a48}
 .bkShelf .bdTitle{padding:.3cqw .8cqw;font-family:var(--font-body);font-size:1.15cqw;line-height:1.05;color:#3b1e08;overflow:auto}
 .bkShelf .bdDesc{padding:.4cqw .8cqw;font-family:var(--font-body);font-size:1.3cqw;line-height:1.1;color:#3b1e08;overflow:auto}
+
+/* ===== Touch screens (iPad / phones). Desktop layout is unchanged. ===== */
+@media (pointer:coarse){
+ html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+ body{-webkit-tap-highlight-color:transparent}
+ #game{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+ /* Fit the whole 3:2 town on screen, centred, respecting the notch / home-bar safe areas */
+ #shell{max-width:none;margin:0;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));min-height:100vh;min-height:100dvh;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center}
+ #frame{--pad:calc(20px + env(safe-area-inset-top) + env(safe-area-inset-bottom));width:min(100%,calc((100vh - var(--pad) - 14px) * 1.5));width:min(100%,calc((100dvh - var(--pad) - 14px) * 1.5));margin:0;border-width:5px;box-sizing:border-box}
+ /* Bigger tap targets */
+ .signGear{min-width:44px;min-height:44px}
+ .townBtn{min-height:44px}
+ .pp .btn,.pp .segbtn,.pp .pfield{min-height:40px}
+ .pp input[type=range]{height:34px}
+ .pp .x{width:40px;height:40px}
+ /* Dashboards fill the town window exactly (they share its 3:2 shape) */
+ #stationView.hqBoard,#stationView.booksArt,#stationView.researchArt{position:absolute;inset:0;display:flex;overflow:hidden}
+ #stationView.hqBoard .stationFrame,#stationView.booksArt .stationFrame,#stationView.researchArt .stationFrame{width:100%}
+ #stationView.hqBoard .stationTop,#stationView.booksArt .stationTop{position:absolute;top:1.2%;right:1.2%}
+ #stationView.hqBoard #backHQ,#stationView.booksArt #backHQ{min-height:40px;font-size:15px}
+}
+/* iPad / tablet portrait: town fills the width; Settings opens underneath it instead of over it */
+@media (pointer:coarse) and (orientation:portrait) and (min-width:600px){
+ #shell{justify-content:flex-start;padding-top:max(24px,env(safe-area-inset-top))}
+ #frame{width:100%}
+ .pp.settings.overlay{position:absolute;top:calc(100% + 14px);left:-5px;right:-5px;max-height:none;overflow:visible}
+}
+/* Phones held sideways: shrink the date sign so it doesn't cover the town */
+@media (pointer:coarse) and (max-height:500px),(pointer:coarse) and (max-width:599px){
+ .signBoard{min-width:0;padding:4px 8px 5px}.signDate{font-size:10px;margin-bottom:3px;padding:1px 5px}.signTime{font-size:14px}
+ .signGear{min-width:36px;min-height:36px;width:36px;height:36px}
+}
+/* Phones: dashboards and the password box open full-screen instead of inside the small town window */
+@media (pointer:coarse) and (max-height:500px),(pointer:coarse) and (max-width:599px){
+ #stationView{position:fixed!important;inset:0;z-index:50;overflow:auto!important;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ #stationView.hqBoard,#stationView.booksArt,#stationView.researchArt{padding:0}
+}
+@media (pointer:coarse) and (max-height:500px){
+ #stationView.hqBoard,#stationView.booksArt,#stationView.researchArt{display:flex!important;align-items:center;justify-content:center}
+ #stationView.hqBoard .stationFrame,#stationView.booksArt .stationFrame,#stationView.researchArt .stationFrame{width:min(100vw,calc(100dvh * 1.5))!important}
+ #stationView.hqBoard #backHQ,#stationView.booksArt #backHQ{min-height:30px;font-size:12px;padding:4px 8px;margin-top:4px}
+}
+/* Phones held upright: the town is small, so dashboards open full-screen and scroll sideways */
+@media (pointer:coarse) and (max-width:599px){
+ #shell{justify-content:center}
+ #frame{width:100%}
+ #stationView.hqBoard,#stationView.booksArt,#stationView.researchArt{position:fixed;inset:0;z-index:50;display:block;overflow:auto}
+ #stationView.hqBoard .stationFrame,#stationView.booksArt .stationFrame{width:max(100%,720px)}
+ #stationView.researchArt .stationFrame{width:max(100%,760px)}
+ #stationView.hqBoard .stationTop,#stationView.booksArt .stationTop{position:fixed;top:max(8px,env(safe-area-inset-top));right:8px}
+}
 </style>
 </head>
 <body>
@@ -268,17 +322,17 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="game-data.js?v=202610302058"></script>
-<script src="assets-embedded.js?v=202610302058"></script>
-<script src="game.js?v=202610302058"></script>
-<script src="thunder-feed.js?v=202610302058"></script>
-<script src="etsy-hq.js?v=202610302058"></script>
-<script src="catalog-data.js?v=202610302058"></script>
-<script src="hq-art-board.js?v=202610302058"></script>
-<script src="research-data.js?v=202610302058"></script>
-<script src="research-board.js?v=202610302058"></script>
-<script src="admin.js?v=202610302058"></script>
-<script src="books-catalog.js?v=202610302058"></script>
+<script src="game-data.js?v=202611030241"></script>
+<script src="assets-embedded.js?v=202611030241"></script>
+<script src="game.js?v=202611030241"></script>
+<script src="thunder-feed.js?v=202611030241"></script>
+<script src="etsy-hq.js?v=202611030241"></script>
+<script src="catalog-data.js?v=202611030241"></script>
+<script src="hq-art-board.js?v=202611030241"></script>
+<script src="research-data.js?v=202611030241"></script>
+<script src="research-board.js?v=202611030241"></script>
+<script src="admin.js?v=202611030241"></script>
+<script src="books-catalog.js?v=202611030241"></script>
 <script>
 (()=>{const t=document.getElementById('settingsTab'),p=document.getElementById('settingsPanel'),x=document.getElementById('settingsClose');
  const set=on=>{p.hidden=!on;t.setAttribute('aria-expanded',String(on));(on?x:t).focus({preventScroll:true});};
