@@ -174,3 +174,5 @@ Everything is under `@media (pointer:coarse)` at the end of the main `<style>` i
 
 Thunder scoreboard rules (Nov 2026, `chooseGame` in thunder-feed.js, Central days): live game → live; game today not started → 0–0 "TODAY" + tip time; game finished today or yesterday → final (back-to-back: a game today wins); otherwise next game → 0–0, date like "NOV 7" + tip time; no upcoming game → last final.
 Court: hovering the court/scoreboard in town draws a yellow box with a "Thunder stats" tag; clicking opens ESPN's Thunder stats page in a new tab (`COURT_BOX`, `THUNDER_STATS_URL` in game.js).
+
+Name tags: hovering a character shows a name tag (Hayden, Annie, Riley, Theo; "Hayden & Annie" for the farmhouse meal/couch/sleep scenes). Hit boxes in `characterBoxes()` in game.js.

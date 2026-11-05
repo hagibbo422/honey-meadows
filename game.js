@@ -1748,7 +1748,43 @@
     g.clearRect(0, 0, c.width, c.height);
     if (scene === "town") drawScheduledTown();
     else drawScheduledInterior(scene);
+    drawCharacterName();
     updateTownButton();
+  }
+  let mousePos = null;
+  function characterBoxes() {
+    const hs = householdState, list = [];
+    if (!hs) return list;
+    if (scene === "town") {
+      if (hs.girl.scene === "town") list.push({ name: "Annie", x: hs.girl.x - 23, y: hs.girl.y - 64, w: 46, h: 74 });
+      if (hs.boy.scene === "town") list.push({ name: "Hayden", x: hs.boy.x - 24, y: hs.boy.y - 66, w: 48, h: 76 });
+      if (hs.dog.scene === "town") list.push({ name: "Riley", x: hs.dog.x - 18, y: hs.dog.y - 29, w: 36, h: 36 });
+      return list;
+    }
+    const k = 640 / 768, room = (x, y, w, h, name) => list.push({ name, x: 256 + x * k, y: 52 + y * k, w: w * k, h: h * k });
+    if (scene === "farm") {
+      const id = hs.period.id;
+      if (id === "breakfast" || id === "dinner") room(286, 100, 205, 185, "Hayden & Annie");
+      else if (id === "couch") room(73, 365, 218, 160, "Hayden & Annie");
+      else if (id === "sleep") room(482, 366, 188, 237, "Hayden & Annie");
+      if (hs.dog.scene === "farm") room(hs.dog.x - 29, hs.dog.y - 51, 58, 58, "Riley");
+      room(hs.cat.x - 23, hs.cat.y - 39, 46, 46, "Theo");
+      return list;
+    }
+    if (hs.girl.scene === scene) room(hs.girl.x - 32, hs.girl.y - 94, 64, 104, "Annie");
+    if (hs.boy.scene === scene) room(hs.boy.x - 32, hs.boy.y - 94, 64, 104, "Hayden");
+    return list;
+  }
+  function drawCharacterName() {
+    if (!mousePos) return;
+    const hits = characterBoxes().filter((b2) => mousePos.x >= b2.x && mousePos.x <= b2.x + b2.w && mousePos.y >= b2.y && mousePos.y <= b2.y + b2.h);
+    if (!hits.length) return;
+    const b = hits.sort((p, q) => p.w * p.h - q.w * q.h)[0];
+    g.font = "bold 13px Georgia";
+    const w = g.measureText(b.name).width + 18, cx = b.x + b.w / 2, top = Math.max(2, b.y - 26);
+    fill(cx - w / 2, top, w, 22, "#5b381f");
+    fill(cx - w / 2 + 2, top + 2, w - 4, 18, "#7a4d2c");
+    text(b.name, cx, top + 16, 13, "#ffe7a4");
   }
   const townBtn = document.getElementById("backToTown");
   function updateTownButton() {
@@ -1890,6 +1926,7 @@
   });
   c.addEventListener("mousemove", (e) => {
     const r = c.getBoundingClientRect(), x = (e.clientX - r.left) * c.width / r.width, y = (e.clientY - r.top) * c.height / r.height;
+    mousePos = { x, y };
     if (INTERIOR_HOTSPOTS[scene]) {
       const sp = hotspotAt(x, y);
       hotspotHover = sp ? sp.id : null;
@@ -1909,6 +1946,7 @@
     c.style.cursor = hover ? "pointer" : "default";
   });
   c.addEventListener("mouseleave", () => {
+    mousePos = null;
     hover = null;
     hotspotHover = null;
     c.style.cursor = "";
