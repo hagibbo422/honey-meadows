@@ -178,3 +178,5 @@ Court: hovering the court/scoreboard in town draws a yellow box with a "Thunder 
 Name tags: hovering a character shows a name tag (Hayden, Annie, Riley, Theo; "Hayden & Annie" for the farmhouse meal/couch/sleep scenes). Hit boxes in `characterBoxes()` in game.js.
 
 Townsfolk: villagers roam the town 7:00 AM–9:30 PM (`TOWNSFOLK` in game.js; sprites `assets/npc_*.png`, 4×4 frames of 64×96, rows down/left/right/up). Each loops through `spots` (shop door ids or markup [x,y] points) along the marked paths, pausing 5 s at each. `with: "<id>"` makes someone walk beside another (Blair and Nick beside Madi, Ralph beside Alisa; `side: "left"` puts a companion on the other side; Alisa = sunglasses sprite npc_sun, Madi = npc_long, Ralph = npc_blue, Nick = npc_beard); `scale` sizes children. Names appear on hover.
+
+Settings → 👥 Characters (`characters.js`): shows each sprite (front frame, trimmed) in three groups: the family; Ralph & Alisa; Madi, Blair & Nick. Edit `GROUPS` to add people.

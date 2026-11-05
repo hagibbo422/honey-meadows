@@ -282,6 +282,13 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  #stationView.researchArt .stationFrame{width:max(100%,760px)}
  #stationView.hqBoard .stationTop,#stationView.booksArt .stationTop{position:fixed;top:max(8px,env(safe-area-inset-top));right:8px}
 }
+.pp .charsWrap{flex-basis:100%;border-top:3px solid var(--frame);padding-top:10px;display:flex;flex-direction:column;gap:10px}
+.pp .charsWrap>button{align-self:flex-start}.pp .charsBody{display:flex;flex-wrap:wrap;gap:12px}.pp .charsBody[hidden]{display:none}
+.pp .charGroup{background:var(--card);border:3px solid var(--frame-out);padding:8px 12px 10px;flex:1 1 auto}
+.pp .charGroup h3{margin:0 0 6px}.pp .charRow{display:flex;gap:14px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.pp .charCard{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pp .charArt{min-height:124px;display:flex;align-items:flex-end;justify-content:center}.pp .charArt canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+.pp .charCard figcaption{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--ink);background:var(--parchment-2);border:2px solid var(--frame-out);padding:1px 10px}
 </style>
 </head>
 <body>
@@ -312,6 +319,7 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
       <select id="viewSelect" class="pfield"><option value="town" selected>Town</option><option value="farm">Farmhouse</option><option value="auto">Follow routine</option><option value="nails">Nail Shop</option><option value="research">Research</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select>
     </div>
     <div class="who" id="who" aria-live="polite"></div>
+    <div class="charsWrap"><button id="charsToggle" class="btn small" aria-expanded="false" aria-controls="charsBody">👥 Characters ▾</button><div id="charsBody" class="charsBody" hidden></div></div>
     <div class="adminWrap"><button id="adminToggle" class="btn small adminToggle" aria-expanded="false" aria-controls="adminBody">🔒 Admin ▾</button><div id="adminBody" class="adminBody" hidden></div></div>
     <div class="hiddenInfo" hidden><strong id="routineTitle"></strong><span id="routineDetail"></span><small id="petStatus"></small></div>
   </section>
@@ -322,18 +330,19 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="compat.js?v=202611052353"></script>
-<script src="game-data.js?v=202611052353"></script>
-<script src="assets-embedded.js?v=202611052353"></script>
-<script src="game.js?v=202611052353"></script>
-<script src="thunder-feed.js?v=202611052353"></script>
-<script src="etsy-hq.js?v=202611052353"></script>
-<script src="catalog-data.js?v=202611052353"></script>
-<script src="hq-art-board.js?v=202611052353"></script>
-<script src="research-data.js?v=202611052353"></script>
-<script src="research-board.js?v=202611052353"></script>
-<script src="admin.js?v=202611052353"></script>
-<script src="books-catalog.js?v=202611052353"></script>
+<script src="compat.js?v=202611052357"></script>
+<script src="game-data.js?v=202611052357"></script>
+<script src="assets-embedded.js?v=202611052357"></script>
+<script src="game.js?v=202611052357"></script>
+<script src="thunder-feed.js?v=202611052357"></script>
+<script src="etsy-hq.js?v=202611052357"></script>
+<script src="catalog-data.js?v=202611052357"></script>
+<script src="hq-art-board.js?v=202611052357"></script>
+<script src="research-data.js?v=202611052357"></script>
+<script src="research-board.js?v=202611052357"></script>
+<script src="characters.js?v=202611052357"></script>
+<script src="admin.js?v=202611052357"></script>
+<script src="books-catalog.js?v=202611052357"></script>
 <script>
 (() => {
   const t = document.getElementById("settingsTab"), p = document.getElementById("settingsPanel"), x = document.getElementById("settingsClose");
