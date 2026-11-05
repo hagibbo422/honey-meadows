@@ -1663,8 +1663,8 @@
   const TOWNSFOLK = [
     { id: "sun", name: "Alisa", sprite: "npc_sun", spots: ["coffee", [438, 300], "nails", [790, 700], [440, 560], "books", [274, 365]], offset: 0 },
     { id: "kid", name: "Blair", sprite: "npc_kid", with: "long", scale: 0.72 },
-    { id: "blue", name: "Ralph", sprite: "npc_blue", spots: ["gear", [850, 265], "headquarters", [620, 705], [392, 435], "research"], offset: 37 },
-    { id: "beard", name: "Nick", sprite: "npc_beard", spots: ["headquarters", [440, 700], [150, 365], [496, 435], "coffee", [600, 265]], offset: 81 },
+    { id: "blue", name: "Ralph", sprite: "npc_blue", with: "sun", side: "left" },
+    { id: "beard", name: "Nick", sprite: "npc_beard", with: "long", side: "left" },
     { id: "long", name: "Madi", sprite: "npc_long", spots: ["books", [365, 145], [438, 300], [440, 560], [790, 630], "nails"], offset: 129 }
   ];
   const FOLK_SPEED = 26, FOLK_PAUSE = 5, FOLK_HOURS = [7 * 60, 21 * 60 + 30];
@@ -1706,7 +1706,8 @@
       }
       const lead = byId[f.with];
       if (!lead) continue;
-      const side = { down: [-13, 0], up: [13, 0], left: [10, 5], right: [-10, 5] }[lead.dir] || [13, 0];
+      const right = { down: [-17, 0], up: [17, 0], left: [13, 6], right: [-13, 6] }, left = { down: [17, 0], up: [-17, 0], left: [13, -6], right: [-13, -6] };
+      const side = (f.side === "left" ? left : right)[lead.dir] || [17, 0];
       out.push({ x: lead.x + side[0], y: lead.y + side[1], dir: lead.dir, phase: lead.phase + 1, moving: lead.moving, folk: f });
     }
     return out;
@@ -1715,8 +1716,8 @@
     const img = assets[e.folk.sprite];
     if (!(img && img.naturalWidth)) return;
     const row = { down: 0, left: 1, right: 2, up: 3 }[e.dir] || 0, frame = e.moving ? Math.floor(e.phase) % 4 : 0;
-    const k = e.folk.scale || 1, w = 28 * k, h = 42 * k;
-    g.drawImage(img, frame * 64, row * 96, 64, 96, Math.round(e.x - w / 2), Math.round(e.y - h + 4), w, h);
+    const k = e.folk.scale || 1, w = 38 * k, h = 57 * k;
+    g.drawImage(img, frame * 64, row * 96, 64, 96, Math.round(e.x - w / 2), Math.round(e.y - h + 6), w, h);
   }
   function drawScheduledTown() {
     drawTownIllustration();
@@ -1820,7 +1821,7 @@
       if (hs.dog.scene === "town") list.push({ name: "Riley", x: hs.dog.x - 18, y: hs.dog.y - 29, w: 36, h: 36 });
       for (const e of townsfolkState()) {
         const k2 = e.folk.scale || 1;
-        list.push({ name: e.folk.name, x: e.x - 12 * k2, y: e.y - 38 * k2, w: 24 * k2, h: 42 * k2 });
+        list.push({ name: e.folk.name, x: e.x - 16 * k2, y: e.y - 51 * k2, w: 32 * k2, h: 57 * k2 });
       }
       return list;
     }
