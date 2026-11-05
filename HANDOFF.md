@@ -176,3 +176,5 @@ Thunder scoreboard rules (Nov 2026, `chooseGame` in thunder-feed.js, Central day
 Court: hovering the court/scoreboard in town draws a yellow box with a "Thunder stats" tag; clicking opens ESPN's Thunder stats page in a new tab (`COURT_BOX`, `THUNDER_STATS_URL` in game.js).
 
 Name tags: hovering a character shows a name tag (Hayden, Annie, Riley, Theo; "Hayden & Annie" for the farmhouse meal/couch/sleep scenes). Hit boxes in `characterBoxes()` in game.js.
+
+Townsfolk: villagers roam the town 7:00 AM–9:30 PM (`TOWNSFOLK` in game.js; sprites `assets/npc_*.png`, 4×4 frames of 64×96, rows down/left/right/up). Each loops through `spots` (shop door ids or markup [x,y] points) along the marked paths, pausing 5 s at each. `with: "<id>"` makes someone walk beside another (Blair beside Madi); `scale` sizes children. Names appear on hover.

@@ -1660,6 +1660,64 @@
     const glow = glowCache[hover] || (glowCache[hover] = buildGlow(hover));
     g.drawImage(glow.img, glow.x, glow.y);
   }
+  const TOWNSFOLK = [
+    { id: "sun", name: "Madi", sprite: "npc_sun", spots: ["coffee", [438, 300], "nails", [790, 700], [440, 560], "books", [274, 365]], offset: 0 },
+    { id: "kid", name: "Blair", sprite: "npc_kid", with: "sun", scale: 0.72 },
+    { id: "blue", name: "Villager", sprite: "npc_blue", spots: ["gear", [850, 265], "headquarters", [620, 705], [392, 435], "research"], offset: 37 },
+    { id: "beard", name: "Villager", sprite: "npc_beard", spots: ["headquarters", [440, 700], [150, 365], [496, 435], "coffee", [600, 265]], offset: 81 },
+    { id: "long", name: "Villager", sprite: "npc_long", spots: ["books", [365, 145], [438, 300], [440, 560], [790, 630], "nails"], offset: 129 }
+  ];
+  const FOLK_SPEED = 26, FOLK_PAUSE = 5, FOLK_HOURS = [7 * 60, 21 * 60 + 30];
+  for (const f of TOWNSFOLK) loadAsset(f.sprite);
+  const spotPoint = (s2) => typeof s2 === "string" ? doorPoint(s2) : markupPoint(s2[0], s2[1]);
+  for (const f of TOWNSFOLK) {
+    if (!f.spots) continue;
+    const pts = f.spots.map(spotPoint);
+    f.legs = pts.map((p, i) => measuredPath(townRoute(p, pts[(i + 1) % pts.length])));
+    f.cycle = f.legs.reduce((t, l) => t + l.length / FOLK_SPEED + FOLK_PAUSE, 0);
+  }
+  function folkAt(f, t) {
+    let u = ((t + f.offset) % f.cycle + f.cycle) % f.cycle;
+    for (const leg of f.legs) {
+      const walk = leg.length / FOLK_SPEED;
+      if (u < walk) {
+        const p = samplePath(leg, u / walk);
+        return { x: p.x, y: p.y, dir: p.dir, phase: u * FOLK_SPEED / 9, moving: true };
+      }
+      u -= walk;
+      if (u < FOLK_PAUSE) {
+        const end = leg.points[leg.points.length - 1];
+        return { x: end.x, y: end.y, dir: "down", phase: 0, moving: false };
+      }
+      u -= FOLK_PAUSE;
+    }
+    const p0 = f.legs[0].points[0];
+    return { x: p0.x, y: p0.y, dir: "down", phase: 0, moving: false };
+  }
+  function townsfolkState() {
+    const m = simMinute;
+    if (m < FOLK_HOURS[0] || m > FOLK_HOURS[1]) return [];
+    const byId = {}, out = [];
+    for (const f of TOWNSFOLK) if (f.legs) byId[f.id] = Object.assign(folkAt(f, clock), { folk: f });
+    for (const f of TOWNSFOLK) {
+      if (f.legs) {
+        out.push(byId[f.id]);
+        continue;
+      }
+      const lead = byId[f.with];
+      if (!lead) continue;
+      const side = { down: [-20, 0], up: [20, 0], left: [16, 7], right: [-16, 7] }[lead.dir] || [20, 0];
+      out.push({ x: lead.x + side[0], y: lead.y + side[1], dir: lead.dir, phase: lead.phase + 1, moving: lead.moving, folk: f });
+    }
+    return out;
+  }
+  function drawFolk(e) {
+    const img = assets[e.folk.sprite];
+    if (!(img && img.naturalWidth)) return;
+    const row = { down: 0, left: 1, right: 2, up: 3 }[e.dir] || 0, frame = e.moving ? Math.floor(e.phase) % 4 : 0;
+    const k = e.folk.scale || 1, w = 48 * k, h = 72 * k;
+    g.drawImage(img, frame * 64, row * 96, 64, 96, Math.round(e.x - w / 2), Math.round(e.y - h + 8), w, h);
+  }
   function drawScheduledTown() {
     drawTownIllustration();
     drawV15Court();
@@ -1671,6 +1729,7 @@
     if (householdState.girl.scene === "town") actors.push({ entity: householdState.girl, draw: drawPlayerAvatar });
     if (householdState.boy.scene === "town") actors.push({ entity: householdState.boy, draw: drawCompanion });
     if (householdState.dog.scene === "town") actors.push({ entity: householdState.dog, draw: (e) => drawPet(e, "dog") });
+    for (const e of townsfolkState()) actors.push({ entity: e, draw: drawFolk });
     actors.sort((a, b) => a.entity.y - b.entity.y);
     actors.filter((a) => a.entity.y < 412).forEach((a) => a.draw(a.entity));
     drawPinkTreeForeground();
@@ -1759,6 +1818,10 @@
       if (hs.girl.scene === "town") list.push({ name: "Annie", x: hs.girl.x - 23, y: hs.girl.y - 64, w: 46, h: 74 });
       if (hs.boy.scene === "town") list.push({ name: "Hayden", x: hs.boy.x - 24, y: hs.boy.y - 66, w: 48, h: 76 });
       if (hs.dog.scene === "town") list.push({ name: "Riley", x: hs.dog.x - 18, y: hs.dog.y - 29, w: 36, h: 36 });
+      for (const e of townsfolkState()) {
+        const k2 = e.folk.scale || 1;
+        list.push({ name: e.folk.name, x: e.x - 18 * k2, y: e.y - 64 * k2, w: 36 * k2, h: 72 * k2 });
+      }
       return list;
     }
     const k = 640 / 768, room = (x, y, w, h, name) => list.push({ name, x: 256 + x * k, y: 52 + y * k, w: w * k, h: h * k });
