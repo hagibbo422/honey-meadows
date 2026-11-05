@@ -107,8 +107,8 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 /* Wooden village sign over the town: date, time and the settings gear */
 .villageSign{position:absolute;left:1.6%;top:1.6%;z-index:5;display:flex;align-items:center;gap:8px}
 .signBoard{font-family:var(--font-display);text-align:center;padding:8px 16px 9px;background:#5a3520;border:3px solid #2b1408;box-shadow:inset 0 0 0 2px #8a5a34,inset 0 0 0 4px #3d2111,3px 4px 0 rgba(0,0,0,.45);min-width:150px}
-.signDate{font-weight:700;font-size:clamp(12px,1.35vw,16px);letter-spacing:.04em;color:#fbe1a8;background:#7a4d2c;border:2px solid #2b1408;padding:2px 8px;margin-bottom:5px}
-.signTime{font-weight:700;font-size:clamp(16px,2.1vw,26px);color:var(--gold);text-shadow:2px 0 0 #2b1408,-2px 0 0 #2b1408,0 2px 0 #2b1408,0 -2px 0 #2b1408,2px 3px 0 #000;font-variant-numeric:tabular-nums;line-height:1.05}
+.signDate{font-family:var(--font-body);font-weight:400;font-size:clamp(16px,1.75vw,21px);line-height:1;letter-spacing:.06em;color:#fbe1a8;background:#7a4d2c;border:2px solid #2b1408;padding:2px 8px;margin-bottom:5px}
+.signTime{font-family:var(--font-body);font-weight:400;font-size:clamp(24px,2.9vw,36px);letter-spacing:.04em;color:var(--gold);text-shadow:2px 2px 0 #000;font-variant-numeric:tabular-nums;line-height:1.05}
 .signGear{width:clamp(38px,4.4vw,52px);height:clamp(38px,4.4vw,52px);border:3px solid #2b1408;box-shadow:inset 0 0 0 2px var(--frame-hi),inset 0 0 0 4px var(--frame),3px 4px 0 rgba(0,0,0,.45)}
 .signGear svg{width:62%;height:62%}
 .pp.settings.overlay{position:absolute;z-index:6;left:1.6%;right:1.6%;top:calc(1.6% + clamp(70px,8.6vw,96px));margin:0;max-height:calc(100% - 110px);overflow:auto}
@@ -260,7 +260,7 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 }
 /* Phones held sideways: shrink the date sign so it doesn't cover the town */
 @media (pointer:coarse) and (max-height:500px),(pointer:coarse) and (max-width:599px){
- .signBoard{min-width:0;padding:4px 8px 5px}.signDate{font-size:10px;margin-bottom:3px;padding:1px 5px}.signTime{font-size:14px}
+ .signBoard{min-width:0;padding:4px 8px 5px}.signDate{font-size:14px;margin-bottom:3px;padding:1px 5px}.signTime{font-size:20px}
  .signGear{min-width:36px;min-height:36px;width:36px;height:36px}
 }
 /* Phones: dashboards and the password box open full-screen instead of inside the small town window */
@@ -322,18 +322,18 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="compat.js?v=202611052319"></script>
-<script src="game-data.js?v=202611052319"></script>
-<script src="assets-embedded.js?v=202611052319"></script>
-<script src="game.js?v=202611052319"></script>
-<script src="thunder-feed.js?v=202611052319"></script>
-<script src="etsy-hq.js?v=202611052319"></script>
-<script src="catalog-data.js?v=202611052319"></script>
-<script src="hq-art-board.js?v=202611052319"></script>
-<script src="research-data.js?v=202611052319"></script>
-<script src="research-board.js?v=202611052319"></script>
-<script src="admin.js?v=202611052319"></script>
-<script src="books-catalog.js?v=202611052319"></script>
+<script src="compat.js?v=202611052320"></script>
+<script src="game-data.js?v=202611052320"></script>
+<script src="assets-embedded.js?v=202611052320"></script>
+<script src="game.js?v=202611052320"></script>
+<script src="thunder-feed.js?v=202611052320"></script>
+<script src="etsy-hq.js?v=202611052320"></script>
+<script src="catalog-data.js?v=202611052320"></script>
+<script src="hq-art-board.js?v=202611052320"></script>
+<script src="research-data.js?v=202611052320"></script>
+<script src="research-board.js?v=202611052320"></script>
+<script src="admin.js?v=202611052320"></script>
+<script src="books-catalog.js?v=202611052320"></script>
 <script>
 (() => {
   const t = document.getElementById("settingsTab"), p = document.getElementById("settingsPanel"), x = document.getElementById("settingsClose");
