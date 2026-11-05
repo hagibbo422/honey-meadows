@@ -171,3 +171,6 @@ Everything is under `@media (pointer:coarse)` at the end of the main `<style>` i
 - `compat.js` (loaded first) adds `replaceChildren`, `Object.fromEntries`, `Array.flat/flatMap`, and — where `cqw` / `aspect-ratio` aren't supported — sets `--cq` (1% of board width in px) and the height on the illustrated boards. CSS sizes use `calc(N * var(--cq,1cqw))`.
 - CSS avoids `inset`, individual `translate/scale/rotate`, and pairs every `dvh` with a `vh` fallback. The clock uses `hour12:false` (not `hourCycle`).
 - Known on Safari 12: flexbox `gap` is ignored (some rows sit closer together) and the intro's circle reveal doesn't animate (the town appears when the logo finishes).
+
+Thunder scoreboard rules (Nov 2026, `chooseGame` in thunder-feed.js, Central days): live game → live; game today not started → 0–0 "TODAY" + tip time; game finished today or yesterday → final (back-to-back: a game today wins); otherwise next game → 0–0, date like "NOV 7" + tip time; no upcoming game → last final.
+Court: hovering the court/scoreboard in town draws a yellow box with a "Thunder stats" tag; clicking opens ESPN's Thunder stats page in a new tab (`COURT_BOX`, `THUNDER_STATS_URL` in game.js).

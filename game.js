@@ -1634,6 +1634,29 @@
     og.putImageData(img, 0, 0);
     return { img: out, x: X0, y: Y0 };
   }
+  const THUNDER_STATS_URL = "https://www.espn.com/nba/team/stats/_/name/okc/oklahoma-city-thunder";
+  const COURT_BOX = { x: 733, y: 226, w: 375, h: 232 };
+  function inCourtBox(x, y) {
+    return x >= COURT_BOX.x && x <= COURT_BOX.x + COURT_BOX.w && y >= COURT_BOX.y && y <= COURT_BOX.y + COURT_BOX.h;
+  }
+  function drawCourtHover() {
+    if (hover !== "court") return;
+    const { x, y, w, h } = COURT_BOX, pulse = 0.5 + 0.5 * Math.sin(clock * 4);
+    g.save();
+    g.fillStyle = "rgba(255,214,70,.10)";
+    g.fillRect(x, y, w, h);
+    g.lineWidth = 4;
+    g.strokeStyle = "rgba(255,209,60," + (0.8 + 0.2 * pulse) + ")";
+    g.shadowColor = "rgba(255,200,40,.9)";
+    g.shadowBlur = 10 + 6 * pulse;
+    g.strokeRect(x + 2, y + 2, w - 4, h - 4);
+    g.restore();
+    const label = "🏀 THUNDER STATS ↗";
+    g.font = "bold 12px Georgia";
+    const lw = g.measureText(label).width + 22;
+    fill(x + w / 2 - lw / 2, y + h + 6, lw, 22, "#5b381f");
+    text(label, x + w / 2, y + h + 21, 12, "#ffe7a4");
+  }
   function drawBuildingGlow() {
     if (!hover || !buildingOutlines[hover]) return;
     const glow = glowCache[hover] || (glowCache[hover] = buildGlow(hover));
@@ -1661,6 +1684,7 @@
     drawTownLighting();
     drawCourtLightFixtures();
     drawBuildingGlow();
+    drawCourtHover();
   }
   function renderWho(p) {
     const el = document.getElementById("who");
@@ -1844,6 +1868,12 @@
       return;
     }
     if (scene !== "town") return;
+    if (!buildingAt(x, y) && inCourtBox(x, y)) {
+      hover = null;
+      c.style.cursor = "";
+      window.open(THUNDER_STATS_URL, "_blank", "noopener");
+      return;
+    }
     const b = buildingAt(x, y);
     if (b && b.id === "books" && window.BooksCatalog) {
       hover = null;
@@ -1877,8 +1907,8 @@
       return;
     }
     const b = buildingAt(x, y);
-    hover = b ? b.id : null;
-    c.style.cursor = b ? "pointer" : "default";
+    hover = b ? b.id : inCourtBox(x, y) ? "court" : null;
+    c.style.cursor = hover ? "pointer" : "default";
   });
   c.addEventListener("mouseleave", () => {
     hover = null;

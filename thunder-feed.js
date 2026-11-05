@@ -59,13 +59,6 @@
     }
     return game;
   }
-  // Which game the scoreboard shows (all days in Central Time):
-  //  1. A game in progress -> live score.
-  //  2. A game today that hasn't started -> 0-0, "TODAY" and the tip time.
-  //  3. A game that finished today or yesterday -> its final score (stays up one extra day).
-  //     Exception: if the next game is today (back-to-back), rule 2 wins.
-  //  4. Otherwise -> the next game: 0-0, its date (e.g. "NOV 7") and tip time.
-  //  5. No upcoming game (off-season) -> the last final score.
   const centralMonDay = (d) => new Intl.DateTimeFormat("en-US", { timeZone: ZONE, month: "short", day: "numeric" }).format(d).toUpperCase();
   const dayIndex = (d) => {
     const [y, m, dd] = centralDay(d).split("-").map(Number);
@@ -108,7 +101,10 @@
         const sb = await getJSON("".concat(API, "/scoreboard?dates=").concat(day));
         const fresh = (sb.events || []).find((e) => e.id === pick.g.id);
         const g = fresh && eventToGame(fresh);
-        if (g && g.state === "pre") { g.period = pick.g.period; g.clock = pick.g.clock; }
+        if (g && g.state === "pre") {
+          g.period = pick.g.period;
+          g.clock = pick.g.clock;
+        }
         if (g) return g;
       } catch (e) {
       }
