@@ -1339,7 +1339,7 @@
         }
       }
     } else if (period.id === "work") {
-      Object.assign(girl, { scene: "nails", x: 204, y: 410, dir: "down", phase: clock * 2 % 4 });
+      Object.assign(girl, { scene: "nails", x: 176, y: 240, dir: "down", phase: 0 });
       Object.assign(boy, { scene: "research", x: 595, y: 445, dir: "down", phase: clock * 2 % 4 });
     }
     const dogOutside = m >= 600 && m < 1080;
@@ -1428,10 +1428,8 @@
     const image = assets["room_" + kind];
     if (!(image == null ? void 0 : image.naturalWidth)) return;
     if (kind === "nails") {
-      g.drawImage(image, 146, 412, 112, 88, 146, 412, 112, 88);
-      fill(actor.x + 10 + Math.sin(clock * 3) * 2, 409, 6, 4, "#ebc4a1");
-      fill(actor.x + 23, 410, 4, 8, "#b6537d");
-      fill(actor.x + 24, 407, 2, 3, "#efd7b5");
+      g.drawImage(image, 128, 243, 104, 80, 128, 243, 104, 80);
+      fill(actor.x - 6 + Math.sin(clock * 3) * 2, 247, 6, 4, "#ebc4a1");
     } else {
       g.drawImage(image, 475, 445, 224, 105, 475, 445, 224, 105);
       fill(607, 458, 26, 15, "#eedbaa");
