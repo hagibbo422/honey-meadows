@@ -45,4 +45,17 @@ t('Every ESPN abbreviation maps to a logo file',()=>{
  for(const a of ['ATL','BOS','BKN','CHA','CHI','CLE','DAL','DEN','DET','GS','HOU','IND','LAC','LAL','MEM','MIA','MIL','MIN','NO','NY','ORL','PHI','PHX','POR','SAC','SA','TOR','UTAH','WSH'])
   assert(fs.existsSync(`${root}/assets/teams/${F.toLocalId(a)}.png`),a);
 });
+// New rules (Nov 2026): final stays up for the game day + 1 day, then the next game shows with its date.
+const gap=[ev('1','2026-10-27T00:00Z','post',true,'PHX',125,114),ev('2','2026-10-31T23:00Z','pre',false,'DEN',0,0)];
+t('Day after a game still shows that final',()=>{const g=F.chooseGame(gap,new Date('2026-10-27T20:00Z')).g;assert.equal(g.opponent,'PHX');assert.equal(g.period,'FINAL');});
+t('Two days after a game shows the next game with date and time',()=>{
+ const g=F.chooseGame(gap,new Date('2026-10-28T15:00Z')).g;
+ assert.equal(g.opponent,'DEN');assert.deepEqual({...g.score},{home:0,away:0});assert.equal(g.period,'OCT 31');assert.equal(g.clock,'6:00 PM');
+});
+t('Next game shows TODAY on game day',()=>{const g=F.chooseGame(gap,new Date('2026-10-31T15:00Z')).g;assert.equal(g.period,'TODAY');assert.equal(g.opponent,'DEN');});
+const b2b=[ev('1','2026-10-27T00:00Z','post',true,'PHX',125,114),ev('2','2026-10-28T00:30Z','pre',false,'MIN',0,0)];
+t('Back-to-back: the next day shows the upcoming game, not yesterday’s final',()=>{
+ const g=F.chooseGame(b2b,new Date('2026-10-27T14:00Z')).g;assert.equal(g.opponent,'MIN');assert.equal(g.period,'TODAY');assert.equal(g.clock,'7:30 PM');
+});
+t('Off-season (no upcoming games) keeps the last final',()=>{const g=F.chooseGame([gap[0]],new Date('2026-11-20T15:00Z')).g;assert.equal(g.opponent,'PHX');assert.equal(g.period,'FINAL');});
 console.log(results);

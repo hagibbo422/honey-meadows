@@ -59,15 +59,37 @@
     }
     return game;
   }
+  // Which game the scoreboard shows (all days in Central Time):
+  //  1. A game in progress -> live score.
+  //  2. A game today that hasn't started -> 0-0, "TODAY" and the tip time.
+  //  3. A game that finished today or yesterday -> its final score (stays up one extra day).
+  //     Exception: if the next game is today (back-to-back), rule 2 wins.
+  //  4. Otherwise -> the next game: 0-0, its date (e.g. "NOV 7") and tip time.
+  //  5. No upcoming game (off-season) -> the last final score.
+  const centralMonDay = (d) => new Intl.DateTimeFormat("en-US", { timeZone: ZONE, month: "short", day: "numeric" }).format(d).toUpperCase();
+  const dayIndex = (d) => {
+    const [y, m, dd] = centralDay(d).split("-").map(Number);
+    return Math.round(Date.UTC(y, m - 1, dd) / 864e5);
+  };
   function chooseGame(events, now = /* @__PURE__ */ new Date()) {
     const games = events.map((e) => ({ ev: e, g: eventToGame(e) })).filter((x) => x.g).sort((a, b) => new Date(a.g.date) - new Date(b.g.date));
     const live = games.find((x) => x.g.state === "in");
     if (live) return live;
-    const today = centralDay(now);
-    const todays = games.filter((x) => centralDay(new Date(x.g.date)) === today);
-    if (todays.length) return todays[todays.length - 1];
+    const today = dayIndex(now);
+    const upcoming = games.filter((x) => x.g.state === "pre" && dayIndex(new Date(x.g.date)) >= today);
+    const next = upcoming.length ? upcoming[0] : null;
     const done = games.filter((x) => x.g.state === "post");
-    return done.length ? done[done.length - 1] : null;
+    const last = done.length ? done[done.length - 1] : null;
+    const label = (x) => {
+      const d = new Date(x.g.date);
+      x.g.period = dayIndex(d) === today ? "TODAY" : centralMonDay(d);
+      x.g.clock = centralTime(d);
+      return x;
+    };
+    if (next && dayIndex(new Date(next.g.date)) === today) return label(next);
+    if (last && today - dayIndex(new Date(last.g.date)) <= 1) return last;
+    if (next) return label(next);
+    return last;
   }
   async function getJSON(url) {
     const r = await fetch(url, { cache: "no-store" });
@@ -80,12 +102,13 @@
     if (!events.length) throw new Error("ESPN schedule empty");
     const pick = chooseGame(events, now);
     if (!pick) return null;
-    if (pick.g.state !== "post" || centralDay(new Date(pick.g.date)) === centralDay(now)) {
+    if (pick.g.state === "in" || centralDay(new Date(pick.g.date)) === centralDay(now)) {
       try {
         const day = centralDay(new Date(pick.g.date)).replace(/-/g, "");
         const sb = await getJSON("".concat(API, "/scoreboard?dates=").concat(day));
         const fresh = (sb.events || []).find((e) => e.id === pick.g.id);
         const g = fresh && eventToGame(fresh);
+        if (g && g.state === "pre") { g.period = pick.g.period; g.clock = pick.g.clock; }
         if (g) return g;
       } catch (e) {
       }
