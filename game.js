@@ -2050,22 +2050,42 @@
       g.drawImage(bi, -4, -2.6, 8, 5.2);
       g.restore();
     }
-    if (st.td >= 0) {
-      const pulse = 1 + 0.08 * Math.sin(st.td * 9), cx = (GRID.GL0 + GRID.GL1) / 2 + 2;
-      g.save();
-      g.translate(cx, 194);
-      g.scale(pulse, pulse);
-      g.font = '900 15px "Arial Black","Helvetica Neue",Arial,sans-serif';
-      g.textAlign = "center";
-      g.textBaseline = "middle";
-      g.lineJoin = "round";
-      g.lineWidth = 4;
-      g.strokeStyle = "#1b1b1f";
-      g.strokeText("TOUCHDOWN!", 0, 0);
-      g.fillStyle = Math.floor(st.td * 4) % 2 ? "#ff7300" : "#ffffff";
-      g.fillText("TOUCHDOWN!", 0, 0);
-      g.restore();
-    }
+    g.restore();
+  }
+  const TD_SECONDS = 4.5;
+  let tdSeen = null, tdUntil = 0;
+  function watchOSUScore() {
+    const gm = window.OSUFeed && window.OSUFeed.current;
+    if (!gm || !gm.score) return;
+    const pts = Number(gm.score.home) || 0;
+    if (tdSeen && tdSeen.id === gm.id && gm.state !== "pre" && pts - tdSeen.pts >= 6) tdUntil = clock + TD_SECONDS;
+    tdSeen = { id: gm.id, pts };
+  }
+  function drawTouchdownFlash() {
+    const left = tdUntil - clock;
+    if (left <= 0) return;
+    const t = TD_SECONDS - left, fade = Math.min(1, t / 0.25, left / 0.5), pulse = 1 + 0.06 * Math.sin(t * 9);
+    g.save();
+    g.globalAlpha = fade * 0.35;
+    g.fillStyle = "#ff7300";
+    g.fillRect(0, 0, 1152, 768);
+    g.globalAlpha = fade;
+    g.translate(576, 384);
+    g.scale(pulse, pulse);
+    g.font = '900 96px "Arial Black","Helvetica Neue",Arial,sans-serif';
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.lineJoin = "round";
+    g.lineWidth = 16;
+    g.strokeStyle = "#1b1b1f";
+    g.strokeText("TOUCHDOWN!", 0, 0);
+    g.fillStyle = Math.floor(t * 4) % 2 ? "#ff7300" : "#ffffff";
+    g.fillText("TOUCHDOWN!", 0, 0);
+    g.font = '900 34px "Arial Black","Helvetica Neue",Arial,sans-serif';
+    g.lineWidth = 8;
+    g.strokeText("GO POKES!", 0, 78);
+    g.fillStyle = "#ffffff";
+    g.fillText("GO POKES!", 0, 78);
     g.restore();
   }
   function drawFolk(e) {
@@ -2190,6 +2210,8 @@
       drawScheduledInterior(scene);
     }
     drawCharacterName();
+    watchOSUScore();
+    drawTouchdownFlash();
     updateTownButton();
   }
   let mousePos = null;
@@ -2485,6 +2507,9 @@
     }
   });
   window.HM_DEBUG = {
+    flashTouchdown() {
+      tdUntil = clock + TD_SECONDS;
+    },
     setFootball(v) {
       footballForced = !!v;
       window.HMFootballPreview = footballForced;

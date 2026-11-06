@@ -25,10 +25,12 @@ The town is now the 1536×1024 illustrated map. The canvas stays 1152×768 (3:2)
 
 ## OSU game on the football field
 
-While the OSU feed says a game is live (`OSUFeed.current.state === "in"`), 3 on 3 plays on the town field, orange always on offense: the QB drops back and throws to one receiver (alternating #88 and #84), who catches it over the defender's break-up attempt and runs into the end zone; "TOUCHDOWN!" flashes, then the next play fades in going the other way (9 s per play).
+While the OSU feed says a game is live (`OSUFeed.current.state === "in"`), 3 on 3 plays on the town field, orange always on offense: the QB drops back and throws to one receiver (alternating #88 and #84), who catches it over the defender's break-up attempt and runs into the end zone, then the next play fades in going the other way (9 s per play).
 
 - Code: the "OSU football" block in `game.js` (`GRID`, `footballState`, `drawFootball`). Preview from Settings → Preview → 🏈 OSU game (also turns the field lights on).
 - Sprites: `assets/football/qb12.png` (idle, run, dropback, pass), `wr88.png` / `wr84.png` (idle, run, catch), `db23.png` / `db37.png` / `db41.png` (idle, run, defend), `football.png`, cut with `tools/make-football-sprites.py`.
+
+- Real touchdowns: when the ESPN feed shows OSU's score go up by 6 or more during a game, a full-screen "TOUCHDOWN! GO POKES!" flashes for 4.5 s (`watchOSUScore` / `drawTouchdownFlash` in `game.js`; test with `HM_DEBUG.flashTouchdown()`).
 
 ## Thunder game on the court
 
