@@ -7,7 +7,7 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const canvas = document.getElementById("game");
   const PREF_KEY = "honeyMeadows.townPrefs.v1", CAM_KEY = "honeyMeadows.camera.v1";
-  const prefs = { townLights: "auto", courtLights: "auto", fieldLights: "auto", rain: false, paths: false };
+  const prefs = { townLights: "auto", courtLights: "auto", fieldLights: "auto", weather: "auto", paths: false };
   try {
     Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}") || {});
   } catch (e) {
@@ -18,6 +18,47 @@
     } catch (e) {
     }
   };
+  const WX_URL = "https://api.open-meteo.com/v1/forecast?latitude=35.4676&longitude=-97.5164&current=weather_code,precipitation,rain,showers&timezone=America%2FChicago";
+  const WX_KEY = "honeyMeadows.okcWeather.v1";
+  const RAIN_CODES = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
+  const WX_NAMES = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Cloudy", 45: "Fog", 48: "Fog", 51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains", 80: "Rain showers", 81: "Rain showers", 82: "Heavy showers", 85: "Snow showers", 86: "Snow showers", 95: "Thunderstorm", 96: "Thunderstorm", 99: "Thunderstorm" };
+  let liveWx = null;
+  try {
+    const c = JSON.parse(localStorage.getItem(WX_KEY) || "null");
+    if (c && Date.now() - c.at < 3 * 36e5) liveWx = c;
+  } catch (e) {
+  }
+  function wxRaining(w) {
+    return !!w && (RAIN_CODES.indexOf(w.code) >= 0 || (w.rain || 0) + (w.showers || 0) > 0);
+  }
+  async function refreshWeather() {
+    try {
+      const r = await fetch(WX_URL, { cache: "no-store" });
+      if (!r.ok) throw new Error("weather " + r.status);
+      const cur = (await r.json()).current || {};
+      liveWx = { at: Date.now(), code: Number(cur.weather_code), rain: Number(cur.rain) || 0, showers: Number(cur.showers) || 0 };
+      try {
+        localStorage.setItem(WX_KEY, JSON.stringify(liveWx));
+      } catch (e) {
+      }
+    } catch (e) {
+      console.warn("[Weather]", e && e.message || e);
+    }
+    syncWeatherNote();
+  }
+  const isRaining = () => prefs.weather === "rain" || prefs.weather === "auto" && wxRaining(liveWx);
+  function syncWeatherNote() {
+    const n = document.getElementById("weatherNote");
+    if (!n) return;
+    n.textContent = liveWx ? "Live OKC weather: " + (WX_NAMES[liveWx.code] || "Unknown") + (wxRaining(liveWx) ? " (raining in Honey Meadows)" : "") : "Live OKC weather: checking…";
+  }
+  if (typeof fetch === "function") {
+    refreshWeather();
+    setInterval(refreshWeather, 10 * 6e4);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && (!liveWx || Date.now() - liveWx.at > 5 * 6e4)) refreshWeather();
+    });
+  }
   const cam = { x: 0, y: 0, z: START_Z };
   function clampCam() {
     cam.z = clamp(cam.z, MIN_Z, MAX_Z);
@@ -80,11 +121,11 @@
   const comp = {}, compKey = {};
   let base = null, baseKey = "";
   function layer(lit, f) {
-    const suffix = lit ? "" : "-off", dayName = (prefs.rain ? "rain" : "day") + suffix;
+    const suffix = lit ? "" : "-off", dayName = (isRaining() ? "rain" : "day") + suffix;
     const key = dayName + "|" + f.toFixed(3) + "|" + texVersion;
     const id = lit ? "on" : "off";
     if (compKey[id] === key) return comp[id];
-    const d = need(dayName) || need(prefs.rain ? "rain" : "day") || need("day");
+    const d = need(dayName) || need(isRaining() ? "rain" : "day") || need("day");
     if (!d) return null;
     const c = comp[id] || (comp[id] = mk()), x = c.getContext("2d");
     x.globalAlpha = 1;
@@ -92,7 +133,7 @@
     if (f > 1e-3) {
       const n = need("night" + suffix);
       if (n) {
-        x.globalAlpha = prefs.rain ? f * 0.85 : f;
+        x.globalAlpha = isRaining() ? f * 0.85 : f;
         x.drawImage(n, 0, 0, WW, WH);
         x.globalAlpha = 1;
       }
@@ -108,7 +149,7 @@
   const SPORTS = MAP.presentation.sportsLighting;
   function buildBase(st) {
     const f = Math.round(st.night * 24) / 24;
-    const key = [prefs.rain, f, st.town, st.court, st.field, texVersion].join("|");
+    const key = [isRaining(), f, st.town, st.court, st.field, texVersion].join("|");
     if (key === baseKey && base) return base;
     const main = layer(st.town, f);
     if (!main) return base;
@@ -134,7 +175,7 @@
   }
   function warm(st) {
     const s = st.town ? "" : "-off", o = st.town ? "-off" : "";
-    const d = prefs.rain ? "rain" : "day";
+    const d = isRaining() ? "rain" : "day";
     need(d + s);
     if (st.court !== st.town || st.field !== st.town) need(d + o);
     if (st.night > 0) {
@@ -353,7 +394,7 @@
     g.save();
     g.fillStyle = "#503923";
     g.fillRect(884, 706, 94, 42);
-    g.fillStyle = prefs.rain ? "#bfa77e" : st.night > 0.5 ? st.town ? "#d7b47b" : "#827d78" : "#e8c18a";
+    g.fillStyle = isRaining() ? "#bfa77e" : st.night > 0.5 ? st.town ? "#d7b47b" : "#827d78" : "#e8c18a";
     g.fillRect(887, 709, 88, 36);
     g.strokeStyle = "#a37a41";
     g.lineWidth = 1;
@@ -445,7 +486,7 @@
       g.fillText("Loading Honey Meadows…", CW / 2, CH / 2);
     }
     g.restore();
-    if (rain && prefs.rain) rain.advance(dt);
+    if (rain && isRaining()) rain.advance(dt);
     return st;
   }
   function beginWorld(g) {
@@ -461,7 +502,7 @@
     drawBoard(g, COURT_BOARD, { home: c.home, away: c.away, period: c.period, clock: c.clock, opp: c.opp, logo: c.opp ? "assets/teams/" + c.opp + ".png" : null });
   }
   function endWorld(g, env) {
-    if (rain && prefs.rain) rain.draw(g);
+    if (rain && isRaining()) rain.draw(g);
     if (prefs.paths) drawPaths(g);
     drawHover(g);
     g.restore();
@@ -484,14 +525,14 @@
       ["Town lights", "townLights", [["auto", "Auto"], ["on", "On"], ["off", "Off"]], "Auto: on from dusk to dawn"],
       ["Court lights", "courtLights", [["auto", "Auto"], ["on", "On"], ["off", "Off"]], "Auto: on only while a Thunder game is live"],
       ["Field lights", "fieldLights", [["auto", "Auto"], ["on", "On"], ["off", "Off"]], "Auto: on only while an OSU game is live"],
-      ["Rain", "rain", [[false, "Off"], [true, "On"]], ""],
+      ["Weather", "weather", [["auto", "Live OKC"], ["rain", "Rain"], ["clear", "Clear"]], "", "weatherNote"],
       ["Walk paths", "paths", [[false, "Hide"], [true, "Show"]], "Shows where characters can walk"]
     ];
     const head = document.createElement("span");
     head.className = "slabel townHead";
     head.textContent = "Town";
     wrap.append(head);
-    for (const [label, key, opts, note] of rows) {
+    for (const [label, key, opts, note, noteId] of rows) {
       const row = document.createElement("div");
       row.className = "townRow";
       const l = document.createElement("span");
@@ -512,9 +553,10 @@
         seg.append(b);
       }
       row.append(l, seg);
-      if (note) {
+      if (note || noteId) {
         const n = document.createElement("span");
         n.className = "snote";
+        if (noteId) n.id = noteId;
         n.textContent = note;
         row.append(n);
       }
@@ -524,6 +566,7 @@
     if (before) panel.insertBefore(wrap, before);
     else panel.append(wrap);
     syncSettings();
+    syncWeatherNote();
   }
   function syncSettings() {
     if (!document.querySelectorAll) return;
@@ -551,6 +594,13 @@
     prefs,
     setPref,
     lightState,
+    refreshWeather,
+    get weather() {
+      return liveWx;
+    },
+    get raining() {
+      return isRaining();
+    },
     deactivate() {
       active = false;
       endDrag();
