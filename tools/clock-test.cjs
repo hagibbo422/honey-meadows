@@ -7,7 +7,7 @@ const element=()=>({style:{},dataset:{},classList:{add(){},remove(){}},setAttrib
 const document={hidden:false,getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);},querySelectorAll(){return []},addEventListener(type,fn){(docListeners[type]??=[]).push(fn);},createElement(){return element();}};
 const window={addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
 const scope={window,document,Image:class{addEventListener(){}},localStorage:{getItem(){return null},setItem(){},removeItem(){}},requestAnimationFrame(){},console,Date:ClockDate,Math,Set,Map,URL,Intl};vm.createContext(scope);
-for(const file of ['game-data.js','assets-embedded.js','game.js'])vm.runInContext(fs.readFileSync(root+'/'+file,'utf8'),scope);
+for(const file of ['game-data.js','assets-embedded.js','map-data.js','town-routes.js','game.js'])vm.runInContext(fs.readFileSync(root+'/'+file,'utf8'),scope);
 const api=window.HM_DEBUG,controller=window.HoneyMeadows,results=[];const run=(name,fn)=>{fn();results.push({name,result:'PASS'});};
 run('Startup uses current Central Time and keeps Town selected',()=>{
  assert.equal(api.clockMode,'live');assert.equal(api.timeZone,'America/Chicago');assert.equal(api.centralZone,'CDT');assert.equal(api.centralDate,'Oct 27, 2026');assert(Math.abs(api.minute-795.5)<.00001);assert.equal(api.scene,'town');assert(elements.get('speedSelect').disabled);

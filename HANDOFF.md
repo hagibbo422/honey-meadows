@@ -2,6 +2,27 @@
 
 This is Honey Meadows V20, updated to open on the town and keep the team-selection controls out of the player interface. It runs as a local browser project with no package installation or build step.
 
+## Expanded town map (Nov 2026)
+
+The town is now the 1536×1024 illustrated map. The canvas stays 1152×768 (3:2); the camera shows part of the map.
+
+| File | Purpose |
+| --- | --- |
+| `map-data.js` | Map geometry from the map package: building outlines, doors, walk paths, sports-light regions. |
+| `town.js` | Camera (drag, mouse wheel / pinch zoom, arrow keys), day/night/rain textures, town/court/field lights, scoreboards, hover outlines, Town settings. |
+| `town-routes.js` | Generated walking routes. Rebuild after editing paths with `node tools/build-routes.cjs` (uses `tools/hm-engine.cjs`). |
+| `osu-feed.js` | ESPN Oklahoma State football feed (team 197). Same display rules as the Thunder feed. |
+| `rain.js` | Animated rain overlay. |
+| `assets/town/*.jpg` | Day / night / rain textures, each lights-on and lights-off. |
+| `assets/interiors/*.jpg` | Gym, Restaurant, Gibbons Residence, Hardaway Household interiors. |
+| `assets/osu/*.png` | Opponent logos for the football scoreboard (KSU, TTU, ASU, KU). Other opponents show their abbreviation. |
+
+- City Hall uses the former Headquarters interior (scene id `headquarters`): sales dashboard plus a Nail Catalog hotspot on the top-left bookshelf.
+- House 3 and Jones Residence show "Coming soon".
+- Ralph & Alisa live in the Gibbons Residence; Madi, Blair & Nick in the Hardaway Household. They are out 7:00 AM–9:30 PM, otherwise home.
+- Settings → Town: Town lights (Auto = dusk to dawn), Court lights and Field lights (Auto = on only while a game is live), Rain, Walk paths overlay. Saved per browser.
+- Scoreboard cell positions are `FIELD_BOARD` / `COURT_BOARD` in `town.js`.
+
 ## Files to edit
 
 | File | Purpose |

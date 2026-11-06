@@ -26,11 +26,18 @@
     assets[name] = image;
     return image;
   }
-  for (const name of ["terrain", "trees", "characters", "farm", "research", "gear", "books", "coffee", "nails", "headquarters", "player_avatar", "companion_avatar"]) {
+  for (const name of ["player_avatar", "companion_avatar", "room_headquarters", "room_farm", "room_research", "room_nails"]) {
     loadAsset(name);
   }
-  for (const name of ["town-tiles", "villagers", "basketball", "room_headquarters", "room_farm", "room_research", "room_nails", "room_gear", "room_books", "room_coffee"]) {
-    loadAsset(name);
+  const ILLUSTRATED = { gym: "assets/interiors/gym.jpg", restaurant: "assets/interiors/restaurant.jpg", gibbons: "assets/interiors/gibbons.jpg", hardaway: "assets/interiors/hardaway.jpg" };
+  function illustrated(id) {
+    const k = "interior_" + id;
+    if (!assets[k]) {
+      const im = new Image();
+      im.src = ILLUSTRATED[id];
+      assets[k] = im;
+    }
+    return ready(k) ? assets[k] : null;
   }
   const ready = (name) => assets[name] && assets[name].complete && assets[name].naturalWidth > 0;
   const statusEl = document.getElementById("status");
@@ -238,12 +245,16 @@
   }
   const interiors = {
     farm: { name: "Your Farmhouse", wall: "#bc8d6a", floor: "#b48457", rug: "#a95b52", items: [["bed", 3, 3], ["stove", 12, 3], ["table", 7, 8], ["shelf", 2, 3], ["plant", 13, 9], ["sofa", 11, 8], ["counter", 3, 10]] },
-    headquarters: { name: "Headquarters • Main Hub", wall: "#a77856", floor: "#a46f47", rug: "#46766c", items: [["fireplace", 8, 2], ["shelf", 2, 3], ["shelf", 13, 3], ["table", 8, 8], ["board", 3, 7], ["plant", 13, 9], ["desk", 12, 10], ["map", 4, 10]] },
+    headquarters: { name: "City Hall", wall: "#a77856", floor: "#a46f47", rug: "#46766c", items: [["fireplace", 8, 2], ["shelf", 2, 3], ["shelf", 13, 3], ["table", 8, 8], ["board", 3, 7], ["plant", 13, 9], ["desk", 12, 10], ["map", 4, 10]] },
     research: { name: "Research • Grocery Store", wall: "#b0a16f", floor: "#c5a67a", rug: "#6a9471", items: [["shelf", 3, 4], ["shelf", 7, 4], ["shelf", 11, 4], ["produce", 4, 8], ["produce", 11, 8], ["counter", 8, 10], ["fridge", 13, 8]] },
-    nails: { name: "Nail Shop • Storefront", wall: "#b98192", floor: "#d4a6a0", rug: "#a56d91", items: [["shelf", 3, 3], ["shelf", 12, 3], ["display", 4, 7], ["display", 12, 7], ["counter", 8, 10], ["plant", 13, 10], ["chair", 3, 10]] },
+    nails: { name: "Nail Salon", wall: "#b98192", floor: "#d4a6a0", rug: "#a56d91", items: [["shelf", 3, 3], ["shelf", 12, 3], ["display", 4, 7], ["display", 12, 7], ["counter", 8, 10], ["plant", 13, 10], ["chair", 3, 10]] },
     gear: { name: "Gear Shop", wall: "#8998a3", floor: "#a48465", rug: "#526f83", items: [["shelf", 3, 4], ["shelf", 12, 4], ["counter", 8, 9], ["display", 8, 6]] },
     books: { name: "Book Shop", wall: "#b08b69", floor: "#a77c50", rug: "#8b5e42", items: [["shelf", 3, 3], ["shelf", 12, 3], ["shelf", 3, 8], ["table", 9, 8], ["chair", 13, 10]] },
-    coffee: { name: "Coffee Shop", wall: "#a0a67c", floor: "#ad8158", rug: "#9b6553", items: [["counter", 8, 4], ["table", 4, 9], ["table", 12, 9], ["chair", 4, 11], ["chair", 12, 11]] }
+    coffee: { name: "Coffee Shop", wall: "#a0a67c", floor: "#ad8158", rug: "#9b6553", items: [["counter", 8, 4], ["table", 4, 9], ["table", 12, 9], ["chair", 4, 11], ["chair", 12, 11]] },
+    gym: { name: "Gym", items: [] },
+    restaurant: { name: "Restaurant", items: [] },
+    gibbons: { name: "Gibbons Residence", items: [] },
+    hardaway: { name: "Hardaway Household", items: [] }
   };
   const stations = [
     { id: "notes", name: "Journal Shelf", label: "NOTES", tx: 13, ty: 3, w: 2, h: 2, emoji: "📔" }
@@ -1219,63 +1230,7 @@
   let courtTexture = null, courtTextureReady = false;
   let opponentId = NBA_TEAMS.some((t) => t.id === courtConfig.opponent && t.id !== "OKC") ? courtConfig.opponent : "SAS";
   courtConfig.opponent = opponentId;
-  for (const team of NBA_TEAMS) {
-    const image = new Image();
-    let fallback = false;
-    image.onerror = () => {
-      if (!fallback) {
-        fallback = true;
-        image.src = ASSET_URLS["team_" + team.id];
-      }
-    };
-    image.onload = () => {
-      if (team.id === opponentId) prepareCourtTexture();
-    };
-    image.src = team.file;
-    teamLogos[team.id] = image;
-  }
-  assets["town-tiles"].addEventListener("load", prepareCourtTexture);
   function prepareCourtTexture() {
-    const town = assets["town-tiles"], logo = teamLogos[opponentId];
-    if (!(town == null ? void 0 : town.complete) || !town.naturalWidth) return;
-    if (opponentId !== "SAS" && (!(logo == null ? void 0 : logo.complete) || !logo.naturalWidth)) return;
-    const texture = document.createElement("canvas");
-    texture.width = 1152;
-    texture.height = 768;
-    const ctx = texture.getContext("2d");
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(town, 0, 0, 1152, 768);
-    if (opponentId !== "SAS") {
-      const team = NBA_TEAMS.find((t) => t.id === opponentId);
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(1042, 273);
-      ctx.lineTo(1083, 274);
-      ctx.lineTo(1082, 315);
-      ctx.lineTo(1041, 316);
-      ctx.closePath();
-      ctx.clip();
-      ctx.fillStyle = team.color;
-      ctx.fillRect(1039, 271, 46, 48);
-      ctx.fillStyle = "rgba(12,19,27,.48)";
-      ctx.fillRect(1039, 271, 46, 48);
-      ctx.drawImage(logo, 1045, 277, 34, 34);
-      const shade = ctx.createLinearGradient(1041, 274, 1083, 315);
-      shade.addColorStop(0, "rgba(255,255,255,.12)");
-      shade.addColorStop(0.45, "rgba(0,0,0,.04)");
-      shade.addColorStop(1, "rgba(0,0,0,.34)");
-      ctx.fillStyle = shade;
-      ctx.fillRect(1040, 272, 45, 46);
-      for (let y = 275; y < 316; y += 3) {
-        ctx.fillStyle = "rgba(0,0,0,.10)";
-        ctx.fillRect(1041, y, 42, 1);
-      }
-      ctx.strokeStyle = "rgba(165,170,146,.38)";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(1043.5, 275.5, 37, 38);
-      ctx.restore();
-    }
-    courtTexture = texture;
     courtTextureReady = true;
   }
   for (const name of ["dog_sprite", "cat_sprite", "meal0", "meal1", "couch0", "couch1", "sleep0", "sleep1"]) {
@@ -1283,8 +1238,8 @@
   }
   const routinePeriods = [
     { id: "breakfast", start: 480, end: 601, label: "Hayden & Annie · Breakfast", detail: "At the kitchen table in the farmhouse." },
-    { id: "outbound", start: 601, end: 606, label: "Walking to work", detail: "Annie is heading to the Nail Shop. Hayden is heading to Research." },
-    { id: "work", start: 606, end: 1081, label: "At work", detail: "Annie is working in the Nail Shop. Hayden is working in Research." },
+    { id: "outbound", start: 601, end: 606, label: "Walking to work", detail: "Annie is heading to the Nail Salon. Hayden is heading to Research." },
+    { id: "work", start: 606, end: 1081, label: "At work", detail: "Annie is working in the Nail Salon. Hayden is working in Research." },
     { id: "return", start: 1081, end: 1086, label: "Walking home", detail: "Hayden and Annie are heading home to the farmhouse." },
     { id: "dinner", start: 1086, end: 1201, label: "Hayden & Annie · Dinner", detail: "Back at the same kitchen table, sharing a meal." },
     { id: "couch", start: 1201, end: 1321, label: "Couch time", detail: "Hayden and Annie snuggled together, with Riley resting on the floor." }
@@ -1319,11 +1274,10 @@
     const dx = b.x - a.x, dy = b.y - a.y;
     return { x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u, dir: Math.abs(dx) > Math.abs(dy) ? dx > 0 ? "right" : "left" : dy > 0 ? "down" : "up", phase: distance / 9, moving: true };
   }
-  const commutePaths = { girl: measuredPath(townRoute(doorPoint("farm"), doorPoint("nails"))), boy: measuredPath(townRoute(doorPoint("farm"), doorPoint("research"))) };
-  const dogWaypoints = [doorPoint("farm"), ...[[274, 365], [274, 435], [440, 435], [440, 341], [438, 265], [700, 265], [438, 265], [438, 341], [392, 341], [392, 435], [274, 435], [274, 365]].map((p) => markupPoint(...p)), doorPoint("farm")];
-  let dogPoints = [];
-  for (let i = 0; i < dogWaypoints.length - 1; i++) dogPoints.push(...townRoute(dogWaypoints[i], dogWaypoints[i + 1]).slice(i ? 1 : 0));
-  const dogWalk = measuredPath(dogPoints);
+  const HM_ROUTES = window.HM_ROUTES || {};
+  const routePath = (pts) => measuredPath((pts && pts.length > 1 ? pts : [[0, 0], [0, 0]]).map(([x, y]) => ({ x, y })));
+  const commutePaths = { girl: routePath(HM_ROUTES["farm-nails"]), boy: routePath(HM_ROUTES["farm-research"]) };
+  const dogWalk = routePath(HM_ROUTES["dog-loop"]);
   const catWalk = measuredPath([{ x: 358, y: 320 }, { x: 370, y: 540 }, { x: 420, y: 575 }, { x: 425, y: 360 }, { x: 358, y: 320 }]);
   let householdState;
   function makeRoutineState() {
@@ -1343,7 +1297,7 @@
       Object.assign(boy, { scene: "research", x: 595, y: 445, dir: "down", phase: clock * 2 % 4 });
     }
     const dogOutside = m >= 600 && m < 1080;
-    const dog = dogOutside ? { ...samplePath(dogWalk, (m - 600) * 22 % dogWalk.length / dogWalk.length), scene: "town", resting: false } : { scene: "farm", x: period.id === "couch" ? 273 : 452, y: period.id === "couch" ? 535 : 580, dir: "down", phase: clock * 1.6, moving: false, resting: true };
+    const dog = dogOutside ? { ...samplePath(dogWalk, clock * 14 % dogWalk.length / dogWalk.length), scene: "town", resting: false } : { scene: "farm", x: period.id === "couch" ? 273 : 452, y: period.id === "couch" ? 535 : 580, dir: "down", phase: clock * 1.6, moving: false, resting: true };
     const catRest = m % 90 < 65 || period.id === "sleep";
     const cat = catRest ? { scene: "farm", x: 302, y: 546, dir: "down", phase: clock * 0.8, moving: false, resting: true } : { ...samplePath(catWalk, m * 7 % catWalk.length / catWalk.length), scene: "farm", resting: false };
     return { period, girl, boy, dog, cat };
@@ -1379,7 +1333,21 @@
     const row = (_a2 = { down: 0, left: 1, right: 2, up: 3 }[actor.dir]) != null ? _a2 : 0;
     g.drawImage(source, Math.floor(actor.phase) % 4 * 52, row * 84, 52, 84, actor.x - 32, actor.y - 94, 64, 104);
   }
+  function drawIllustratedInterior(id) {
+    const image = illustrated(id);
+    fill(0, 0, 1152, 768, "#10251e");
+    if (image) g.drawImage(image, 0, 0, 1152, 768);
+    else text("Opening " + interiors[id].name + "…", 576, 384, 22, "#ffe4ac");
+    const shade = darknessAt(simMinute) * 0.23;
+    if (shade) fill(0, 0, 1152, 768, "rgba(22,29,65," + shade + ")");
+    g.font = "bold 20px Georgia";
+    const w = g.measureText(interiors[id].name).width + 40;
+    fill(576 - w / 2, 10, w, 36, "#5b381f");
+    fill(576 - w / 2 + 3, 13, w - 6, 30, "#7a4d2c");
+    text(interiors[id].name, 576, 35, 20, "#ffe4ac");
+  }
   function drawScheduledInterior(id) {
+    if (ILLUSTRATED[id]) return drawIllustratedInterior(id);
     const image = assets["room_" + id], ox = 256, oy = 52, scale = 640 / 768;
     fill(0, 0, 1152, 768, "#10251e");
     if (image == null ? void 0 : image.naturalWidth) {
@@ -1661,54 +1629,53 @@
     g.drawImage(glow.img, glow.x, glow.y);
   }
   const TOWNSFOLK = [
-    { id: "sun", name: "Alisa", sprite: "npc_sun", spots: ["coffee", [438, 300], "nails", [790, 700], [440, 560], "books", [274, 365]], offset: 0 },
-    { id: "kid", name: "Blair", sprite: "npc_kid", with: "long", scale: 0.72 },
+    { id: "sun", name: "Alisa", sprite: "npc_sun", legs: "gibbons-legs", offset: 0 },
     { id: "blue", name: "Ralph", sprite: "npc_blue", with: "sun", side: "left" },
-    { id: "beard", name: "Nick", sprite: "npc_beard", with: "long", side: "left" },
-    { id: "long", name: "Madi", sprite: "npc_long", spots: ["books", [365, 145], [438, 300], [440, 560], [790, 630], "nails"], offset: 129 }
+    { id: "long", name: "Madi", sprite: "npc_long", legs: "hardaway-legs", offset: 95 },
+    { id: "kid", name: "Blair", sprite: "npc_kid", with: "long", scale: 0.72 },
+    { id: "beard", name: "Nick", sprite: "npc_beard", with: "kid" }
   ];
-  const FOLK_SPEED = 26, FOLK_PAUSE = 5, FOLK_HOURS = [7 * 60, 21 * 60 + 30];
+  const FOLK_SPEED = 16, FOLK_PAUSE = 5, HOME_PAUSE = 45, FOLK_HOURS = [7 * 60, 21 * 60 + 30];
   for (const f of TOWNSFOLK) loadAsset(f.sprite);
-  const spotPoint = (s2) => typeof s2 === "string" ? doorPoint(s2) : markupPoint(s2[0], s2[1]);
   for (const f of TOWNSFOLK) {
-    if (!f.spots) continue;
-    const pts = f.spots.map(spotPoint);
-    f.legs = pts.map((p, i) => measuredPath(townRoute(p, pts[(i + 1) % pts.length])));
-    f.cycle = f.legs.reduce((t, l) => t + l.length / FOLK_SPEED + FOLK_PAUSE, 0);
+    if (!f.legs) continue;
+    f.paths = (HM_ROUTES[f.legs] || []).map(routePath);
+    f.cycle = f.paths.reduce((t, l) => t + l.length / FOLK_SPEED + FOLK_PAUSE, 0) - FOLK_PAUSE + HOME_PAUSE;
   }
   function folkAt(f, t) {
+    if (!f.paths || !f.paths.length) return null;
     let u = ((t + f.offset) % f.cycle + f.cycle) % f.cycle;
-    for (const leg of f.legs) {
-      const walk = leg.length / FOLK_SPEED;
+    for (let i = 0; i < f.paths.length; i++) {
+      const leg = f.paths[i], walk = leg.length / FOLK_SPEED;
       if (u < walk) {
         const p = samplePath(leg, u / walk);
-        return { x: p.x, y: p.y, dir: p.dir, phase: u * FOLK_SPEED / 9, moving: true };
+        return { x: p.x, y: p.y, dir: p.dir, phase: u * FOLK_SPEED / 5, moving: true };
       }
       u -= walk;
+      if (i === f.paths.length - 1) return null;
       if (u < FOLK_PAUSE) {
         const end = leg.points[leg.points.length - 1];
         return { x: end.x, y: end.y, dir: "down", phase: 0, moving: false };
       }
       u -= FOLK_PAUSE;
     }
-    const p0 = f.legs[0].points[0];
-    return { x: p0.x, y: p0.y, dir: "down", phase: 0, moving: false };
+    return null;
   }
   function townsfolkState() {
     const m = simMinute;
     if (m < FOLK_HOURS[0] || m > FOLK_HOURS[1]) return [];
     const byId = {}, out = [];
-    for (const f of TOWNSFOLK) if (f.legs) byId[f.id] = Object.assign(folkAt(f, clock), { folk: f });
     for (const f of TOWNSFOLK) {
-      if (f.legs) {
-        out.push(byId[f.id]);
+      if (f.paths) {
+        const p = folkAt(f, clock);
+        if (p) out.push(byId[f.id] = Object.assign(p, { folk: f }));
         continue;
       }
       const lead = byId[f.with];
       if (!lead) continue;
-      const right = { down: [-17, 0], up: [17, 0], left: [13, 6], right: [-13, 6] }, left = { down: [17, 0], up: [-17, 0], left: [13, -6], right: [-13, -6] };
-      const side = (f.side === "left" ? left : right)[lead.dir] || [17, 0];
-      out.push({ x: lead.x + side[0], y: lead.y + side[1], dir: lead.dir, phase: lead.phase + 1, moving: lead.moving, folk: f });
+      const right = { down: [-10, 0], up: [10, 0], left: [7, 4], right: [-7, 4] }, left = { down: [10, 0], up: [-10, 0], left: [7, -4], right: [-7, -4] };
+      const side = (f.side === "left" ? left : right)[lead.dir] || [10, 0];
+      out.push(byId[f.id] = { x: lead.x + side[0], y: lead.y + side[1], dir: lead.dir, phase: lead.phase + 1, moving: lead.moving, folk: f });
     }
     return out;
   }
@@ -1719,30 +1686,36 @@
     const k = e.folk.scale || 1, w = 38 * k, h = 57 * k;
     g.drawImage(img, frame * 64, row * 96, 64, 96, Math.round(e.x - w / 2), Math.round(e.y - h + 6), w, h);
   }
-  function drawScheduledTown() {
-    drawTownIllustration();
-    drawV15Court();
-    drawAnimatedWater();
-    drawEmptyStands();
-    drawV8Scoreboard();
-    drawV8Basketball();
-    const actors = [];
-    if (householdState.girl.scene === "town") actors.push({ entity: householdState.girl, draw: drawPlayerAvatar });
-    if (householdState.boy.scene === "town") actors.push({ entity: householdState.boy, draw: drawCompanion });
-    if (householdState.dog.scene === "town") actors.push({ entity: householdState.dog, draw: (e) => drawPet(e, "dog") });
-    for (const e of townsfolkState()) actors.push({ entity: e, draw: drawFolk });
-    actors.sort((a, b) => a.entity.y - b.entity.y);
-    actors.filter((a) => a.entity.y < 412).forEach((a) => a.draw(a.entity));
-    drawPinkTreeForeground();
-    actors.filter((a) => a.entity.y >= 412).forEach((a) => a.draw(a.entity));
-    if (showGrid) {
-      g.fillStyle = "rgba(255,100,70,.2)";
-      pathBoxes.forEach((r) => g.fillRect(r.x, r.y, r.w, r.h));
+  const ACTOR_K = 0.62;
+  function townActors() {
+    const hs = householdState, actors = [];
+    if (hs.girl.scene === "town") actors.push({ name: "Annie", entity: hs.girl, draw: drawPlayerAvatar, box: [-23, -64, 46, 74] });
+    if (hs.boy.scene === "town") actors.push({ name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-24, -66, 48, 76] });
+    if (hs.dog.scene === "town") actors.push({ name: "Riley", entity: hs.dog, draw: (e) => drawPet(e, "dog"), box: [-18, -29, 36, 36], k: 0.8 });
+    for (const e of townsfolkState()) {
+      const k = e.folk.scale || 1;
+      actors.push({ name: e.folk.name, entity: e, draw: drawFolk, box: [-16 * k, -51 * k, 32 * k, 57 * k] });
     }
-    drawTownLighting();
-    drawCourtLightFixtures();
-    drawBuildingGlow();
-    drawCourtHover();
+    return actors.sort((a, b) => a.entity.y - b.entity.y);
+  }
+  function drawScheduledTown() {
+    const T2 = window.HMTown;
+    if (!T2) {
+      fill(0, 0, 1152, 768, "#294c36");
+      return;
+    }
+    const env = { darkness: darknessAt(simMinute), court: { home: pickup.score[0], away: pickup.score[1], opp: opponentId, period: courtConfig.period, clock: courtConfig.clock } };
+    const st = T2.drawGround(g, env);
+    T2.beginWorld(g);
+    T2.drawBoards(g, env, st);
+    for (const a of townActors()) {
+      g.save();
+      g.translate(a.entity.x, a.entity.y);
+      g.scale(a.k || ACTOR_K, a.k || ACTOR_K);
+      a.draw(Object.assign({}, a.entity, { x: 0, y: 0 }));
+      g.restore();
+    }
+    T2.endWorld(g, env);
   }
   function renderWho(p) {
     const el = document.getElementById("who");
@@ -1750,7 +1723,7 @@
     const id = p.id, dog = householdState.dog, catRest = simMinute % 90 < 65 || id === "sleep";
     const at = { breakfast: "Breakfast at the farmhouse", dinner: "Dinner at the farmhouse", couch: "Snuggled on the couch", sleep: "Asleep at the farmhouse" };
     const hayden = at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home" }[id];
-    const annie = at[id] || { outbound: "Walking to the Nail Shop", work: "Working at the Nail Shop", return: "Walking home" }[id];
+    const annie = at[id] || { outbound: "Walking to the Nail Salon", work: "Working at the Nail Salon", return: "Walking home" }[id];
     const riley = dog.scene === "town" ? "Walking around town" : id === "couch" ? "Resting by the couch" : id === "sleep" ? "Asleep at home" : "Hanging out at home";
     const theo = id === "sleep" ? "Asleep with the family" : catRest ? "Napping at home" : "Wandering the farmhouse";
     const html = [["Hayden", hayden], ["Annie", annie], ["Riley", riley], ["Theo", theo]].map(([n, t]) => "<span><b>".concat(n, "</b>").concat(t, "</span>")).join("");
@@ -1807,7 +1780,13 @@
   function draw() {
     g.clearRect(0, 0, c.width, c.height);
     if (scene === "town") drawScheduledTown();
-    else drawScheduledInterior(scene);
+    else {
+      if (window.HMTown) {
+        window.HMTown.deactivate();
+        window.HMTown.setHover(null);
+      }
+      drawScheduledInterior(scene);
+    }
     drawCharacterName();
     updateTownButton();
   }
@@ -1816,12 +1795,11 @@
     const hs = householdState, list = [];
     if (!hs) return list;
     if (scene === "town") {
-      if (hs.girl.scene === "town") list.push({ name: "Annie", x: hs.girl.x - 23, y: hs.girl.y - 64, w: 46, h: 74 });
-      if (hs.boy.scene === "town") list.push({ name: "Hayden", x: hs.boy.x - 24, y: hs.boy.y - 66, w: 48, h: 76 });
-      if (hs.dog.scene === "town") list.push({ name: "Riley", x: hs.dog.x - 18, y: hs.dog.y - 29, w: 36, h: 36 });
-      for (const e of townsfolkState()) {
-        const k2 = e.folk.scale || 1;
-        list.push({ name: e.folk.name, x: e.x - 16 * k2, y: e.y - 51 * k2, w: 32 * k2, h: 57 * k2 });
+      const T2 = window.HMTown;
+      if (!T2) return list;
+      for (const a of townActors()) {
+        const ak = a.k || ACTOR_K, [bx, by, bw, bh] = a.box, [x, y] = T2.toScreen(a.entity.x + bx * ak, a.entity.y + by * ak), z = T2.camera.z * ak;
+        list.push({ name: a.name, x, y, w: bw * z, h: bh * z });
       }
       return list;
     }
@@ -1923,8 +1901,19 @@
       return true;
     }
   };
+  const TOWN_DOORS = { nails: "nails", research: "research", farm: "farm", "city-hall": "headquarters", gym: "gym", restaurant: "restaurant", gibbons: "gibbons", hardaway: "hardaway" };
+  function openScene(id) {
+    viewMode = id;
+    const vs = document.getElementById("viewSelect");
+    if (vs) vs.value = id;
+    syncRoutine();
+    draw();
+  }
   const INTERIOR_HOTSPOTS = {
-    headquarters: [{ id: "sales", label: "📊 SALES DASHBOARD", box: { x: 494, y: 346, w: 166, h: 134 }, open: () => window.EtsyHQ && window.EtsyHQ.open() }],
+    headquarters: [
+      { id: "sales", label: "📊 SALES DASHBOARD", box: { x: 494, y: 346, w: 166, h: 134 }, open: () => window.EtsyHQ && window.EtsyHQ.open() },
+      { id: "catalog", label: "📚 NAIL CATALOG", box: { x: 296, y: 104, w: 132, h: 120 }, open: () => window.BooksCatalog && window.BooksCatalog.open() }
+    ],
     research: [
       { id: "tiktok", label: "🎵 TIKTOK", box: { x: 335, y: 214, w: 254, h: 125 }, open: () => window.ResearchBoard && window.ResearchBoard.open("tiktok") },
       { id: "pinterest", label: "📌 PINTEREST", box: { x: 627, y: 240, w: 204, h: 104 }, open: () => window.ResearchBoard && window.ResearchBoard.open("pinterest") },
@@ -1965,28 +1954,26 @@
       spot.open();
       return;
     }
-    if (scene !== "town") return;
-    if (!buildingAt(x, y) && inCourtBox(x, y)) {
-      hover = null;
-      c.style.cursor = "";
+    if (scene !== "town" || !window.HMTown) return;
+    if (window.HMTown.consumeDrag()) return;
+    const t = window.HMTown.hit(x, y);
+    if (!t) return;
+    window.HMTown.setHover(null);
+    c.style.cursor = "";
+    if (t.id === "basketball-court") {
       window.open(THUNDER_STATS_URL, "_blank", "noopener");
       return;
     }
-    const b = buildingAt(x, y);
-    if (b && b.id === "books" && window.BooksCatalog) {
-      hover = null;
-      c.style.cursor = "";
-      window.BooksCatalog.open();
+    if (t.id === "football-field") {
+      window.open(window.OSUFeed ? window.OSUFeed.STATS_URL : "https://www.espn.com/college-football/team/stats/_/id/197/oklahoma-state-cowboys", "_blank", "noopener");
       return;
     }
-    if (b) {
-      hover = null;
-      c.style.cursor = "";
-      viewMode = b.id;
-      document.getElementById("viewSelect").value = b.id;
-      syncRoutine();
-      draw();
+    if (t.id === "house-3" || t.id === "jones") {
+      window.HMTown.comingSoon(t);
+      return;
     }
+    const sceneId = TOWN_DOORS[t.id];
+    if (sceneId) openScene(sceneId);
   });
   c.addEventListener("mousemove", (e) => {
     const r = c.getBoundingClientRect(), x = (e.clientX - r.left) * c.width / r.width, y = (e.clientY - r.top) * c.height / r.height;
@@ -2005,13 +1992,20 @@
       }
       return;
     }
-    const b = buildingAt(x, y);
-    hover = b ? b.id : inCourtBox(x, y) ? "court" : null;
-    c.style.cursor = hover ? "pointer" : "default";
+    const T2 = window.HMTown;
+    if (!T2) return;
+    if (T2.dragging) {
+      T2.setHover(null);
+      return;
+    }
+    const t = T2.hit(x, y);
+    T2.setHover(t);
+    c.style.cursor = t ? "pointer" : "";
   });
   c.addEventListener("mouseleave", () => {
     mousePos = null;
     hover = null;
+    if (window.HMTown) window.HMTown.setHover(null);
     hotspotHover = null;
     c.style.cursor = "";
   });
@@ -2096,17 +2090,25 @@
       return Object.fromEntries(Object.keys(assets).map((k) => [k, ready(k)]));
     },
     get townActorsValid() {
-      return [householdState.girl, householdState.boy, householdState.dog].filter((a) => a.scene === "town").every((a) => townFootprint(a.x, a.y));
+      const M = window.HM_MAP;
+      const onPath = (a) => M.paths.some((p) => p.points.slice(1).some((b, i) => {
+        const q = p.points[i], dx = b[0] - q[0], dy = b[1] - q[1], t = Math.max(0, Math.min(1, ((a.x - q[0]) * dx + (a.y - q[1]) * dy) / (dx * dx + dy * dy || 1)));
+        return Math.hypot(a.x - q[0] - t * dx, a.y - q[1] - t * dy) <= p.width / 2 + 2;
+      }));
+      return [householdState.girl, householdState.boy, householdState.dog, ...townsfolkState()].filter((a) => a.scene === "town" || a.folk && a.folk.paths).every(onPath);
+    },
+    get townsfolk() {
+      return townsfolkState().map((e) => ({ name: e.folk.name, x: e.x, y: e.y }));
     },
     get generatedPose() {
       return ["breakfast", "dinner"].includes(householdState.period.id) ? "meal" : householdState.period.id;
     },
     setCourtLights(v) {
-      courtLightsOverride = v === null || v === void 0 ? null : !!v;
+      if (window.HMTown) window.HMTown.setPref("courtLights", v === null || v === void 0 ? "auto" : v ? "on" : "off");
       draw();
     },
     get courtLightsOn() {
-      return courtLightsOn();
+      return window.HMTown ? window.HMTown.lightState({ darkness: darknessAt(simMinute) }).court : false;
     },
     setTime,
     periodAt,

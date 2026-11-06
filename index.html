@@ -289,6 +289,11 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp .charCard{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
 .pp .charArt{min-height:124px;display:flex;align-items:flex-end;justify-content:center}.pp .charArt canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 .pp .charCard figcaption{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--ink);background:var(--parchment-2);border:2px solid var(--frame-out);padding:1px 10px}
+.pp .townWrap{flex-basis:100%;border-top:3px solid var(--frame);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.pp .townRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .townRow>.slabel{min-width:110px}
+.pp .townRow .seg{display:flex;gap:0}.pp .segbtn[aria-pressed="true"]{background:var(--frame);color:#fff7e2;box-shadow:inset 0 3px 0 rgba(0,0,0,.25)}
+.pp .townHead{font-size:18px}
+#game{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#game.dragging{cursor:grabbing}
 </style>
 </head>
 <body>
@@ -316,7 +321,7 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
     </div>
     <div class="sgroup">
       <label class="slabel" for="viewSelect">View</label>
-      <select id="viewSelect" class="pfield"><option value="town" selected>Town</option><option value="farm">Farmhouse</option><option value="auto">Follow routine</option><option value="nails">Nail Shop</option><option value="research">Research</option><option value="headquarters">Headquarters</option><option value="coffee">Coffee Shop</option><option value="books">Book Shop</option><option value="gear">Gear Shop</option></select>
+      <select id="viewSelect" class="pfield"><option value="town" selected>Town</option><option value="auto">Follow routine</option><option value="farm">Farmhouse</option><option value="nails">Nail Salon</option><option value="research">Research</option><option value="headquarters">City Hall</option><option value="restaurant">Restaurant</option><option value="gym">Gym</option><option value="gibbons">Gibbons Residence</option><option value="hardaway">Hardaway Household</option></select>
     </div>
     <div class="who" id="who" aria-live="polite"></div>
     <div class="charsWrap"><button id="charsToggle" class="btn small" aria-expanded="false" aria-controls="charsBody">👥 Characters ▾</button><div id="charsBody" class="charsBody" hidden></div></div>
@@ -330,19 +335,24 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="compat.js?v=202611052357"></script>
-<script src="game-data.js?v=202611052357"></script>
-<script src="assets-embedded.js?v=202611052357"></script>
-<script src="game.js?v=202611052357"></script>
-<script src="thunder-feed.js?v=202611052357"></script>
-<script src="etsy-hq.js?v=202611052357"></script>
-<script src="catalog-data.js?v=202611052357"></script>
-<script src="hq-art-board.js?v=202611052357"></script>
-<script src="research-data.js?v=202611052357"></script>
-<script src="research-board.js?v=202611052357"></script>
-<script src="characters.js?v=202611052357"></script>
-<script src="admin.js?v=202611052357"></script>
-<script src="books-catalog.js?v=202611052357"></script>
+<script src="compat.js?v=202611060444"></script>
+<script src="game-data.js?v=202611060444"></script>
+<script src="assets-embedded.js?v=202611060444"></script>
+<script src="map-data.js?v=202611060444"></script>
+<script src="town-routes.js?v=202611060444"></script>
+<script src="rain.js?v=202611060444"></script>
+<script src="town.js?v=202611060444"></script>
+<script src="game.js?v=202611060444"></script>
+<script src="osu-feed.js?v=202611060444"></script>
+<script src="thunder-feed.js?v=202611060444"></script>
+<script src="etsy-hq.js?v=202611060444"></script>
+<script src="catalog-data.js?v=202611060444"></script>
+<script src="hq-art-board.js?v=202611060444"></script>
+<script src="research-data.js?v=202611060444"></script>
+<script src="research-board.js?v=202611060444"></script>
+<script src="characters.js?v=202611060444"></script>
+<script src="admin.js?v=202611060444"></script>
+<script src="books-catalog.js?v=202611060444"></script>
 <script>
 (() => {
   const t = document.getElementById("settingsTab"), p = document.getElementById("settingsPanel"), x = document.getElementById("settingsClose");

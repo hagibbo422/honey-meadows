@@ -5,7 +5,7 @@ const element=()=>({style:{},dataset:{},classList:{add(){},remove(){}},setAttrib
 const document={getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id);},querySelectorAll(){return []},addEventListener(){},createElement(){return element();}};
 const window={addEventListener(type,fn){(listeners[type]??=[]).push(fn);}};
 const scope={window,document,Image:class{addEventListener(){}},localStorage:{getItem(){return null},setItem(){},removeItem(){}},requestAnimationFrame(){},console,Date,Math,Set,Map,URL};vm.createContext(scope);
-for(const file of ['game-data.js','assets-embedded.js','game.js'])vm.runInContext(fs.readFileSync(root+'/'+file,'utf8'),scope);
+for(const file of ['game-data.js','assets-embedded.js','map-data.js','town-routes.js','game.js'])vm.runInContext(fs.readFileSync(root+'/'+file,'utf8'),scope);
 const api=window.HM_DEBUG,controller=window.HoneyMeadows,results=[];const run=(name,fn)=>{fn();results.push({name,result:'PASS'});};
 run('Town is the startup view and stays selected throughout the entire routine',()=>{
  assert.equal(api.scene,'town');for(const m of [0,479,480,600,601,603,606,720,1080,1081,1083,1086,1201,1321,1439]){api.setTime(m);assert.equal(api.scene,'town');assert(api.townActorsValid);assert.equal(api.state.cat.scene,'farm');}
