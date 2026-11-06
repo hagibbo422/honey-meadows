@@ -190,7 +190,7 @@
     return {
       night,
       town: pick(prefs.townLights, (env.darkness || 0) > 0.12),
-      court: pick(prefs.courtLights, feedLive(window.ThunderFeed)),
+      court: pick(prefs.courtLights, feedLive(window.ThunderFeed) || !!window.HMHoopsPreview),
       field: pick(prefs.fieldLights, feedLive(window.OSUFeed))
     };
   }

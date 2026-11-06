@@ -1799,6 +1799,120 @@
     const T2 = rideT(), riding = isRideDay() && T2 >= RIDE_START && T2 < RIDE_END;
     return riding ? [] : RIDERS.filter((r) => r.bike).map((r) => ({ x: r.bikeAt.x, y: r.bikeAt.y, bike: r.bike }));
   }
+  const HOOPS = {
+    okc: [["okc_2", 57, 83], ["okc_7", 58, 84], ["okc_5", 58, 90]],
+    opp: [["opp_1", 59, 88], ["opp_22", 58, 87], ["opp_5", 60, 87]],
+    rows: { run: 0, dribble: 1, pass: 2, shoot: 3, shuffle: 0, block: 1, steal: 2 },
+    K: 0.42,
+    P: 8.6,
+    X0: 1126,
+    X1: 1328,
+    RIM_U: 0.9,
+    RIM_Y: 371
+  };
+  for (const [n] of HOOPS.okc.concat(HOOPS.opp)) loadAsset("hoops/" + n);
+  loadAsset("hoops/ball");
+  let hoopsForced = false;
+  const hoopsLive = () => hoopsForced || !!(window.ThunderFeed && window.ThunderFeed.current && window.ThunderFeed.current.state === "in");
+  const ease = (t) => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ROLE_END = { H: [0.56, 374], W: [0.8, 346], S: [0.7, 396] };
+  const roleOf = (p, k) => ["H", "W", "S"][((p - k) % 3 + 3) % 3];
+  function offensePos(p, k, s) {
+    const r = roleOf(p, k), prev = ROLE_END[roleOf(p, k - 1)], start = [1 - prev[0], prev[1]];
+    const mid = r === "S" ? [0.52, 400] : ROLE_END[r];
+    let u, v;
+    if (s < 3.5) {
+      const t = ease(s / 3.5);
+      u = lerp(start[0], mid[0], t);
+      v = lerp(start[1], mid[1], t);
+    } else if (r === "S" && s < 5.3) {
+      const t = ease((s - 4.3) / 1);
+      u = lerp(mid[0], ROLE_END.S[0], t);
+      v = lerp(mid[1], ROLE_END.S[1], t);
+    } else [u, v] = ROLE_END[r];
+    return { u, v, r };
+  }
+  const uToX = (u, d) => d > 0 ? HOOPS.X0 + u * (HOOPS.X1 - HOOPS.X0) : HOOPS.X1 - u * (HOOPS.X1 - HOOPS.X0);
+  function hoopsState(time) {
+    const k = Math.floor(time / HOOPS.P), s = time - k * HOOPS.P, d = k % 2 === 0 ? 1 : -1;
+    const players = [], byRole = {};
+    for (let p = 0; p < 3; p++) {
+      const a = offensePos(p, k, s), b = offensePos(p, k, s - 0.12);
+      const pl = { p, team: "okc", x: uToX(a.u, d), y: a.v, role: a.r, moving: Math.hypot(uToX(a.u, d) - uToX(b.u, d), a.v - b.v) > 0.4, flip: d < 0 };
+      let row = "run", f = Math.floor(time * (pl.moving ? 10 : 4)) % 4;
+      if (a.r === "H" && s < 3.5) row = "dribble", f = Math.floor(time * 8) % 4;
+      else if (a.r === "H" && s < 4) row = "pass", f = Math.min(2, Math.floor((s - 3.5) / 0.12));
+      else if (a.r === "W" && s >= 4.3 && s < 5.3) row = "dribble", f = Math.floor(time * 8) % 4;
+      else if (a.r === "W" && s >= 5.3 && s < 5.8) row = "pass", f = Math.min(2, Math.floor((s - 5.3) / 0.12));
+      else if (a.r === "S" && s >= 6.1 && s < 7.3) row = "shoot", f = s < 6.35 ? 0 : s < 6.6 ? 1 : s < 6.8 ? 2 : 3;
+      pl.row = row;
+      pl.f = f;
+      players.push(pl);
+      byRole[a.r] = pl;
+    }
+    for (let p = 0; p < 3; p++) {
+      const o = players[p], a = offensePos(p, k, s), b = offensePos(p, k, s - 0.12);
+      const gap = o.role === "S" && s >= 6.1 && s < 7.4 ? 0.07 : 0.11;
+      const du = Math.min(0.96, a.u + gap), x = uToX(du, d), y = a.v + (a.v < 372 ? 5 : -5);
+      const moving = Math.hypot(uToX(du, d) - uToX(Math.min(0.96, b.u + gap), d), a.v - b.v) > 0.4;
+      let row = "shuffle", f = moving ? Math.floor(time * 8) % 4 : 0;
+      if (o.role === "S" && s >= 6.25 && s < 7.25) row = "block", f = Math.min(3, Math.floor((s - 6.25) / 0.25));
+      else if (o.role === "W" && s >= 4.5 && s < 5.2) row = "steal", f = Math.min(3, Math.floor((s - 4.5) / 0.17));
+      players.push({ p, team: "opp", x, y, row, f, flip: d > 0 });
+    }
+    const hand = (pl, dx, dy) => [pl.x + dx * (pl.flip ? -1 : 1), pl.y + dy];
+    const arc = (a, b, t, h) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t) - Math.sin(Math.PI * t) * h];
+    const H2 = byRole.H, W2 = byRole.W, S = byRole.S, rim = [uToX(HOOPS.RIM_U, d), HOOPS.RIM_Y];
+    let ball = null, alpha = 1;
+    if (s >= 3.5 && s < 3.85) ball = hand(H2, 9, -13);
+    else if (s >= 3.85 && s < 4.3) ball = arc(hand(H2, 9, -13), hand(W2, 4, -12), (s - 3.85) / 0.45, 5);
+    else if (s >= 5.3 && s < 5.65) ball = hand(W2, 9, -13);
+    else if (s >= 5.65 && s < 6.1) ball = arc(hand(W2, 9, -13), hand(S, 4, -12), (s - 5.65) / 0.45, 5);
+    else if (s >= 6.8 && s < 7.7) ball = arc(hand(S, 2, -31), rim, (s - 6.8) / 0.9, 26);
+    else if (s >= 7.7 && s < 8) ball = [rim[0], lerp(rim[1], rim[1] + 9, (s - 7.7) / 0.3)];
+    else if (s >= 8) {
+      const t = (s - 8) / (HOOPS.P - 8), to = hand(S, 4, -4);
+      ball = [lerp(rim[0], to[0], t), lerp(rim[1] + 9, to[1], t) - Math.abs(Math.sin(t * Math.PI * 2)) * 6];
+    }
+    return { players, ball, alpha, scored: s >= 7.7 && s < 8.4, rim };
+  }
+  function drawHoops() {
+    if (!hoopsLive()) return;
+    const st = hoopsState(clock), K = HOOPS.K;
+    st.players.sort((a, b) => a.y - b.y);
+    for (const pl of st.players) {
+      const [name, cw, ch] = HOOPS[pl.team][pl.p], img = assets["hoops/" + name];
+      if (!(img && img.naturalWidth)) continue;
+      const w = cw * K, h = ch * K;
+      g.save();
+      g.translate(Math.round(pl.x), Math.round(pl.y));
+      if (pl.flip) g.scale(-1, 1);
+      g.globalAlpha = 0.28;
+      g.fillStyle = "#0c1830";
+      g.beginPath();
+      g.ellipse(0, 0, w * 0.32, 2.4, 0, 0, Math.PI * 2);
+      g.fill();
+      g.globalAlpha = 1;
+      g.drawImage(img, pl.f * cw, HOOPS.rows[pl.row] * ch, cw, ch, -w / 2, -h, w, h);
+      g.restore();
+    }
+    const bi = assets["hoops/ball"];
+    if (st.ball && bi && bi.naturalWidth) g.drawImage(bi, st.ball[0] - 3, st.ball[1] - 3, 6, 6);
+    if (st.scored) {
+      g.save();
+      g.globalAlpha = 0.85;
+      g.strokeStyle = "#fff";
+      g.lineWidth = 1;
+      for (let i = 0; i < 3; i++) {
+        g.beginPath();
+        g.moveTo(st.rim[0] - 3 + i * 3, st.rim[1] + 1);
+        g.lineTo(st.rim[0] - 2 + i * 2, st.rim[1] + 6);
+        g.stroke();
+      }
+      g.restore();
+    }
+  }
   function drawFolk(e) {
     const img = assets[e.folk.sprite];
     if (!(img && img.naturalWidth)) return;
@@ -1839,6 +1953,7 @@
     const st = T2.drawGround(g, env);
     T2.beginWorld(g);
     T2.drawBoards(g, env, st);
+    drawHoops();
     for (const a of townActors()) {
       g.save();
       g.translate(a.entity.x, a.entity.y);
@@ -2007,6 +2122,22 @@
     rideForced = false;
     setTime(button.dataset.time);
   });
+  const hoopsBtn = document.getElementById("previewHoops");
+  if (hoopsBtn) hoopsBtn.onclick = () => {
+    hoopsForced = !hoopsForced;
+    window.HMHoopsPreview = hoopsForced;
+    hoopsBtn.setAttribute("aria-pressed", String(hoopsForced));
+    if (hoopsForced) {
+      viewMode = "town";
+      const vs = document.getElementById("viewSelect");
+      if (vs) vs.value = "town";
+      if (window.HMTown) {
+        window.HMTown.camera.z = 2.2;
+        window.HMTown.focus(1229, 368);
+      }
+      syncRoutine();
+    }
+  };
   const rideBtn = document.getElementById("previewRide");
   if (rideBtn) rideBtn.onclick = () => {
     rideForced = true;
@@ -2182,6 +2313,19 @@
     }
   });
   window.HM_DEBUG = {
+    setHoops(v) {
+      hoopsForced = !!v;
+      window.HMHoopsPreview = hoopsForced;
+    },
+    get hoopsLive() {
+      return hoopsLive();
+    },
+    get clock() {
+      return clock;
+    },
+    hoopsAt(t) {
+      return hoopsState(t);
+    },
     setRideDay(v) {
       rideForced = !!v;
     },

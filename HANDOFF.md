@@ -23,6 +23,13 @@ The town is now the 1536×1024 illustrated map. The canvas stays 1152×768 (3:2)
 - Settings → Town: Town lights (Auto = dusk to dawn), Court lights and Field lights (Auto = on only while a game is live), Weather (Live OKC = rains when it is raining or overcast in Oklahoma City, from Open-Meteo every 10 minutes; or force Rain / Clear), Walk paths overlay. Saved per browser.
 - Scoreboard cell positions are `FIELD_BOARD` / `COURT_BOARD` in `town.js`.
 
+## Thunder game on the court
+
+While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`), three OKC players play on the town court: the ball handler dribbles up, passes to the wing, the wing passes to the shooter, who scores; then they go the other way with roles rotated (8.6 s per trip). Three Spurs-style defenders shuffle, reach for steals and contest the shot.
+
+- Code: the "Thunder pickup game" block in `game.js` (`HOOPS`, `hoopsState`, `drawHoops`). Preview from Settings → Preview → 🏀 Thunder game (also turns the court lights on).
+- Sprites: `assets/hoops/okc_*.png` (rows run, dribble, pass, shoot), `assets/hoops/opp_*.png` (rows shuffle, block, steal), `assets/hoops/ball.png`, cut with `tools/make-hoops-sprites.py`.
+
 ## Wednesday bike ride
 
 Every Wednesday (Central time) everyone walks across the bridge to their parked bike on the south trail, arriving at different times (Annie 5:50, Hayden 5:54, Alisa & Ralph 5:58, Nick, Madi & Blair 6:02). At 6:05 PM they all ride laps of the dirt trail around the map, park at 6:45 PM and walk home. Blair rides in Madi's trailer.
