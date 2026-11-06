@@ -2343,9 +2343,9 @@
     if (vs) vs.value = "town";
     if (window.HMTown) {
       window.HMTown.camera.z = 1.6;
-      window.HMTown.focus(560, 900);
+      window.HMTown.focus(470, 950);
     }
-    setTime(17 * 60 + 48.5, false);
+    setTime(18 * 60 + 4.9, false);
     timeRunning = true;
     refreshUI();
   };

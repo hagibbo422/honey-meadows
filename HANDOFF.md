@@ -43,7 +43,7 @@ While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`
 
 Every Wednesday (Central time) everyone walks across the bridge to their parked bike on the south trail, arriving at different times (Annie 5:50, Hayden 5:54, Alisa & Ralph 5:58, Nick, Madi & Blair 6:02). At 6:05 PM they all ride laps of the dirt trail around the map, park at 6:45 PM and walk home. Blair rides in Madi's trailer.
 
-- Code: the "Wednesday bike ride" block in `game.js` (`RIDERS`, `rideState`). Preview it from Settings → Preview → 🚲 Wed bike ride (plays in real time).
+- Code: the "Wednesday bike ride" block in `game.js` (`RIDERS`, `rideState`). Preview it from Settings → Jump to → 🚲 Wed bike ride (starts a few seconds before 6:05 PM, in real time).
 - Sprites: `assets/bikes/ride_*.png` (riding sheets) and `assets/bikes/bike_*.png` (parked bikes), cut from the uploaded art with `tools/make-bike-sprites.py`. Madi's purple bike is a recoloured copy of the red bike (only five parked bikes were supplied).
 - Trail: `tools/trace-trail.py` traces the painted dirt trail into `tools/ride-loop.json`; `node tools/build-routes.cjs` puts it in `town-routes.js` as `ride-loop`.
 - Test: `node tools/bike-ride-test.cjs`.
