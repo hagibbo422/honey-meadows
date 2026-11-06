@@ -1703,8 +1703,8 @@
   const RIDE_LAPS = Math.max(1, Math.round((RIDE_END - RIDE_START) * 38 / RIDE_LOOP.length));
   const RIDE_SPEED = RIDE_LAPS * RIDE_LOOP.length / (RIDE_END - RIDE_START);
   const RIDE_SHEETS = {
-    annie: { cw: 83, ch: 103, k: 0.85, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
-    hayden: { cw: 83, ch: 99, k: 0.85, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
+    annie: { cw: 83, ch: 103, k: 0.8, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
+    hayden: { cw: 83, ch: 99, k: 0.8, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
     alisa: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     ralph: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     nick: { cw: 66, ch: 100, dirs: ["down", "right", "up", "left"] },
@@ -1807,6 +1807,7 @@
     g.drawImage(img, frame * 64, row * 96, 64, 96, Math.round(e.x - w / 2), Math.round(e.y - h + 6), w, h);
   }
   const ACTOR_K = 0.62;
+  const ANNIE_MATCH = 1.55, HAYDEN_MATCH = 1.33;
   function townActors() {
     const hs = householdState, actors = [];
     const riderBox = (e) => {
@@ -1814,8 +1815,8 @@
       const k = (sh.k || 1) / 2;
       return [-sh.cw * k / 2, -sh.ch * k, sh.cw * k, sh.ch * k];
     };
-    if (hs.girl.scene === "town") actors.push(hs.girl.ride ? { name: "Annie", entity: hs.girl, draw: drawRider, box: riderBox(hs.girl), k: 1 } : { name: "Annie", entity: hs.girl, draw: drawPlayerAvatar, box: [-23, -64, 46, 74] });
-    if (hs.boy.scene === "town") actors.push(hs.boy.ride ? { name: "Hayden", entity: hs.boy, draw: drawRider, box: riderBox(hs.boy), k: 1 } : { name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-24, -66, 48, 76] });
+    if (hs.girl.scene === "town") actors.push(hs.girl.ride ? { name: "Annie", entity: hs.girl, draw: drawRider, box: riderBox(hs.girl), k: 1 } : { name: "Annie", entity: hs.girl, draw: drawPlayerAvatar, box: [-17, -35, 34, 45], k: ACTOR_K * ANNIE_MATCH });
+    if (hs.boy.scene === "town") actors.push(hs.boy.ride ? { name: "Hayden", entity: hs.boy, draw: drawRider, box: riderBox(hs.boy), k: 1 } : { name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-15, -40, 30, 50], k: ACTOR_K * HAYDEN_MATCH });
     for (const b of parkedBikes()) actors.push({ name: null, entity: b, draw: drawParkedBike, box: null, k: 1 });
     if (hs.dog.scene === "town") actors.push({ name: "Riley", entity: hs.dog, draw: (e) => drawPet(e, "dog"), box: [-18, -29, 36, 36], k: 0.8 });
     for (const e of townsfolkState()) {
