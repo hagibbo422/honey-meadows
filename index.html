@@ -293,6 +293,13 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
 .pp .townRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .townRow>.slabel{min-width:110px}
 .pp .townRow .seg{display:flex;gap:0}.pp .segbtn[aria-pressed="true"]{background:var(--frame);color:#fff7e2;box-shadow:inset 0 3px 0 rgba(0,0,0,.25)}
 .pp .townHead{font-size:18px}
+.pp .jumpWrap,.pp .townWrap{flex-basis:100%;display:flex;flex-direction:column;gap:8px}.pp .jumpWrap>button,.pp .townWrap>button{align-self:flex-start}
+.pp .jumpBody,.pp .townBody{display:flex;flex-direction:column;gap:8px}.pp .jumpBody[hidden],.pp .townBody[hidden]{display:none}
+.pp .jumpRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pp .jumpRow>.slabel{min-width:110px}
+.pp .charCard.pick{cursor:pointer;border-radius:6px;padding:2px}.pp .charCard.pick:hover figcaption,.pp .charCard.pick:focus-visible figcaption,.pp .charCard.pick[aria-expanded="true"] figcaption{background:var(--frame);color:#fff7e2}
+.pp .charDetail{display:flex;gap:28px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin-top:10px;padding:10px;background:var(--parchment-2);border:2px solid var(--frame-out)}
+.pp .charAnim{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}.pp .charAnim canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+.pp .charAnim figcaption{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--ink)}
 #game{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}#game.dragging{cursor:grabbing}
 </style>
 </head>
@@ -312,12 +319,15 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
       <output id="timeReadout" class="timeLbl" for="timeSlider">—</output>
       <button id="currentTime" class="btn small">Now</button>
     </div>
+    <div class="jumpWrap"><button id="jumpToggle" class="btn small" aria-expanded="false" aria-controls="jumpBody">🕒 Jump to ▾</button><div id="jumpBody" class="jumpBody" hidden>
+      <div class="jumpRow"><span class="slabel">Daily routine</span><div class="seg jumpTimes"><button class="segbtn" data-time="480">Breakfast</button><button class="segbtn" data-time="603">Commute</button><button class="segbtn" data-time="720">Work</button><button class="segbtn" data-time="1083">Home</button><button class="segbtn" data-time="1140">Dinner</button><button class="segbtn" data-time="1260">Couch</button><button class="segbtn" data-time="1380">Sleep</button></div></div>
+      <div class="jumpRow"><span class="slabel">Events</span><div class="seg jumpTimes"><button class="segbtn" id="previewRide" type="button">🚲 Wed bike ride</button><button class="segbtn" id="previewHoops" type="button" aria-pressed="false">🏀 Thunder game</button><button class="segbtn" id="previewFootball" type="button" aria-pressed="false">🏈 OSU game</button></div></div>
+    </div></div>
     <div class="sgroup">
       <span class="slabel">Preview</span>
       <button id="toggleTime" class="btn small">Pause</button>
       <label class="slabel" for="speedSelect">Speed</label>
       <select id="speedSelect" class="pfield" disabled><option value="0.016666666666666666">Real time</option><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="5">5×</option></select>
-      <div class="seg jumpTimes"><button class="segbtn" data-time="480">Breakfast</button><button class="segbtn" data-time="603">Commute</button><button class="segbtn" data-time="720">Work</button><button class="segbtn" data-time="1083">Home</button><button class="segbtn" data-time="1140">Dinner</button><button class="segbtn" data-time="1260">Couch</button><button class="segbtn" data-time="1380">Sleep</button><button class="segbtn" id="previewRide" type="button">🚲 Wed bike ride</button><button class="segbtn" id="previewHoops" type="button" aria-pressed="false">🏀 Thunder game</button><button class="segbtn" id="previewFootball" type="button" aria-pressed="false">🏈 OSU game</button></div>
     </div>
     <div class="sgroup">
       <label class="slabel" for="viewSelect">View</label>
@@ -335,24 +345,24 @@ select{font:15px Georgia,serif;background:#f5dfb6;color:#3d3024;border:2px solid
  
   
 </div>
-<script src="compat.js?v=202611061849"></script>
-<script src="game-data.js?v=202611061849"></script>
-<script src="assets-embedded.js?v=202611061849"></script>
-<script src="map-data.js?v=202611061849"></script>
-<script src="town-routes.js?v=202611061849"></script>
-<script src="rain.js?v=202611061849"></script>
-<script src="town.js?v=202611061849"></script>
-<script src="game.js?v=202611061849"></script>
-<script src="osu-feed.js?v=202611061849"></script>
-<script src="thunder-feed.js?v=202611061849"></script>
-<script src="etsy-hq.js?v=202611061849"></script>
-<script src="catalog-data.js?v=202611061849"></script>
-<script src="hq-art-board.js?v=202611061849"></script>
-<script src="research-data.js?v=202611061849"></script>
-<script src="research-board.js?v=202611061849"></script>
-<script src="characters.js?v=202611061849"></script>
-<script src="admin.js?v=202611061849"></script>
-<script src="books-catalog.js?v=202611061849"></script>
+<script src="compat.js?v=202611061917"></script>
+<script src="game-data.js?v=202611061917"></script>
+<script src="assets-embedded.js?v=202611061917"></script>
+<script src="map-data.js?v=202611061917"></script>
+<script src="town-routes.js?v=202611061917"></script>
+<script src="rain.js?v=202611061917"></script>
+<script src="town.js?v=202611061917"></script>
+<script src="game.js?v=202611061917"></script>
+<script src="osu-feed.js?v=202611061917"></script>
+<script src="thunder-feed.js?v=202611061917"></script>
+<script src="etsy-hq.js?v=202611061917"></script>
+<script src="catalog-data.js?v=202611061917"></script>
+<script src="hq-art-board.js?v=202611061917"></script>
+<script src="research-data.js?v=202611061917"></script>
+<script src="research-board.js?v=202611061917"></script>
+<script src="characters.js?v=202611061917"></script>
+<script src="admin.js?v=202611061917"></script>
+<script src="books-catalog.js?v=202611061917"></script>
 <script>
 (() => {
   const t = document.getElementById("settingsTab"), p = document.getElementById("settingsPanel"), x = document.getElementById("settingsClose");

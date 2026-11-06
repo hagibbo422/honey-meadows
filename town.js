@@ -528,10 +528,24 @@
       ["Weather", "weather", [["auto", "Live OKC"], ["rain", "Rain"], ["clear", "Clear"]], "", "weatherNote"],
       ["Walk paths", "paths", [[false, "Hide"], [true, "Show"]], "Shows where characters can walk"]
     ];
-    const head = document.createElement("span");
-    head.className = "slabel townHead";
-    head.textContent = "Town";
-    wrap.append(head);
+    const head = document.createElement("button");
+    head.type = "button";
+    head.className = "btn small";
+    head.id = "townToggle";
+    head.setAttribute("aria-expanded", "false");
+    head.setAttribute("aria-controls", "townBody");
+    head.textContent = "🏘️ Town ▾";
+    const body = document.createElement("div");
+    body.className = "townBody";
+    body.id = "townBody";
+    body.hidden = true;
+    head.onclick = () => {
+      const open = body.hidden;
+      body.hidden = !open;
+      head.setAttribute("aria-expanded", String(open));
+      head.textContent = "🏘️ Town " + (open ? "▴" : "▾");
+    };
+    wrap.append(head, body);
     for (const [label, key, opts, note, noteId] of rows) {
       const row = document.createElement("div");
       row.className = "townRow";
@@ -560,7 +574,7 @@
         n.textContent = note;
         row.append(n);
       }
-      wrap.append(row);
+      body.append(row);
     }
     const before = panel.querySelector(".charsWrap");
     if (before) panel.insertBefore(wrap, before);
