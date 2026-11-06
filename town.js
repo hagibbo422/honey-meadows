@@ -154,8 +154,8 @@
     };
   }
   const rain = window.HoneyMeadowsRain ? new window.HoneyMeadowsRain(WW, WH, ROUTES.surfaces || []) : null;
-  const FONT = '"Pixelify Sans","Courier New",monospace';
-  function cellText(g, s, cx, cy, maxW, size, color, weight = "bold") {
+  const FONT = '"Arial Black","Helvetica Neue",Arial,Helvetica,sans-serif';
+  function cellText(g, s, cx, cy, maxW, size, color, weight = "900") {
     s = String(s == null ? "" : s);
     let px = size;
     g.font = weight + " " + px + "px " + FONT;
@@ -163,10 +163,14 @@
       px -= 0.5;
       g.font = weight + " " + px + "px " + FONT;
     }
-    g.fillStyle = color;
     g.textAlign = "center";
     g.textBaseline = "middle";
-    g.fillText(s, cx, cy + 0.5);
+    if (color !== INK) {
+      g.fillStyle = "rgba(0,0,0,.75)";
+      g.fillText(s, cx + 0.6, cy + 1.3);
+    }
+    g.fillStyle = color;
+    g.fillText(s, cx, cy + 0.6);
   }
   const boardColor = { field: "#1e1f2d", court: "#1e1f2d" };
   function sampleBoards(c) {
@@ -207,16 +211,16 @@
     g.fillRect(L.guest[0] - L.guest[2] / 2, L.y0, L.guest[2], L.h);
     g.fillStyle = CREAM;
     g.fillRect(L.clock[0] - L.clock[2] / 2, L.clock[1] - L.clock[3] / 2, L.clock[2], L.clock[3]);
-    cellText(g, d.home, L.home[0], L.cy, L.home[2] - 2, 15, GOLD);
-    cellText(g, d.period, L.period[0], L.cy, L.period[2] - 1, 9, WHITE);
-    cellText(g, d.clock, L.clock[0], L.cy, L.clock[2] - 3, 13, INK);
-    cellText(g, d.away, L.away[0], L.cy, L.away[2] - 2, 15, GOLD);
+    cellText(g, d.home, L.home[0], L.cy, L.home[2] - 1, 17, GOLD);
+    cellText(g, d.period, L.period[0], L.cy, L.period[2], 11, WHITE);
+    cellText(g, d.clock, L.clock[0], L.cy, L.clock[2] - 2, 15, INK);
+    cellText(g, d.away, L.away[0], L.cy, L.away[2] - 1, 17, GOLD);
     const im = logo(d.logo);
     if (im) {
       const s = L.h + 2;
       g.imageSmoothingEnabled = true;
       g.drawImage(im, L.guest[0] - s / 2, L.cy - s / 2, s, s);
-    } else cellText(g, d.opp, L.guest[0], L.cy, L.guest[2] - 2, 11, WHITE);
+    } else cellText(g, d.opp, L.guest[0], L.cy, L.guest[2] - 2, 12, WHITE);
     g.restore();
   }
   const FIELD_BOARD = { id: "field", y0: 106, h: 21, cy: 116.5, home: [1167, 0, 28], period: [1198, 0, 22], clock: [1231, 116.5, 35, 19], shot: [1264, 0, 18], away: [1292, 0, 26], guest: [1324.5, 0, 36] };
@@ -454,7 +458,7 @@
     drawHouseholdLabel(g, st);
     drawBoard(g, FIELD_BOARD, fieldData());
     const c = env.court || {};
-    drawBoard(g, COURT_BOARD, { home: c.home, away: c.away, period: c.period, clock: c.clock, opp: c.opp });
+    drawBoard(g, COURT_BOARD, { home: c.home, away: c.away, period: c.period, clock: c.clock, opp: c.opp, logo: c.opp ? "assets/teams/" + c.opp + ".png" : null });
   }
   function endWorld(g, env) {
     if (rain && prefs.rain) rain.draw(g);
