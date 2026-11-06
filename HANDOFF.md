@@ -23,6 +23,15 @@ The town is now the 1536×1024 illustrated map. The canvas stays 1152×768 (3:2)
 - Settings → Town: Town lights (Auto = dusk to dawn), Court lights and Field lights (Auto = on only while a game is live), Rain, Walk paths overlay. Saved per browser.
 - Scoreboard cell positions are `FIELD_BOARD` / `COURT_BOARD` in `town.js`.
 
+## Wednesday bike ride
+
+Every Wednesday (Central time) everyone walks across the bridge to their parked bike on the south trail, arriving at different times (Annie 5:50, Hayden 5:54, Alisa & Ralph 5:58, Nick, Madi & Blair 6:02). At 6:05 PM they all ride laps of the dirt trail around the map, park at 6:45 PM and walk home. Blair rides in Madi's trailer.
+
+- Code: the "Wednesday bike ride" block in `game.js` (`RIDERS`, `rideState`). Preview it from Settings → Preview → 🚲 Wed bike ride (plays in real time).
+- Sprites: `assets/bikes/ride_*.png` (riding sheets) and `assets/bikes/bike_*.png` (parked bikes), cut from the uploaded art with `tools/make-bike-sprites.py`. Madi's purple bike is a recoloured copy of the red bike (only five parked bikes were supplied).
+- Trail: `tools/trace-trail.py` traces the painted dirt trail into `tools/ride-loop.json`; `node tools/build-routes.cjs` puts it in `town-routes.js` as `ride-loop`.
+- Test: `node tools/bike-ride-test.cjs`.
+
 ## Files to edit
 
 | File | Purpose |

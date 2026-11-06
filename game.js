@@ -1220,6 +1220,7 @@
   }
   function useCurrentCentralTime() {
     clockMode = "live";
+    rideForced = false;
     timeRunning = true;
     readCentralClock(true);
     syncRoutine();
@@ -1300,6 +1301,11 @@
     const dog = dogOutside ? { ...samplePath(dogWalk, clock * 14 % dogWalk.length / dogWalk.length), scene: "town", resting: false } : { scene: "farm", x: period.id === "couch" ? 273 : 452, y: period.id === "couch" ? 535 : 580, dir: "down", phase: clock * 1.6, moving: false, resting: true };
     const catRest = m % 90 < 65 || period.id === "sleep";
     const cat = catRest ? { scene: "farm", x: 302, y: 546, dir: "down", phase: clock * 0.8, moving: false, resting: true } : { ...samplePath(catWalk, m * 7 % catWalk.length / catWalk.length), scene: "farm", resting: false };
+    for (const [id, actor] of [["girl", girl], ["boy", boy]]) {
+      const rs = rideState(id, m * 60);
+      if (rs && rs.x != null) Object.assign(actor, { scene: "town", x: rs.x, y: rs.y, dir: rs.dir || "down", phase: rs.phase || 0, moving: !!rs.moving, ride: rs.ride || null, rideStatus: rs.status });
+      else if (rs && rs.status) actor.rideStatus = rs.status;
+    }
     return { period, girl, boy, dog, cat };
   }
   function selectedScene() {
@@ -1661,12 +1667,25 @@
     }
     return null;
   }
+  function homeSince5(f, T2) {
+    const u = ((clock + f.offset) % f.cycle + f.cycle) % f.cycle;
+    return (u - (f.cycle - HOME_PAUSE) + f.cycle) % f.cycle <= T2 - 17 * 3600;
+  }
   function townsfolkState() {
     const m = simMinute;
     if (m < FOLK_HOURS[0] || m > FOLK_HOURS[1]) return [];
-    const byId = {}, out = [];
+    const byId = {}, out = [], T2 = m * 60, rideEvening = isRideDay() && m >= 17 * 60;
     for (const f of TOWNSFOLK) {
+      if (rideEvening) {
+        const rs = rideState(f.id, T2);
+        if (rs && rs.step === "after") continue;
+        if (rs && rs.step !== "before") {
+          if (!rs.hidden) out.push(byId[f.id] = { x: rs.x, y: rs.y, dir: rs.dir || "down", phase: rs.phase || 0, moving: !!rs.moving, ride: rs.ride || null, folk: f });
+          continue;
+        }
+      }
       if (f.paths) {
+        if (rideEvening && homeSince5(f, T2)) continue;
         const p = folkAt(f, clock);
         if (p) out.push(byId[f.id] = Object.assign(p, { folk: f }));
         continue;
@@ -1679,6 +1698,107 @@
     }
     return out;
   }
+  const RIDE_START = (18 * 60 + 5) * 60, RIDE_END = (18 * 60 + 45) * 60, RIDE_WALK = 16;
+  const RIDE_LOOP = routePath(HM_ROUTES["ride-loop"]);
+  const RIDE_LAPS = Math.max(1, Math.round((RIDE_END - RIDE_START) * 38 / RIDE_LOOP.length));
+  const RIDE_SPEED = RIDE_LAPS * RIDE_LOOP.length / (RIDE_END - RIDE_START);
+  const RIDE_SHEETS = {
+    annie: { cw: 83, ch: 103, k: 0.85, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
+    hayden: { cw: 83, ch: 99, k: 0.85, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
+    alisa: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
+    ralph: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
+    nick: { cw: 66, ch: 100, dirs: ["down", "right", "up", "left"] },
+    madi: { cw: 72, ch: 103, dirs: ["down", "right", "up", "left"] }
+  };
+  const BIKE_SIZE = { blue: [89, 59], red: [82, 63], green: [82, 64], yellow: [81, 60], teal: [84, 60], purple: [82, 63] };
+  for (const k in RIDE_SHEETS) loadAsset("bikes/ride_" + k);
+  for (const k in BIKE_SIZE) loadAsset("bikes/bike_" + k);
+  const RIDE_GAP = 62;
+  const RIDERS = [
+    { id: "girl", name: "Annie", out: "nails-bridge", home: "farm-bridge", arrive: [17, 50, 0], back: 0, s: 70 + RIDE_GAP * 5, bike: "blue", sheet: "annie" },
+    { id: "boy", name: "Hayden", out: "research-bridge", home: "farm-bridge", arrive: [17, 54, 0], back: 6, s: 70 + RIDE_GAP * 4, bike: "red", sheet: "hayden" },
+    { id: "sun", name: "Alisa", out: "gibbons-bridge", home: "gibbons-bridge", arrive: [17, 58, 0], back: 30, s: 70 + RIDE_GAP * 3, bike: "green", sheet: "alisa" },
+    { id: "blue", name: "Ralph", out: "gibbons-bridge", home: "gibbons-bridge", arrive: [17, 58, 3], back: 32, s: 70 + RIDE_GAP * 2, bike: "teal", sheet: "ralph" },
+    { id: "beard", name: "Nick", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 0], back: 50, s: 70 + RIDE_GAP, bike: "yellow", sheet: "nick" },
+    { id: "long", name: "Madi", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 2], back: 52, s: 70, bike: "purple", sheet: "madi" },
+    { id: "kid", name: "Blair", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 4], back: 53, s: 70, stand: 42, bike: null, sheet: null }
+  ];
+  function trailTo(sEnd) {
+    const pts = [];
+    RIDE_LOOP.points.forEach((p, i) => {
+      if (i > 0 && RIDE_LOOP.cumulative[i] < sEnd) pts.push([p.x, p.y]);
+    });
+    const e = loopPoint(sEnd);
+    pts.push([e.x, e.y - 4]);
+    return pts;
+  }
+  for (const r of RIDERS) {
+    const standS = r.s - (r.stand || 24), trail = trailTo(standS);
+    const pts = (HM_ROUTES[r.out] || [[664, 989]]).concat(trail), homePts = (HM_ROUTES[r.home] || [[664, 989]]).concat(trail).reverse();
+    const bike = loopPoint(r.s);
+    r.bikeAt = { x: bike.x, y: bike.y + 9 };
+    r.standAt = trail[trail.length - 1];
+    r.outPath = routePath(pts);
+    r.homePath = routePath(homePts);
+    r.arriveT = (r.arrive[0] * 60 + r.arrive[1]) * 60 + r.arrive[2];
+    r.leaveT = r.arriveT - r.outPath.length / RIDE_WALK;
+    r.backT = RIDE_END + 30 + r.back;
+    r.homeT = r.backT + r.homePath.length / RIDE_WALK;
+  }
+  const RIDER = Object.fromEntries(RIDERS.map((r) => [r.id, r]));
+  let rideForced = false;
+  function centralWeekday() {
+    const day = centralSnapshot ? centralSnapshot.dayNumber : Math.floor(Date.now() / 864e5);
+    return ((day + 4) % 7 + 7) % 7;
+  }
+  const isRideDay = () => rideForced || centralWeekday() === 3;
+  function loopPoint(s) {
+    const L = RIDE_LOOP.length, u = (s % L + L) % L;
+    const a = samplePath(RIDE_LOOP, u / L), b = samplePath(RIDE_LOOP, (u + 6) % L / L);
+    return { x: a.x, y: a.y, dx: b.x - a.x, dy: b.y - a.y };
+  }
+  function dirOf(dx, dy, dirs) {
+    if (dirs.length === 4) return Math.abs(dx) > Math.abs(dy) ? dx > 0 ? "right" : "left" : dy > 0 ? "down" : "up";
+    const k = Math.round(Math.atan2(dy, dx) / (Math.PI / 4));
+    return { 0: "right", 1: "downright", 2: "down", 3: "downleft", 4: "left", "-4": "left", "-3": "upleft", "-2": "up", "-1": "upright" }[k];
+  }
+  function rideState(id, T2) {
+    const r = RIDER[id];
+    if (!r || !isRideDay()) return null;
+    if (T2 < r.leaveT) return { step: "before" };
+    if (T2 >= r.homeT) return { step: "after" };
+    if (T2 < r.arriveT) return { step: "walk", status: "Walking to the Wednesday bike ride", ...samplePath(r.outPath, (T2 - r.leaveT) / (r.arriveT - r.leaveT)) };
+    if (T2 < RIDE_START) return { step: "wait", status: "Waiting by the bikes", x: r.standAt[0], y: r.standAt[1], dir: "down", moving: false };
+    if (T2 < RIDE_END) {
+      const status = "On the Wednesday bike ride";
+      if (!r.sheet) return { step: "ride", status, hidden: true };
+      const p = loopPoint(r.s + RIDE_SPEED * (T2 - RIDE_START)), sh = RIDE_SHEETS[r.sheet];
+      return { step: "ride", status, x: p.x, y: p.y + 9, dir: "down", ride: { sheet: r.sheet, dir: dirOf(p.dx, p.dy, sh.dirs), frame: Math.floor((T2 - RIDE_START) * RIDE_SPEED / 11) % 4 } };
+    }
+    if (T2 < r.backT) return { step: "wait", status: "Parking the bikes", x: r.standAt[0], y: r.standAt[1], dir: "down", moving: false };
+    return { step: "walk", status: "Walking home from the bike ride", ...samplePath(r.homePath, (T2 - r.backT) / (r.homeT - r.backT)) };
+  }
+  const rideT = () => simMinute * 60;
+  function drawRider(e) {
+    const sh = RIDE_SHEETS[e.ride.sheet], img = assets["bikes/ride_" + e.ride.sheet];
+    if (!sh || !(img && img.naturalWidth)) return;
+    const row = Math.max(0, sh.dirs.indexOf(e.ride.dir)), k = (sh.k || 1) / 2, w = sh.cw * k, h = sh.ch * k;
+    g.drawImage(img, e.ride.frame * sh.cw, row * sh.ch, sh.cw, sh.ch, e.x - w / 2, e.y - h, w, h);
+  }
+  function drawParkedBike(e) {
+    const img = assets["bikes/bike_" + e.bike], sz = BIKE_SIZE[e.bike];
+    if (!(img && img.naturalWidth)) return;
+    const w = sz[0] / 2, h = sz[1] / 2;
+    g.save();
+    g.translate(e.x, e.y);
+    g.scale(-1, 1);
+    g.drawImage(img, -w / 2, -h, w, h);
+    g.restore();
+  }
+  function parkedBikes() {
+    const T2 = rideT(), riding = isRideDay() && T2 >= RIDE_START && T2 < RIDE_END;
+    return riding ? [] : RIDERS.filter((r) => r.bike).map((r) => ({ x: r.bikeAt.x, y: r.bikeAt.y, bike: r.bike }));
+  }
   function drawFolk(e) {
     const img = assets[e.folk.sprite];
     if (!(img && img.naturalWidth)) return;
@@ -1689,10 +1809,20 @@
   const ACTOR_K = 0.62;
   function townActors() {
     const hs = householdState, actors = [];
-    if (hs.girl.scene === "town") actors.push({ name: "Annie", entity: hs.girl, draw: drawPlayerAvatar, box: [-23, -64, 46, 74] });
-    if (hs.boy.scene === "town") actors.push({ name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-24, -66, 48, 76] });
+    const riderBox = (e) => {
+      const sh = RIDE_SHEETS[e.ride.sheet];
+      const k = (sh.k || 1) / 2;
+      return [-sh.cw * k / 2, -sh.ch * k, sh.cw * k, sh.ch * k];
+    };
+    if (hs.girl.scene === "town") actors.push(hs.girl.ride ? { name: "Annie", entity: hs.girl, draw: drawRider, box: riderBox(hs.girl), k: 1 } : { name: "Annie", entity: hs.girl, draw: drawPlayerAvatar, box: [-23, -64, 46, 74] });
+    if (hs.boy.scene === "town") actors.push(hs.boy.ride ? { name: "Hayden", entity: hs.boy, draw: drawRider, box: riderBox(hs.boy), k: 1 } : { name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-24, -66, 48, 76] });
+    for (const b of parkedBikes()) actors.push({ name: null, entity: b, draw: drawParkedBike, box: null, k: 1 });
     if (hs.dog.scene === "town") actors.push({ name: "Riley", entity: hs.dog, draw: (e) => drawPet(e, "dog"), box: [-18, -29, 36, 36], k: 0.8 });
     for (const e of townsfolkState()) {
+      if (e.ride) {
+        actors.push({ name: e.folk.name, entity: e, draw: drawRider, box: riderBox(e), k: 1 });
+        continue;
+      }
       const k = e.folk.scale || 1;
       actors.push({ name: e.folk.name, entity: e, draw: drawFolk, box: [-16 * k, -51 * k, 32 * k, 57 * k] });
     }
@@ -1722,8 +1852,8 @@
     if (!el) return;
     const id = p.id, dog = householdState.dog, catRest = simMinute % 90 < 65 || id === "sleep";
     const at = { breakfast: "Breakfast at the farmhouse", dinner: "Dinner at the farmhouse", couch: "Snuggled on the couch", sleep: "Asleep at the farmhouse" };
-    const hayden = at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home" }[id];
-    const annie = at[id] || { outbound: "Walking to the Nail Salon", work: "Working at the Nail Salon", return: "Walking home" }[id];
+    const hayden = householdState.boy.rideStatus || at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home" }[id];
+    const annie = householdState.girl.rideStatus || at[id] || { outbound: "Walking to the Nail Salon", work: "Working at the Nail Salon", return: "Walking home" }[id];
     const riley = dog.scene === "town" ? "Walking around town" : id === "couch" ? "Resting by the couch" : id === "sleep" ? "Asleep at home" : "Hanging out at home";
     const theo = id === "sleep" ? "Asleep with the family" : catRest ? "Napping at home" : "Wandering the farmhouse";
     const html = [["Hayden", hayden], ["Annie", annie], ["Riley", riley], ["Theo", theo]].map(([n, t]) => "<span><b>".concat(n, "</b>").concat(t, "</span>")).join("");
@@ -1798,6 +1928,7 @@
       const T2 = window.HMTown;
       if (!T2) return list;
       for (const a of townActors()) {
+        if (!a.box) continue;
         const ak = a.k || ACTOR_K, [bx, by, bw, bh] = a.box, [x, y] = T2.toScreen(a.entity.x + bx * ak, a.entity.y + by * ak), z = T2.camera.z * ak;
         list.push({ name: a.name, x, y, w: bw * z, h: bh * z });
       }
@@ -1871,7 +2002,27 @@
     syncRoutine();
     draw();
   };
-  document.querySelectorAll("[data-time]").forEach((button) => button.onclick = () => setTime(button.dataset.time));
+  document.querySelectorAll("[data-time]").forEach((button) => button.onclick = () => {
+    rideForced = false;
+    setTime(button.dataset.time);
+  });
+  const rideBtn = document.getElementById("previewRide");
+  if (rideBtn) rideBtn.onclick = () => {
+    rideForced = true;
+    timeSpeed = 1 / 60;
+    const sp = document.getElementById("speedSelect");
+    if (sp) sp.value = String(1 / 60);
+    viewMode = "town";
+    const vs = document.getElementById("viewSelect");
+    if (vs) vs.value = "town";
+    if (window.HMTown) {
+      window.HMTown.camera.z = 1.6;
+      window.HMTown.focus(560, 900);
+    }
+    setTime(17 * 60 + 48.5, false);
+    timeRunning = true;
+    refreshUI();
+  };
   window.HoneyMeadows = {
     useCurrentCentralTime,
     getClockState() {
@@ -2030,6 +2181,21 @@
     }
   });
   window.HM_DEBUG = {
+    setRideDay(v) {
+      rideForced = !!v;
+    },
+    get isRideDay() {
+      return isRideDay();
+    },
+    rideAt(id, minute) {
+      return rideState(id, minute * 60);
+    },
+    get rideLoop() {
+      return RIDE_LOOP.points;
+    },
+    get parkedBikes() {
+      return parkedBikes();
+    },
     get clockMode() {
       return clockMode;
     },

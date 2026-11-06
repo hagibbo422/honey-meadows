@@ -55,6 +55,17 @@ const routes = {
   // Madi, Blair & Nick: out from the Hardaway Household and back
   'hardaway-legs': [['hardaway', 'parkEast'], ['parkEast', 'court'], ['court', 'northEast'], ['northEast', 'research'], ['research', 'plaza'], ['plaza', 'hall'], ['hall', 'hardaway']].map(([a, b]) => leg(a, b))
 };
+// Wednesday bike ride: walk across the bridge to the bikes parked on the south trail, then ride the
+// perimeter trail all the way around the map (closed loop that starts at the bottom of the bridge).
+P.bridgeTop = [664, 640];
+P.bridgeBottom = [664, 989];
+routes['farm-bridge'] = chain(['farm', 'bridgeTop', 'bridgeBottom']);
+routes['nails-bridge'] = chain(['nails', 'bridgeTop', 'bridgeBottom']);
+routes['research-bridge'] = chain(['research', 'bridgeTop', 'bridgeBottom']);
+routes['gibbons-bridge'] = chain(['gibbons', 'bridgeTop', 'bridgeBottom']);
+routes['hardaway-bridge'] = chain(['hardaway', 'bridgeTop', 'bridgeBottom']);
+// The painted dirt trail, traced from the artwork by tools/trace-trail.py.
+routes['ride-loop'] = JSON.parse(fs.readFileSync(__dirname + '/ride-loop.json', 'utf8'));
 // Points along the walkable paths, used for rain splashes.
 const surfaces = [];
 for (const p of map.paths) for (let i = 1; i < p.points.length; i++) {
