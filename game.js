@@ -1913,6 +1913,161 @@
       g.restore();
     }
   }
+  const GRID = {
+    sheets: {
+      qb12: { cw: 46, ch: 64, rows: { idle: [0, 4], run: [1, 4], dropback: [2, 4], pass: [3, 4] } },
+      wr88: { cw: 43, ch: 59, rows: { idle: [0, 4], run: [1, 5], catch: [2, 5] } },
+      wr84: { cw: 40, ch: 59, rows: { idle: [0, 4], run: [1, 5], catch: [2, 5] } },
+      db23: { cw: 49, ch: 55, rows: { idle: [0, 4], run: [1, 4], defend: [2, 4] } },
+      db37: { cw: 45, ch: 55, rows: { idle: [0, 4], run: [1, 4], defend: [2, 4] } },
+      db41: { cw: 47, ch: 58, rows: { idle: [0, 4], run: [1, 4], defend: [2, 4] } }
+    },
+    K: 0.42,
+    P: 9,
+    GL0: 1117,
+    GL1: 1364,
+    MID: 204
+  };
+  for (const n in GRID.sheets) loadAsset("football/" + n);
+  loadAsset("football/football");
+  let footballForced = false;
+  const footballLive = () => footballForced || !!(window.OSUFeed && window.OSUFeed.current && window.OSUFeed.current.state === "in");
+  const fx = (u, d) => d > 0 ? GRID.GL0 + u * (GRID.GL1 - GRID.GL0) : GRID.GL1 - u * (GRID.GL1 - GRID.GL0);
+  function seg(s, keys2) {
+    if (s <= keys2[0][0]) return [keys2[0][1], keys2[0][2]];
+    for (let i = 1; i < keys2.length; i++) {
+      if (s <= keys2[i][0]) {
+        const a = keys2[i - 1], b = keys2[i], t = (s - a[0]) / (b[0] - a[0] || 1);
+        return [lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+      }
+    }
+    const z = keys2[keys2.length - 1];
+    return [z[1], z[2]];
+  }
+  function footballState(time) {
+    const k = Math.floor(time / GRID.P), s = time - k * GRID.P, d = k % 2 === 0 ? 1 : -1;
+    const top = k % 4 < 2, M = GRID.MID;
+    const tv = top ? 180 : 228, ov = top ? 228 : 180, slant = top ? 12 : -12;
+    const target = top ? "wr88" : "wr84", other = top ? "wr84" : "wr88";
+    const tKeys = [[1, 0.45, tv], [2.6, 0.64, tv], [3.6, 0.76, tv + slant], [5.4, 1.06, tv + slant * 1.4]];
+    const oKeys = [[1, 0.45, ov], [2.6, 0.66, ov], [3.6, 0.72, ov + (top ? -6 : 6)]];
+    const qKeys = [[1, 0.4, M], [2.4, 0.33, M]];
+    const pos = {
+      qb12: seg(s, qKeys),
+      [target]: seg(s, tKeys),
+      [other]: seg(s, oKeys)
+    };
+    const T2 = pos[target], O = pos[other];
+    const lag = s < 3.6 ? 0.035 : 0.035 + Math.min(0.06, (s - 3.6) * 0.04);
+    const dbT = top ? "db23" : "db37", dbO = top ? "db37" : "db23";
+    pos[dbT] = s < 1 ? [0.53, tv] : [Math.min(0.99, T2[0] - lag + (s < 1.4 ? (1.4 - s) * 0.2 : 0)), T2[1] + 5];
+    pos[dbO] = s < 1 ? [0.53, ov] : [Math.min(0.99, O[0] + 0.03 + (s < 1.4 ? (1.4 - s) * 0.1 : 0)), O[1] + 4];
+    pos.db41 = s < 3.6 ? seg(s, [[1, 0.6, M], [3.6, 0.72, M + slant * 0.6]]) : seg(s, [[3.6, 0.72, M + slant * 0.6], [5.6, 0.97, (M + T2[1]) / 2]]);
+    const moving = (n, a, b) => a && b && Math.hypot(a[0] - b[0], a[1] - b[1]) > 15e-4;
+    const prev = (() => {
+      const q = footballStateLite(time - 0.1);
+      return q;
+    })();
+    const players = [];
+    for (const n of Object.keys(GRID.sheets)) {
+      const p = pos[n];
+      let row = "idle", f = Math.floor(time * 3) % 4;
+      const mv = moving(n, p, prev[n]);
+      if (mv) row = "run", f = Math.floor(time * 10) % GRID.sheets[n].rows.run[1];
+      if (n === "qb12") {
+        if (s >= 1 && s < 2.4) row = "dropback", f = Math.floor((s - 1) * 6) % 4;
+        else if (s >= 2.4 && s < 3.1) row = "pass", f = Math.min(3, Math.floor((s - 2.4) / 0.14));
+      } else if (n === target) {
+        if (s >= 3.25 && s < 3.6) row = "catch", f = Math.min(3, Math.floor((s - 3.25) / 0.09));
+        else if (s >= 3.6 && s < 3.85) row = "catch", f = 4;
+        else if (s >= 5.4) row = "catch", f = 4;
+      } else if (n === dbT && s >= 3.3 && s < 3.8) row = "defend", f = Math.min(3, Math.floor((s - 3.3) / 0.12));
+      players.push({ n, x: fx(p[0], d), y: p[1], row, f, flip: d < 0 });
+    }
+    const byN = Object.fromEntries(players.map((p) => [p.n, p]));
+    const hand = (pl, dx, dy) => [pl.x + dx * (pl.flip ? -1 : 1), pl.y + dy];
+    let ball = null, angle = 0;
+    if (s >= 2.75 && s < 3.6) {
+      const t = (s - 2.75) / 0.85, catchAt = [fx(0.76, d), tv + slant];
+      const a = hand(byN.qb12, 7, -21), b = [catchAt[0] - 3 * d, catchAt[1] - 13];
+      const at = (tt) => [lerp(a[0], b[0], tt), lerp(a[1], b[1], tt) - Math.sin(Math.PI * tt) * 22];
+      ball = at(t);
+      const nx = at(Math.min(1, t + 0.02));
+      angle = Math.atan2(nx[1] - ball[1], nx[0] - ball[0]);
+    } else if (s >= 3.85 && s < 5.4) {
+      ball = hand(byN[target], 4, -11);
+      angle = 0.5 * d;
+    }
+    let alpha = 1;
+    if (s < 0.4) alpha = s / 0.4;
+    else if (s > GRID.P - 0.5) alpha = (GRID.P - s) / 0.5;
+    return { players, ball, angle, alpha, td: s >= 5.4 && s < GRID.P - 0.5 ? s - 5.4 : -1, target, d };
+  }
+  function footballStateLite(time) {
+    const k = Math.floor(time / GRID.P), s = time - k * GRID.P;
+    const top = k % 4 < 2, M = GRID.MID, tv = top ? 180 : 228, ov = top ? 228 : 180, slant = top ? 12 : -12;
+    const target = top ? "wr88" : "wr84", other = top ? "wr84" : "wr88";
+    const T2 = seg(s, [[1, 0.45, tv], [2.6, 0.64, tv], [3.6, 0.76, tv + slant], [5.4, 1.06, tv + slant * 1.4]]);
+    const O = seg(s, [[1, 0.45, ov], [2.6, 0.66, ov], [3.6, 0.72, ov + (top ? -6 : 6)]]);
+    const lag = s < 3.6 ? 0.035 : 0.035 + Math.min(0.06, (s - 3.6) * 0.04);
+    const dbT = top ? "db23" : "db37", dbO = top ? "db37" : "db23";
+    return {
+      qb12: seg(s, [[1, 0.4, M], [2.4, 0.33, M]]),
+      [target]: T2,
+      [other]: O,
+      [dbT]: s < 1 ? [0.53, tv] : [Math.min(0.99, T2[0] - lag + (s < 1.4 ? (1.4 - s) * 0.2 : 0)), T2[1] + 5],
+      [dbO]: s < 1 ? [0.53, ov] : [Math.min(0.99, O[0] + 0.03 + (s < 1.4 ? (1.4 - s) * 0.1 : 0)), O[1] + 4],
+      db41: s < 3.6 ? seg(s, [[1, 0.6, M], [3.6, 0.72, M + slant * 0.6]]) : seg(s, [[3.6, 0.72, M + slant * 0.6], [5.6, 0.97, (M + T2[1]) / 2]])
+    };
+  }
+  function drawFootball() {
+    if (!footballLive()) return;
+    const st = footballState(clock), K = GRID.K;
+    g.save();
+    g.globalAlpha = st.alpha;
+    st.players.sort((a, b) => a.y - b.y);
+    for (const pl of st.players) {
+      const sh = GRID.sheets[pl.n], img = assets["football/" + pl.n];
+      if (!(img && img.naturalWidth)) continue;
+      const w = sh.cw * K, h = sh.ch * K;
+      g.save();
+      g.translate(Math.round(pl.x), Math.round(pl.y));
+      if (pl.flip) g.scale(-1, 1);
+      g.globalAlpha = st.alpha * 0.3;
+      g.fillStyle = "#0b2410";
+      g.beginPath();
+      g.ellipse(0, 0, w * 0.3, 2.2, 0, 0, Math.PI * 2);
+      g.fill();
+      g.globalAlpha = st.alpha;
+      g.drawImage(img, pl.f * sh.cw, sh.rows[pl.row][0] * sh.ch, sh.cw, sh.ch, -w / 2, -h, w, h);
+      g.restore();
+    }
+    const bi = assets["football/football"];
+    if (st.ball && bi && bi.naturalWidth) {
+      g.save();
+      g.translate(st.ball[0], st.ball[1]);
+      g.rotate(st.angle);
+      g.drawImage(bi, -4, -2.6, 8, 5.2);
+      g.restore();
+    }
+    if (st.td >= 0) {
+      const pulse = 1 + 0.08 * Math.sin(st.td * 9), cx = (GRID.GL0 + GRID.GL1) / 2 + 2;
+      g.save();
+      g.translate(cx, 194);
+      g.scale(pulse, pulse);
+      g.font = '900 15px "Arial Black","Helvetica Neue",Arial,sans-serif';
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.lineJoin = "round";
+      g.lineWidth = 4;
+      g.strokeStyle = "#1b1b1f";
+      g.strokeText("TOUCHDOWN!", 0, 0);
+      g.fillStyle = Math.floor(st.td * 4) % 2 ? "#ff7300" : "#ffffff";
+      g.fillText("TOUCHDOWN!", 0, 0);
+      g.restore();
+    }
+    g.restore();
+  }
   function drawFolk(e) {
     const img = assets[e.folk.sprite];
     if (!(img && img.naturalWidth)) return;
@@ -1954,6 +2109,7 @@
     T2.beginWorld(g);
     T2.drawBoards(g, env, st);
     drawHoops();
+    drawFootball();
     for (const a of townActors()) {
       g.save();
       g.translate(a.entity.x, a.entity.y);
@@ -2122,6 +2278,22 @@
     rideForced = false;
     setTime(button.dataset.time);
   });
+  const footballBtn = document.getElementById("previewFootball");
+  if (footballBtn) footballBtn.onclick = () => {
+    footballForced = !footballForced;
+    window.HMFootballPreview = footballForced;
+    footballBtn.setAttribute("aria-pressed", String(footballForced));
+    if (footballForced) {
+      viewMode = "town";
+      const vs = document.getElementById("viewSelect");
+      if (vs) vs.value = "town";
+      if (window.HMTown) {
+        window.HMTown.camera.z = 2.2;
+        window.HMTown.focus(1240, 190);
+      }
+      syncRoutine();
+    }
+  };
   const hoopsBtn = document.getElementById("previewHoops");
   if (hoopsBtn) hoopsBtn.onclick = () => {
     hoopsForced = !hoopsForced;
@@ -2313,6 +2485,13 @@
     }
   });
   window.HM_DEBUG = {
+    setFootball(v) {
+      footballForced = !!v;
+      window.HMFootballPreview = footballForced;
+    },
+    footballAt(t) {
+      return footballState(t);
+    },
     setHoops(v) {
       hoopsForced = !!v;
       window.HMHoopsPreview = hoopsForced;

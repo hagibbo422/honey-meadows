@@ -191,7 +191,7 @@
       night,
       town: pick(prefs.townLights, (env.darkness || 0) > 0.12),
       court: pick(prefs.courtLights, feedLive(window.ThunderFeed) || !!window.HMHoopsPreview),
-      field: pick(prefs.fieldLights, feedLive(window.OSUFeed))
+      field: pick(prefs.fieldLights, feedLive(window.OSUFeed) || !!window.HMFootballPreview)
     };
   }
   const rain = window.HoneyMeadowsRain ? new window.HoneyMeadowsRain(WW, WH, ROUTES.surfaces || []) : null;

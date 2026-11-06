@@ -23,6 +23,13 @@ The town is now the 1536×1024 illustrated map. The canvas stays 1152×768 (3:2)
 - Settings → Town: Town lights (Auto = dusk to dawn), Court lights and Field lights (Auto = on only while a game is live), Weather (Live OKC = rains when it is raining or overcast in Oklahoma City, from Open-Meteo every 10 minutes; or force Rain / Clear), Walk paths overlay. Saved per browser.
 - Scoreboard cell positions are `FIELD_BOARD` / `COURT_BOARD` in `town.js`.
 
+## OSU game on the football field
+
+While the OSU feed says a game is live (`OSUFeed.current.state === "in"`), 3 on 3 plays on the town field, orange always on offense: the QB drops back and throws to one receiver (alternating #88 and #84), who catches it over the defender's break-up attempt and runs into the end zone; "TOUCHDOWN!" flashes, then the next play fades in going the other way (9 s per play).
+
+- Code: the "OSU football" block in `game.js` (`GRID`, `footballState`, `drawFootball`). Preview from Settings → Preview → 🏈 OSU game (also turns the field lights on).
+- Sprites: `assets/football/qb12.png` (idle, run, dropback, pass), `wr88.png` / `wr84.png` (idle, run, catch), `db23.png` / `db37.png` / `db41.png` (idle, run, defend), `football.png`, cut with `tools/make-football-sprites.py`.
+
 ## Thunder game on the court
 
 While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`), three OKC players play on the town court: the ball handler dribbles up, passes to the wing, the wing passes to the shooter, who scores; then they go the other way with roles rotated (8.6 s per trip). Three Spurs-style defenders shuffle, reach for steals and contest the shot.
