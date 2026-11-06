@@ -1807,8 +1807,8 @@
     P: 8.6,
     X0: 1126,
     X1: 1328,
-    RIM_U: 0.9,
-    RIM_Y: 371
+    RIM_U: 0.99,
+    RIM_Y: 362
   };
   for (const [n] of HOOPS.okc.concat(HOOPS.opp)) loadAsset("hoops/" + n);
   loadAsset("hoops/ball");
