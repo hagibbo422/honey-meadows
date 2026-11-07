@@ -1640,8 +1640,8 @@
     { id: "blue", name: "Ralph", sprite: "npc_blue", with: "sun", side: "left" },
     { id: "long", name: "Madi", sprite: "npc_long", legs: "hardaway-legs", offset: 95 },
     { id: "kid", name: "Blair", sprite: "npc_kid", with: "long", scale: 0.72 },
-    { id: "jonesF", name: "Mrs. Jones", sprite: "npc_jones_f", legs: "jones-legs", offset: 210 },
-    { id: "jonesM", name: "Mr. Jones", sprite: "npc_jones_m", with: "jonesF", side: "left" },
+    { id: "jonesF", name: "Bailey", sprite: "npc_jones_f", legs: "jones-legs", offset: 210 },
+    { id: "jonesM", name: "Dakota", sprite: "npc_jones_m", with: "jonesF", side: "left" },
     { id: "beard", name: "Nick", sprite: "npc_beard", with: "kid" }
   ];
   const FOLK_SPEED = 16, FOLK_PAUSE = 5, HOME_PAUSE = 45, FOLK_HOURS = [7 * 60, 21 * 60 + 30];
@@ -1727,8 +1727,8 @@
     { id: "beard", name: "Nick", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 0], back: 50, s: RIDE_BASE + RIDE_GAP, bike: "yellow", sheet: "nick" },
     { id: "long", name: "Madi", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 2], back: 52, s: RIDE_BASE, bike: "purple", sheet: "madi" },
     { id: "kid", name: "Blair", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 4], back: 53, s: RIDE_BASE, stand: 42, bike: null, sheet: null },
-    { id: "jonesF", name: "Mrs. Jones", out: "jones-bridge", home: "jones-bridge", arrive: [18, 3, 30], back: 70, s: 70 + RIDE_GAP, bike: "navy", sheet: "jones_f" },
-    { id: "jonesM", name: "Mr. Jones", out: "jones-bridge", home: "jones-bridge", arrive: [18, 3, 33], back: 72, s: 70, bike: "forest", sheet: "jones_m" }
+    { id: "jonesF", name: "Bailey", out: "jones-bridge", home: "jones-bridge", arrive: [18, 3, 30], back: 70, s: 70 + RIDE_GAP, bike: "navy", sheet: "jones_f" },
+    { id: "jonesM", name: "Dakota", out: "jones-bridge", home: "jones-bridge", arrive: [18, 3, 33], back: 72, s: 70, bike: "forest", sheet: "jones_m" }
   ];
   function trailTo(sEnd) {
     const pts = [];

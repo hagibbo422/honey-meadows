@@ -6,7 +6,7 @@
     { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "player_avatar", 52, 84, 104, ["bikes/ride_annie", 83, 103, 2]], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
     { title: "Ralph & Alisa", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]]] },
     { title: "Madi, Blair & Nick", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]]] },
-    { title: "The Joneses", people: [["Mrs. Jones", "npc_jones_f", 64, 96, 108, ["bikes/ride_jones_f", 74, 101, 1]], ["Mr. Jones", "npc_jones_m", 64, 96, 112, ["bikes/ride_jones_m", 74, 101, 1]]] }
+    { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 108, ["bikes/ride_jones_f", 74, 101, 1]], ["Dakota", "npc_jones_m", 64, 96, 112, ["bikes/ride_jones_m", 74, 101, 1]]] }
   ];
   var built = false;
   function card(p) {
