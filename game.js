@@ -1402,7 +1402,7 @@
     if (id === "gym" && householdState && householdState.girl.scene === "gym") out.push({ img: "annie_gym", sx: Math.floor(clock * 2.6) % 10 * 80, sy: 0, sw: 80, sh: 100, x: 1040, y: 380, w: 132, h: 165, name: "Annie" });
     if (id === "gym" && householdState && householdState.boy.scene === "gym") out.push({ img: "hayden_legpress", sx: Math.floor(clock * 2.4) % 8 * 120, sy: 0, sw: 120, sh: 105, x: 225, y: 245, w: 195, h: 171, name: "Hayden" });
     if (id === "gym" && act === "gym") {
-      const bench = { x: 660, y: 330, w: 185, h: 185 }, floor = { x: 1100, y: 356, w: 190, h: 190 };
+      const bench = { x: 712, y: 300, w: 185, h: 185 }, floor = { x: 1100, y: 356, w: 190, h: 190 };
       const who = [["Bailey", 0], ["Dakota", 3]];
       for (const [name, row] of who) {
         const benchRow = row === 1 || row === 3, n = benchRow ? 5 : 6, at = benchRow ? bench : floor;
