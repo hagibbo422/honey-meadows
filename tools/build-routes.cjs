@@ -53,6 +53,8 @@ const routes = {
   // Ralph & Alisa: out from the Gibbons Residence and back, one leg per stop
   'gibbons-legs': [['gibbons', 'fountain'], ['fountain', 'hall'], ['hall', 'restaurant'], ['restaurant', 'nails'], ['nails', 'gym'], ['gym', 'court'], ['court', 'gibbons']].map(([a, b]) => leg(a, b)),
   // Madi, Blair & Nick: out from the Hardaway Household and back
+  // The Joneses: out from the Jones Residence and back
+  'jones-legs': [['jones', 'parkSouth'], ['parkSouth', 'restaurant'], ['restaurant', 'gym'], ['gym', 'court'], ['court', 'parkEast'], ['parkEast', 'jones']].map(([a, b]) => leg(a, b)),
   'hardaway-legs': [['hardaway', 'parkEast'], ['parkEast', 'court'], ['court', 'northEast'], ['northEast', 'research'], ['research', 'plaza'], ['plaza', 'hall'], ['hall', 'hardaway']].map(([a, b]) => leg(a, b))
 };
 // Wednesday bike ride: walk across the bridge to the bikes parked on the south trail, then ride the
@@ -64,6 +66,7 @@ routes['nails-bridge'] = chain(['nails', 'bridgeTop', 'bridgeBottom']);
 routes['research-bridge'] = chain(['research', 'bridgeTop', 'bridgeBottom']);
 routes['gibbons-bridge'] = chain(['gibbons', 'bridgeTop', 'bridgeBottom']);
 routes['hardaway-bridge'] = chain(['hardaway', 'bridgeTop', 'bridgeBottom']);
+routes['jones-bridge'] = chain(['jones', 'bridgeTop', 'bridgeBottom']);
 // The painted dirt trail, traced from the artwork by tools/trace-trail.py.
 routes['ride-loop'] = JSON.parse(fs.readFileSync(__dirname + '/ride-loop.json', 'utf8'));
 // Points along the walkable paths, used for rain splashes.

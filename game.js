@@ -29,7 +29,7 @@
   for (const name of ["player_avatar", "companion_avatar", "room_headquarters", "room_farm", "room_research", "room_nails"]) {
     loadAsset(name);
   }
-  const ILLUSTRATED = { gym: "assets/interiors/gym.jpg", restaurant: "assets/interiors/restaurant.jpg", gibbons: "assets/interiors/gibbons.jpg", hardaway: "assets/interiors/hardaway.jpg" };
+  const ILLUSTRATED = { gym: "assets/interiors/gym.jpg", restaurant: "assets/interiors/restaurant.jpg", gibbons: "assets/interiors/gibbons.jpg", hardaway: "assets/interiors/hardaway.jpg", jones: "assets/interiors/jones.jpg" };
   function illustrated(id) {
     const k = "interior_" + id;
     if (!assets[k]) {
@@ -254,7 +254,8 @@
     gym: { name: "Gym", items: [] },
     restaurant: { name: "Restaurant", items: [] },
     gibbons: { name: "Gibbons Residence", items: [] },
-    hardaway: { name: "Hardaway Household", items: [] }
+    hardaway: { name: "Hardaway Household", items: [] },
+    jones: { name: "Jones Residence", items: [] }
   };
   const stations = [
     { id: "notes", name: "Journal Shelf", label: "NOTES", tx: 13, ty: 3, w: 2, h: 2, emoji: "📔" }
@@ -1639,6 +1640,8 @@
     { id: "blue", name: "Ralph", sprite: "npc_blue", with: "sun", side: "left" },
     { id: "long", name: "Madi", sprite: "npc_long", legs: "hardaway-legs", offset: 95 },
     { id: "kid", name: "Blair", sprite: "npc_kid", with: "long", scale: 0.72 },
+    { id: "jonesF", name: "Mrs. Jones", sprite: "npc_jones_f", legs: "jones-legs", offset: 210 },
+    { id: "jonesM", name: "Mr. Jones", sprite: "npc_jones_m", with: "jonesF", side: "left" },
     { id: "beard", name: "Nick", sprite: "npc_beard", with: "kid" }
   ];
   const FOLK_SPEED = 16, FOLK_PAUSE = 5, HOME_PAUSE = 45, FOLK_HOURS = [7 * 60, 21 * 60 + 30];
@@ -1708,20 +1711,24 @@
     alisa: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     ralph: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     nick: { cw: 66, ch: 100, dirs: ["down", "right", "up", "left"] },
-    madi: { cw: 72, ch: 103, dirs: ["down", "right", "up", "left"] }
+    madi: { cw: 72, ch: 103, dirs: ["down", "right", "up", "left"] },
+    jones_f: { cw: 74, ch: 101, dirs: ["down", "right", "up", "left"] },
+    jones_m: { cw: 74, ch: 101, dirs: ["down", "right", "up", "left"] }
   };
-  const BIKE_SIZE = { blue: [89, 59], red: [82, 63], green: [82, 64], yellow: [81, 60], teal: [84, 60], purple: [82, 63] };
+  const BIKE_SIZE = { blue: [89, 59], red: [82, 63], green: [82, 64], yellow: [81, 60], teal: [84, 60], purple: [82, 63], navy: [89, 59], forest: [82, 64] };
   for (const k in RIDE_SHEETS) loadAsset("bikes/ride_" + k);
   for (const k in BIKE_SIZE) loadAsset("bikes/bike_" + k);
-  const RIDE_GAP = 62;
+  const RIDE_GAP = 62, RIDE_BASE = 70 + RIDE_GAP * 2;
   const RIDERS = [
-    { id: "girl", name: "Annie", out: "nails-bridge", home: "farm-bridge", arrive: [17, 50, 0], back: 0, s: 70 + RIDE_GAP * 5, bike: "blue", sheet: "annie" },
-    { id: "boy", name: "Hayden", out: "research-bridge", home: "farm-bridge", arrive: [17, 54, 0], back: 6, s: 70 + RIDE_GAP * 4, bike: "red", sheet: "hayden" },
-    { id: "sun", name: "Alisa", out: "gibbons-bridge", home: "gibbons-bridge", arrive: [17, 58, 0], back: 30, s: 70 + RIDE_GAP * 3, bike: "green", sheet: "alisa" },
-    { id: "blue", name: "Ralph", out: "gibbons-bridge", home: "gibbons-bridge", arrive: [17, 58, 3], back: 32, s: 70 + RIDE_GAP * 2, bike: "teal", sheet: "ralph" },
-    { id: "beard", name: "Nick", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 0], back: 50, s: 70 + RIDE_GAP, bike: "yellow", sheet: "nick" },
-    { id: "long", name: "Madi", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 2], back: 52, s: 70, bike: "purple", sheet: "madi" },
-    { id: "kid", name: "Blair", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 4], back: 53, s: 70, stand: 42, bike: null, sheet: null }
+    { id: "girl", name: "Annie", out: "nails-bridge", home: "farm-bridge", arrive: [17, 50, 0], back: 0, s: RIDE_BASE + RIDE_GAP * 5, bike: "blue", sheet: "annie" },
+    { id: "boy", name: "Hayden", out: "research-bridge", home: "farm-bridge", arrive: [17, 54, 0], back: 6, s: RIDE_BASE + RIDE_GAP * 4, bike: "red", sheet: "hayden" },
+    { id: "sun", name: "Alisa", out: "gibbons-bridge", home: "gibbons-bridge", arrive: [17, 58, 0], back: 30, s: RIDE_BASE + RIDE_GAP * 3, bike: "green", sheet: "alisa" },
+    { id: "blue", name: "Ralph", out: "gibbons-bridge", home: "gibbons-bridge", arrive: [17, 58, 3], back: 32, s: RIDE_BASE + RIDE_GAP * 2, bike: "teal", sheet: "ralph" },
+    { id: "beard", name: "Nick", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 0], back: 50, s: RIDE_BASE + RIDE_GAP, bike: "yellow", sheet: "nick" },
+    { id: "long", name: "Madi", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 2], back: 52, s: RIDE_BASE, bike: "purple", sheet: "madi" },
+    { id: "kid", name: "Blair", out: "hardaway-bridge", home: "hardaway-bridge", arrive: [18, 2, 4], back: 53, s: RIDE_BASE, stand: 42, bike: null, sheet: null },
+    { id: "jonesF", name: "Mrs. Jones", out: "jones-bridge", home: "jones-bridge", arrive: [18, 3, 30], back: 70, s: 70 + RIDE_GAP, bike: "navy", sheet: "jones_f" },
+    { id: "jonesM", name: "Mr. Jones", out: "jones-bridge", home: "jones-bridge", arrive: [18, 3, 33], back: 72, s: 70, bike: "forest", sheet: "jones_m" }
   ];
   function trailTo(sEnd) {
     const pts = [];
@@ -2378,7 +2385,7 @@
       return true;
     }
   };
-  const TOWN_DOORS = { nails: "nails", research: "research", farm: "farm", "city-hall": "headquarters", gym: "gym", restaurant: "restaurant", gibbons: "gibbons", hardaway: "hardaway" };
+  const TOWN_DOORS = { nails: "nails", research: "research", farm: "farm", "city-hall": "headquarters", gym: "gym", restaurant: "restaurant", gibbons: "gibbons", hardaway: "hardaway", jones: "jones" };
   function openScene(id) {
     viewMode = id;
     const vs = document.getElementById("viewSelect");
@@ -2445,7 +2452,7 @@
       window.open(window.OSUFeed ? window.OSUFeed.STATS_URL : "https://www.espn.com/college-football/team/stats/_/id/197/oklahoma-state-cowboys", "_blank", "noopener");
       return;
     }
-    if (t.id === "house-3" || t.id === "jones") {
+    if (t.id === "house-3") {
       window.HMTown.comingSoon(t);
       return;
     }

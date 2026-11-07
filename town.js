@@ -461,7 +461,7 @@
       const c = env.court || {};
       return "🏀 OKC " + (c.home != null ? c.home + " – " + c.away + " " + c.opp + " • " + c.period + " " + c.clock : "") + " • THUNDER STATS ↗";
     }
-    if (t.id === "house-3" || t.id === "jones") return "🚧 " + t.name.toUpperCase() + " • COMING SOON";
+    if (t.id === "house-3") return "🚧 " + t.name.toUpperCase() + " • COMING SOON";
     return "✦ ENTER " + t.name.toUpperCase();
   }
   function drawGround(g, env) {

@@ -10,7 +10,7 @@ const scope={window,document,Image:class{addEventListener(){}},localStorage:{get
 for(const file of ['game-data.js','assets-embedded.js','map-data.js','town-routes.js','game.js'])vm.runInContext(fs.readFileSync(root+'/'+file,'utf8'),scope);
 const api=window.HM_DEBUG,controller=window.HoneyMeadows,results=[];const run=(name,fn)=>{fn();results.push({name,result:'PASS'});};
 const near=(p,pts,d)=>pts.some((q,i)=>i&&(()=>{const a=pts[i-1],dx=q.x-a.x,dy=q.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy)<=d;})());
-const ids=['girl','boy','sun','blue','beard','long','kid'];
+const ids=['girl','boy','sun','blue','beard','long','kid','jonesF','jonesM'];
 run('Wednesday is detected from the Central date',()=>assert.equal(api.isRideDay,true));
 run('Nobody is involved before 5:45 PM',()=>ids.forEach(id=>assert.equal(api.rideAt(id,17*60+40).step,'before')));
 run('Everyone arrives at a different time and waits by the bikes before 6:05',()=>{
@@ -26,7 +26,7 @@ run('Everyone starts riding at 6:05 PM on the trail',()=>{
   assert.equal(api.rideAt('kid',18*60+20).hidden,true);
 });
 run('Bikes are parked except during the ride, and everyone is home by 7 PM',()=>{
-  api.setTime(17*60);assert.equal(api.parkedBikes.length,6);
+  api.setTime(17*60);assert.equal(api.parkedBikes.length,8);
   api.setTime(18*60+20);assert.equal(api.parkedBikes.length,0);
   ids.forEach(id=>assert.equal(api.rideAt(id,19*60).step,'after'));
 });
