@@ -43,6 +43,10 @@ While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`
 
 Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right ×6, up ×7, idle ×5), `assets/bikes/ride_annie.png` (90x100 cells; rows right ×4, left ×4, down ×7, up ×7) and `assets/annie_portrait.png`, cut with `tools/make-annie-sprites.py <main sheet> assets <up-down sheet>`. `drawAnnie` in `game.js` draws her in town and indoors. The old `player_avatar.png` and the farmhouse meal/couch/sleep pictures still show the earlier look.
 
+## Weekends for Hayden & Annie
+
+On Saturdays and Sundays (Central), instead of the work commute and workday (10:01 AM-6:06 PM) they stroll together around the `weekend-stroll` loop (farmhouse, shops, gym, court, park, Gibbons and Jones houses, City Hall), finishing back at the farmhouse door for dinner. Code: `STROLL` / period `stroll` in `game.js`.
+
 ## Bailey & Dakota's day
 
 Breakfast at home 7-8 AM and dinner 7-8 PM (table animation over the Jones dining table), couch 8-9:30 PM, asleep otherwise. Weekdays they are out in town 8 AM-6 PM and work out at the Gym 6-7 PM (dumbbells and bench press, swapping at 6:30; on Wednesdays the bike ride replaces the workout). Weekends they roam town 8 AM-7 PM. Code: `jonesActivity`, `jonesIndoorSprites` in `game.js`. Sprites `assets/jones_eat.png`, `jones_couch.png`, `jones_workout.png`; Hayden's new look (`companion_avatar.png`, `bikes/ride_hayden.png`, `hayden_portrait2.png`) and Annie's admin portrait, cut with `tools/make-batch5-sprites.py`.

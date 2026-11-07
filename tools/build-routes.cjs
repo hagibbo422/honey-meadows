@@ -67,6 +67,8 @@ routes['research-bridge'] = chain(['research', 'bridgeTop', 'bridgeBottom']);
 routes['gibbons-bridge'] = chain(['gibbons', 'bridgeTop', 'bridgeBottom']);
 routes['hardaway-bridge'] = chain(['hardaway', 'bridgeTop', 'bridgeBottom']);
 routes['jones-bridge'] = chain(['jones', 'bridgeTop', 'bridgeBottom']);
+// Hayden & Annie's weekend stroll: a loop from the farmhouse through the shops, park and neighbourhood.
+routes['weekend-stroll'] = chain(['farm', 'nails', 'restaurant', 'gym', 'court', 'parkEast', 'fountain', 'gibbons', 'jones', 'bridge', 'hall', 'farm']);
 // The painted dirt trail, traced from the artwork by tools/trace-trail.py.
 routes['ride-loop'] = JSON.parse(fs.readFileSync(__dirname + '/ride-loop.json', 'utf8'));
 // Points along the walkable paths, used for rain splashes.

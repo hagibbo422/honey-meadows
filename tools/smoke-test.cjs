@@ -24,7 +24,7 @@ run('External data controller updates opponent and fixed scores without automati
  controller.setGameData({opponent:'SAS',scoreMode:'simulation',score:{home:20,away:16}});api.advance(10);assert.notEqual(api.score.join(','),'20,16');
 });
 run('Optional interior views and Escape return to the town without changing the schedule',()=>{
- api.setTime(720);api.setView('farm');assert.equal(api.scene,'farm');assert.equal(api.state.girl.scene,'nails');for(const fn of listeners.keydown??[])fn({key:'Escape'});assert.equal(api.scene,'town');assert.equal(elements.get('viewSelect').value,'town');
+ api.setTime(720);api.setView('farm');assert.equal(api.scene,'farm');assert.equal(api.state.girl.scene,api.isWeekend?'town':'nails');if(api.isWeekend){assert.equal(api.state.period.id,'stroll');assert(api.townActorsValid);}for(const fn of listeners.keydown??[])fn({key:'Escape'});assert.equal(api.scene,'town');assert.equal(elements.get('viewSelect').value,'town');
 });
 run('Project has separate editable code, data, and offline-image files',()=>{
  const html=fs.readFileSync(root+'/index.html','utf8');for(const f of ['game.js','game-data.js','assets-embedded.js'])assert(html.includes('src="'+f));assert(fs.statSync(root+'/game.js').size<150000);

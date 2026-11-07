@@ -1282,8 +1282,17 @@
   const dogWalk = routePath(HM_ROUTES["dog-loop"]);
   const catWalk = measuredPath([{ x: 358, y: 320 }, { x: 370, y: 540 }, { x: 420, y: 575 }, { x: 425, y: 360 }, { x: 358, y: 320 }]);
   let householdState;
+  const STROLL = routePath(HM_ROUTES["weekend-stroll"]), STROLL_START = 601, STROLL_END = 1086;
+  const STROLL_SPEED = Math.max(1, Math.round((STROLL_END - STROLL_START) * 60 * 16 / STROLL.length)) * STROLL.length / ((STROLL_END - STROLL_START) * 60);
+  const isWeekend = () => {
+    const wd = centralWeekday();
+    return wd === 0 || wd === 6;
+  };
   function makeRoutineState() {
-    const period = periodAt(simMinute), m = simMinute, commuting = period.id === "outbound" || period.id === "return";
+    let period = periodAt(simMinute);
+    const m = simMinute;
+    if (isWeekend() && m >= STROLL_START && m < STROLL_END) period = { id: "stroll", start: STROLL_START, end: STROLL_END, label: "Weekend stroll", detail: "Hayden and Annie are wandering around town together." };
+    const commuting = period.id === "outbound" || period.id === "return";
     const u = commuting ? (m - period.start) / (period.end - period.start) : 0;
     const girl = { scene: "farm", x: 384, y: 228, dir: "down", phase: 0, moving: false }, boy = { scene: "farm", x: 410, y: 228, dir: "down", phase: 0, moving: false };
     if (commuting) {
@@ -1293,6 +1302,13 @@
         if (period.id === "return") {
           actor.dir = { up: "down", down: "up", left: "right", right: "left" }[actor.dir];
         }
+      }
+    } else if (period.id === "stroll") {
+      const d = (m - STROLL_START) * 60 * STROLL_SPEED;
+      const L = STROLL.length, at = (dd) => samplePath(STROLL, (dd % L + L) % L / L);
+      const here = at(d), ahead = at(d + 6), dx = ahead.x - here.x, dy = ahead.y - here.y, len = Math.hypot(dx, dy) || 1;
+      for (const [actor, side] of [[girl, -5], [boy, 5]]) {
+        Object.assign(actor, here, { x: here.x - dy / len * side, y: here.y + dx / len * side * 0.6, scene: "town" });
       }
     } else if (period.id === "work") {
       Object.assign(girl, { scene: "nails", x: 176, y: 240, dir: "down", phase: 0 });
@@ -2254,8 +2270,8 @@
     if (!el) return;
     const id = p.id, dog = householdState.dog, catRest = simMinute % 90 < 65 || id === "sleep";
     const at = { breakfast: "Breakfast at the farmhouse", dinner: "Dinner at the farmhouse", couch: "Snuggled on the couch", sleep: "Asleep at the farmhouse" };
-    const hayden = householdState.boy.rideStatus || at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home" }[id];
-    const annie = householdState.girl.rideStatus || at[id] || { outbound: "Walking to the Nail Salon", work: "Working at the Nail Salon", return: "Walking home" }[id];
+    const hayden = householdState.boy.rideStatus || at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home", stroll: "Strolling around town with Annie" }[id];
+    const annie = householdState.girl.rideStatus || at[id] || { outbound: "Walking to the Nail Salon", work: "Working at the Nail Salon", return: "Walking home", stroll: "Strolling around town with Hayden" }[id];
     const riley = dog.scene === "town" ? "Walking around town" : id === "couch" ? "Resting by the couch" : id === "sleep" ? "Asleep at home" : "Hanging out at home";
     const theo = id === "sleep" ? "Asleep with the family" : catRest ? "Napping at home" : "Wandering the farmhouse";
     const html = [["Hayden", hayden], ["Annie", annie], ["Riley", riley], ["Theo", theo]].map(([n, t]) => "<span><b>".concat(n, "</b>").concat(t, "</span>")).join("");
@@ -2621,6 +2637,9 @@
     }
   });
   window.HM_DEBUG = {
+    get isWeekend() {
+      return isWeekend();
+    },
     jonesActivity(m) {
       return jonesActivity(m == null ? simMinute : m);
     },
