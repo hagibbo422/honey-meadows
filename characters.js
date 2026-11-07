@@ -3,9 +3,9 @@
   var btn = document.getElementById("charsToggle"), box = document.getElementById("charsBody");
   if (!btn || !box) return;
   var GROUPS = [
-    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 2], "annie_portrait", 0], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
-    { title: "Ralph, Alisa, Maggie & Sophie", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]], ["Maggie", "dogs/maggie", 58, 53, 66, null, "dogs/maggie_portrait"], ["Sophie", "dogs/sophie", 42, 45, 70, null, "dogs/sophie_portrait"]] },
-    { title: "Madi, Blair, Nick, Sadie & Mylo", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]], ["Sadie", "dogs/sadie", 60, 52, 66, null, "dogs/sadie_portrait"], ["Mylo", "dogs/mylo", 43, 42, 70, null, "dogs/mylo_portrait"]] },
+    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 90, 100, 2], "hayden_portrait", 0], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 2], "annie_portrait", 0], ["Riley", "dog_sprite", 72, 72, 62, null, null, 2, 4], ["Theo", "cat_sprite", 72, 72, 54, null, null, 2, 4]] },
+    { title: "Ralph, Alisa, Maggie & Sophie", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]], ["Maggie", "dogs/maggie", 58, 53, 66, null, "dogs/maggie_portrait", 1, 5], ["Sophie", "dogs/sophie", 42, 45, 70, null, "dogs/sophie_portrait", 1, 6]] },
+    { title: "Madi, Blair, Nick, Sadie & Mylo", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80, null, null, 0, 4], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]], ["Sadie", "dogs/sadie", 60, 52, 66, null, "dogs/sadie_portrait", 1, 5], ["Mylo", "dogs/mylo", 43, 42, 70, null, "dogs/mylo_portrait", 1, 6]] },
     { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 112, ["bikes/ride_jones_f", 74, 101, 1], "portrait_jones_f"], ["Dakota", "npc_jones_m", 64, 96, 120, ["bikes/ride_jones_m", 74, 101, 1], "portrait_jones_m"]] }
   ];
   var built = false;
@@ -58,7 +58,7 @@
     return fig;
   }
   var animTimer = null;
-  function animCanvas(src, cw, ch, row, h, label) {
+  function animCanvas(src, cw, ch, row, h, label, frames) {
     var fig = document.createElement("figure");
     fig.className = "charAnim";
     var cv = document.createElement("canvas"), box2 = null;
@@ -67,7 +67,7 @@
     var img = new Image();
     var nf = 4;
     img.onload = function() {
-      nf = Math.max(1, Math.floor(img.naturalWidth / cw));
+      nf = frames || Math.max(1, Math.floor(img.naturalWidth / cw));
       box2 = { x0: 0, y0: 0, x1: cw, y1: ch };
       try {
         var t = document.createElement("canvas");
@@ -121,13 +121,17 @@
     fig.setAttribute("aria-expanded", "true");
     var d = document.createElement("div");
     d.className = "charDetail";
-    var b = p[5], H = 150;
-    var walk = animCanvas(p[1], p[2], p[3], p[7] || 0, H, p[0] + " walking");
-    var ride = animCanvas(b[0], b[1], b[2], b[3], H, p[0] + " on the bike");
+    var b = p[5], small = p[3] <= 72 && !b, H = small ? 110 : 150;
+    var walk = animCanvas(p[1], p[2], p[3], p[7] || 0, H, p[0] + " walking", p[8]);
     d.appendChild(walk);
-    d.appendChild(ride);
+    var cvs = [walk.firstChild];
+    if (b) {
+      var ride = animCanvas(b[0], b[1], b[2], b[3], H, p[0] + " on the bike");
+      d.appendChild(ride);
+      cvs.push(ride.firstChild);
+    }
     sec.appendChild(d);
-    var f = 0, cvs = [walk.firstChild, ride.firstChild];
+    var f = 0;
     var tick = function() {
       cvs.forEach(function(cv) {
         cv._draw(f);
@@ -149,12 +153,12 @@
       row.className = "charRow";
       gp.people.forEach(function(p) {
         var fig = card(p);
-        if (p[5]) {
+        {
           fig.className += " pick";
           fig.tabIndex = 0;
           fig.setAttribute("role", "button");
           fig.setAttribute("aria-expanded", "false");
-          fig.title = "Show " + p[0] + " on the bike";
+          fig.title = p[5] ? "Show " + p[0] + " walking and on the bike" : "Show " + p[0] + " walking";
           fig.onclick = function() {
             openDetail(p, sec, fig);
           };

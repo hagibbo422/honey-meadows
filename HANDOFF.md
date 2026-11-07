@@ -43,6 +43,10 @@ While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`
 
 Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right ×6, up ×7, idle ×5), `assets/bikes/ride_annie.png` (90x100 cells; rows right ×4, left ×4, down ×7, up ×7) and `assets/annie_portrait.png`, cut with `tools/make-annie-sprites.py <main sheet> assets <up-down sheet>`. `drawAnnie` in `game.js` draws her in town and indoors. The old `player_avatar.png` and the farmhouse meal/couch/sleep pictures still show the earlier look.
 
+## Bailey & Dakota's day
+
+Breakfast at home 7-8 AM and dinner 7-8 PM (table animation over the Jones dining table), couch 8-9:30 PM, asleep otherwise. Weekdays they are out in town 8 AM-6 PM and work out at the Gym 6-7 PM (dumbbells and bench press, swapping at 6:30; on Wednesdays the bike ride replaces the workout). Weekends they roam town 8 AM-7 PM. Code: `jonesActivity`, `jonesIndoorSprites` in `game.js`. Sprites `assets/jones_eat.png`, `jones_couch.png`, `jones_workout.png`; Hayden's new look (`companion_avatar.png`, `bikes/ride_hayden.png`, `hayden_portrait.png`) and Annie's admin portrait, cut with `tools/make-batch5-sprites.py`.
+
 ## Neighbours' dogs
 
 Maggie (brown) and Sophie (small tan) belong to the Gibbons and trail Alisa & Ralph; Sadie (gold) and Mylo (small grey) belong to the Hardaways and trail Madi, Blair & Nick. They follow the family's route a little behind, sit or idle when the family stops, and stay home at night and during the Wednesday ride. Code: `DOGS` / `townDogs` in `game.js`. Sprites `assets/dogs/<name>.png` (rows idle, walkR, walkL, runR, runL, sit, lay, getup, bark) and `<name>_portrait.png`, cut with `tools/make-dog-sprites.py`.

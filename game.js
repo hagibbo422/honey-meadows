@@ -1355,10 +1355,35 @@
     const row = (_a2 = { down: 0, left: 1, right: 2, up: 3 }[actor.dir]) != null ? _a2 : 0;
     g.drawImage(source, Math.floor(actor.phase) % 4 * 52, row * 84, 52, 84, actor.x - 32, actor.y - 94, 64, 104);
   }
+  for (const n of ["jones_eat", "jones_couch", "jones_workout"]) loadAsset(n);
+  const IK = 0.75;
+  function jonesIndoorSprites(id) {
+    const act = jonesActivity(simMinute), out = [];
+    if (id === "jones" && (act === "breakfast" || act === "dinner")) out.push({ img: "jones_eat", sx: Math.floor(clock * 1.1) % 6 * 170, sy: 0, sw: 170, sh: 150, x: 195, y: 390, w: 182, h: 162, name: "Bailey & Dakota" });
+    if (id === "jones" && act === "couch") out.push({ img: "jones_couch", sx: Math.floor(clock * 0.5) % 5 * 150, sy: 0, sw: 150, sh: 110, x: 455, y: 405, w: 210, h: 154, name: "Bailey & Dakota" });
+    if (id === "gym" && act === "gym") {
+      const swap = simMinute >= 18.5 * 60;
+      const bench = { x: 712, y: 340, w: 185, h: 185 }, floor = { x: 520, y: 470, w: 175, h: 175 };
+      const who = [["Bailey", swap ? 1 : 0], ["Dakota", swap ? 2 : 3]];
+      for (const [name, row] of who) {
+        const benchRow = row === 1 || row === 3, n = benchRow ? 5 : 6, at = benchRow ? bench : floor;
+        out.push({ img: "jones_workout", sx: Math.floor(clock * (benchRow ? 2 : 2.4)) % n * 120, sy: row * 120, sw: 120, sh: 120, x: at.x, y: at.y, w: at.w, h: at.h, name });
+      }
+    }
+    return out;
+  }
+  function drawJonesIndoors(id) {
+    for (const s2 of jonesIndoorSprites(id)) {
+      const im = assets[s2.img];
+      if (!(im && im.naturalWidth)) continue;
+      g.drawImage(im, s2.sx, s2.sy, s2.sw, s2.sh, s2.x * IK, s2.y * IK, s2.w * IK, s2.h * IK);
+    }
+  }
   function drawIllustratedInterior(id) {
     const image = illustrated(id);
     fill(0, 0, 1152, 768, "#10251e");
     if (image) g.drawImage(image, 0, 0, 1152, 768);
+    if (image && (id === "jones" || id === "gym")) drawJonesIndoors(id);
     else text("Opening " + interiors[id].name + "…", 576, 384, 22, "#ffe4ac");
     const shade = darknessAt(simMinute) * 0.23;
     if (shade) fill(0, 0, 1152, 768, "rgba(22,29,65," + shade + ")");
@@ -1703,7 +1728,8 @@
         }
       }
       if (f.paths) {
-        if (rideEvening && homeSince5(f, T2)) continue;
+        if (f.id === "jonesF" && jonesActivity(m) !== "town") continue;
+        if (f.id !== "jonesF" && rideEvening && homeSince5(f, T2)) continue;
         const p = folkAt(f, clock);
         if (p) out.push(byId[f.id] = Object.assign(p, { folk: f }));
         continue;
@@ -1722,7 +1748,7 @@
   const RIDE_SPEED = RIDE_LAPS * RIDE_LOOP.length / (RIDE_END - RIDE_START);
   const RIDE_SHEETS = {
     annie: { cw: 90, ch: 100, frames: 7, rows: { right: [0, 4], left: [1, 4], down: [2, 7], up: [3, 7] }, dirs: ["down", "right", "up", "left"] },
-    hayden: { cw: 83, ch: 99, k: 0.8, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
+    hayden: { cw: 90, ch: 100, rows: { right: [0, 4], left: [1, 4], down: [2, 4], up: [3, 4] }, dirs: ["down", "right", "up", "left"] },
     alisa: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     ralph: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     nick: { cw: 66, ch: 100, dirs: ["down", "right", "up", "left"] },
@@ -1769,6 +1795,15 @@
   }
   const RIDER = Object.fromEntries(RIDERS.map((r) => [r.id, r]));
   let rideForced = false;
+  function jonesActivity(m) {
+    const wd = centralWeekday(), weekend = wd === 0 || wd === 6;
+    if (m < 7 * 60 || m >= 21.5 * 60) return "sleep";
+    if (m < 8 * 60) return "breakfast";
+    if (m >= 19 * 60 && m < 20 * 60) return "dinner";
+    if (m >= 20 * 60) return "couch";
+    if (!weekend && m >= 18 * 60) return isRideDay() ? "ride" : "gym";
+    return "town";
+  }
   function centralWeekday() {
     const day = centralSnapshot ? centralSnapshot.dayNumber : Math.floor(Date.now() / 864e5);
     return ((day + 4) % 7 + 7) % 7;
@@ -2167,7 +2202,7 @@
     g.drawImage(img, frame * 64, row * 96, 64, 96, Math.round(e.x - w / 2), Math.round(e.y - h + 6), w, h);
   }
   const ACTOR_K = 0.62;
-  const ANNIE_MATCH = 1.55, HAYDEN_MATCH = 1.33;
+  const ANNIE_MATCH = 1.55, HAYDEN_MATCH = 0.8;
   function townActors() {
     const hs = householdState, actors = [];
     const riderBox = (e) => {
@@ -2176,7 +2211,7 @@
       return [-sh.cw * k / 2, -sh.ch * k, sh.cw * k, sh.ch * k];
     };
     if (hs.girl.scene === "town") actors.push(hs.girl.ride ? { name: "Annie", entity: hs.girl, draw: drawRider, box: riderBox(hs.girl), k: 1 } : { name: "Annie", entity: hs.girl, draw: (e) => drawAnnie(e, 38, 57), box: [-16, -51, 32, 57] });
-    if (hs.boy.scene === "town") actors.push(hs.boy.ride ? { name: "Hayden", entity: hs.boy, draw: drawRider, box: riderBox(hs.boy), k: 1 } : { name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-15, -40, 30, 50], k: ACTOR_K * HAYDEN_MATCH });
+    if (hs.boy.scene === "town") actors.push(hs.boy.ride ? { name: "Hayden", entity: hs.boy, draw: drawRider, box: riderBox(hs.boy), k: 1 } : { name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-20, -64, 40, 70], k: ACTOR_K * HAYDEN_MATCH });
     for (const b of parkedBikes()) actors.push({ name: null, entity: b, draw: drawParkedBike, box: null, k: 1 });
     if (hs.dog.scene === "town") actors.push({ name: "Riley", entity: hs.dog, draw: (e) => drawPet(e, "dog"), box: [-18, -29, 36, 36], k: 0.8 });
     for (const e of townsfolkState()) {
@@ -2301,6 +2336,10 @@
         const ak = a.k || ACTOR_K, [bx, by, bw, bh] = a.box, [x, y] = T2.toScreen(a.entity.x + bx * ak, a.entity.y + by * ak), z = T2.camera.z * ak;
         list.push({ name: a.name, x, y, w: bw * z, h: bh * z });
       }
+      return list;
+    }
+    if (scene === "jones" || scene === "gym") {
+      for (const s2 of jonesIndoorSprites(scene)) list.push({ name: s2.name, x: s2.x * IK, y: s2.y * IK, w: s2.w * IK, h: s2.h * IK });
       return list;
     }
     const k = 640 / 768, room = (x, y, w, h, name) => list.push({ name, x: 256 + x * k, y: 52 + y * k, w: w * k, h: h * k });
@@ -2582,6 +2621,9 @@
     }
   });
   window.HM_DEBUG = {
+    jonesActivity(m) {
+      return jonesActivity(m == null ? simMinute : m);
+    },
     get dogs() {
       return townDogs().map((e) => ({ name: e.dog.name, x: e.x, y: e.y, row: e.row }));
     },
