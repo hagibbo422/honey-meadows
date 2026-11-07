@@ -47,6 +47,10 @@ Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right 
 
 On Saturdays and Sundays (Central), instead of the work commute and workday (10:01 AM-6:06 PM) they stroll together around the `weekend-stroll` loop (farmhouse, shops, gym, court, park, Gibbons and Jones houses, City Hall), finishing back at the farmhouse door for dinner. Code: `STROLL` / period `stroll` in `game.js`.
 
+## Annie's gym hour
+
+Mon, Tue, Thu and Fri: Annie walks from the Nail Salon to the Gym at 6 PM, works out with Bailey & Dakota (`assets/annie_gym.png`, 10 dumbbell frames, on the green yoga mat), walks home at 7 PM and dinner starts at 7:05. Hayden is home alone meanwhile. Period `annieGym` / `ANNIE_GYM` in `game.js`; routes `nails-gym`, `gym-farm`. Annie's walk and bike sheets are cut by `tools/make-pet-sprites.py`.
+
 ## Bailey & Dakota's day
 
 Breakfast at home 7-8 AM and dinner 7-8 PM (table animation over the Jones dining table), couch 8-9:30 PM, asleep otherwise. Weekdays they are out in town 8 AM-6 PM and work out at the Gym 6-7 PM (dumbbells and bench press, swapping at 6:30; on Wednesdays the bike ride replaces the workout). Weekends they roam town 8 AM-7 PM. Code: `jonesActivity`, `jonesIndoorSprites` in `game.js`. Sprites `assets/jones_eat.png`, `jones_couch.png`, `jones_workout.png`; Hayden's new look (`companion_avatar.png`, `bikes/ride_hayden.png`, `hayden_portrait2.png`) and Annie's admin portrait, cut with `tools/make-batch5-sprites.py`.

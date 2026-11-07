@@ -41,7 +41,7 @@ run('Focus and visibility restore wall-clock sync; preview stays untouched',()=>
  api.setTime(603);now+=3600000;for(const fn of listeners.focus??[])fn();assert.equal(api.minute,603);assert.equal(api.clockMode,'preview');
 });
 run('Daily routine, pets and town camera still follow the selected clock',()=>{
- for(const [minute,id]of [[480,'breakfast'],[603,'outbound'],[720,'work'],[1083,'return'],[1140,'dinner'],[1260,'couch'],[1380,'sleep']]){api.setTime(minute);assert.equal(api.period,id);assert.equal(api.scene,'town');assert.equal(api.state.cat.scene,'farm');assert(api.townActorsValid);}
+ for(const [minute,id]of [[480,'breakfast'],[603,'outbound'],[720,'work'],[1083,'return'],[1150,'dinner'],[1100,'annieGym'],[1260,'couch'],[1380,'sleep']]){api.setTime(minute);assert.equal(api.period,id);assert.equal(api.scene,'town');assert.equal(api.state.cat.scene,'farm');assert(api.townActorsValid);}
 });
 run('Future controller retains game data and exposes clock state',()=>{
  controller.setGameData({opponent:'BOS',scoreMode:'manual',score:{home:108,away:104}});api.advance(30);assert.equal(api.score.join(','),'108,104');controller.useCurrentCentralTime();assert.equal(controller.getClockState().mode,'live');assert.equal(controller.getClockState().timeZone,'America/Chicago');

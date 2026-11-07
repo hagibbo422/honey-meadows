@@ -6,15 +6,15 @@ import numpy as np
 from PIL import Image, ImageOps
 from scipy import ndimage
 A, OUT = sys.argv[1:3]
-def grid(path, rows, cols, xmin=0):
+def grid(path, rows, cols, xmin=0, thr=100, clean=True):
     im = np.array(Image.open(path).convert('RGBA'))
-    m = im[..., 3] > 100
+    m = im[..., 3] > thr
     # opaque patches of the dark backdrop caught between legs: very dark blobs bigger than an outline
     v = im[..., :3].max(2)
-    dl, dn = ndimage.label(m & (v < 45))
+    dl, dn = ndimage.label(m & (v < 45) & clean)
     ds = ndimage.sum(m, dl, range(1, dn + 1))
     m &= ~np.isin(dl, 1 + np.where(ds > 500)[0])
-    im[..., 3] = np.where(m | (im[..., 3] <= 100), im[..., 3], 0)
+    im[..., 3] = np.where(m, im[..., 3], 0)
     m[:, :xmin] = False
     lab, n = ndimage.label(ndimage.binary_closing(m, iterations=2))
     objs = []
@@ -68,4 +68,13 @@ for name, h in (('apollo', 'b394ee1c'), ('peanut', 'e12fcc79')):
 # Hayden: sheet rows down, up, left, right -> companion_avatar rows down, left, right, up (52x84).
 down, up, left, right = grid(P('a23079f4'), 4, 4, xmin=230)
 sheet([down, left, right, up], 52, 84, f'{OUT}/companion_avatar.png', fit=0.94)
+# Annie (Nov 7): walk rows up, right, down, left -> annie_walk rows down, left, right, up, idle (64x96)
+up, right, down, left = grid(P('f0522d15'), 4, 4, xmin=320, thr=200, clean=False)
+sheet([down, left, right, up, [down[0]] * 4], 64, 96, f'{OUT}/annie_walk.png', fit=0.98)
+# bike rows up, down, left, right -> ride_annie rows right, left, down, up (90x100)
+bu, bd, bl, br = grid(P('baf21ffe'), 4, 4, xmin=320, thr=200, clean=False)
+sheet([br, bl, bd, bu], 90, 100, f'{OUT}/bikes/ride_annie.png', fit=0.98)
+# dumbbell curls, 2 rows of 5 -> one row of 10 (80x100)
+r1, r2 = grid(P('1913bbcc'), 2, 5, thr=200, clean=False)
+sheet([r1 + r2], 80, 100, f'{OUT}/annie_gym.png', fit=0.98)
 print('ok')
