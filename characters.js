@@ -3,10 +3,10 @@
   var btn = document.getElementById("charsToggle"), box = document.getElementById("charsBody");
   if (!btn || !box) return;
   var GROUPS = [
-    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 90, 100, 2], "hayden_portrait2", 0], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 2], "annie_portrait3", 0], ["Riley", "dog_sprite", 72, 72, 62, null, null, 2, 4], ["Theo", "cat_sprite", 72, 72, 54, null, null, 2, 4]] },
+    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 90, 100, 2], "portraits/hayden", 0], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 2], "portraits/annie", 0], ["Riley", "dog_anim", 96, 96, 62, null, "portraits/riley", 0, 4], ["Theo", "cat_anim", 96, 96, 62, null, "portraits/theo", 0, 4]] },
     { title: "Ralph, Alisa, Maggie & Sophie", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]], ["Maggie", "dogs/maggie", 58, 53, 66, null, "dogs/maggie_portrait", 1, 5], ["Sophie", "dogs/sophie", 42, 45, 70, null, "dogs/sophie_portrait", 1, 6]] },
     { title: "Madi, Blair, Nick, Sadie & Mylo", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80, null, null, 0, 4], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]], ["Sadie", "dogs/sadie", 60, 52, 66, null, "dogs/sadie_portrait", 1, 5], ["Mylo", "dogs/mylo", 43, 42, 70, null, "dogs/mylo_portrait", 1, 6]] },
-    { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 112, ["bikes/ride_jones_f", 74, 101, 1], "portrait_jones_f"], ["Dakota", "npc_jones_m", 64, 96, 120, ["bikes/ride_jones_m", 74, 101, 1], "portrait_jones_m"]] }
+    { title: "Bailey, Dakota, Apollo & Peanut", people: [["Bailey", "npc_jones_f", 64, 96, 112, ["bikes/ride_jones_f", 74, 101, 1], "portraits/bailey"], ["Dakota", "npc_jones_m", 64, 96, 120, ["bikes/ride_jones_m", 74, 101, 1], "portraits/dakota"], ["Apollo", "dogs/apollo", 60, 52, 66, null, "portraits/apollo", 1, 4], ["Peanut", "dogs/peanut", 60, 52, 50, null, "portraits/peanut", 1, 4]] }
   ];
   var built = false;
   function card(p) {

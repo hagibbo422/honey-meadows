@@ -2167,7 +2167,9 @@
     { id: "maggie", name: "Maggie", leader: "sun", lag: 1.1, side: 7, cw: 58, ch: 53 },
     { id: "sophie", name: "Sophie", leader: "sun", lag: 1.7, side: -6, cw: 42, ch: 45 },
     { id: "sadie", name: "Sadie", leader: "long", lag: 1.3, side: 8, cw: 60, ch: 52 },
-    { id: "mylo", name: "Mylo", leader: "long", lag: 1.9, side: -7, cw: 43, ch: 42 }
+    { id: "mylo", name: "Mylo", leader: "long", lag: 1.9, side: -7, cw: 43, ch: 42 },
+    { id: "apollo", name: "Apollo", leader: "jonesF", lag: 1.2, side: 8, cw: 60, ch: 52, n: 4, k: 0.38 },
+    { id: "peanut", name: "Peanut", leader: "jonesF", lag: 1.8, side: -7, cw: 60, ch: 52, n: 4, k: 0.27 }
   ];
   const DOG_ROWS = { idle: [0, 4], walkR: [1, 5], walkL: [2, 5], sit: [5, 3] }, DOG_K = 0.42;
   for (const d of DOGS) loadAsset("dogs/" + d.id);
@@ -2179,7 +2181,8 @@
     for (const d of DOGS) {
       const f = TOWNSFOLK.find((x) => x.id === d.leader);
       if (!f || !f.paths) continue;
-      if (rideEvening) {
+      if (f.id === "jonesF" && jonesActivity(m) !== "town") continue;
+      if (f.id !== "jonesF" && rideEvening) {
         const rs = rideState(f.id, T2);
         if (rs && rs.step !== "before") continue;
         if (homeSince5(f, T2)) continue;
@@ -2190,10 +2193,10 @@
       if (Math.abs(dx) > 0.05) dogFacing[d.id] = dx > 0 ? "R" : "L";
       const face = dogFacing[d.id] || "R";
       const len = Math.hypot(dx, dy) || 1, ox = moving ? -dy / len * d.side : d.side, oy = moving ? dx / len * d.side * 0.5 : 3;
-      let row = "walk" + face, f2 = Math.floor(clock * 9) % DOG_ROWS[row][1];
+      let row = "walk" + face, f2 = Math.floor(clock * 9) % (d.n || DOG_ROWS[row][1]);
       if (!moving) {
         row = Math.floor((clock + d.lag * 7) / 6) % 2 ? "sit" : "idle";
-        f2 = row === "sit" ? 2 : Math.floor(clock * 4) % 4;
+        f2 = row === "sit" ? 2 : Math.floor(clock * 4) % (d.n || 4);
       }
       out.push({ dog: d, x: a.x + ox, y: a.y + oy + 2, row, f: f2, flip: !moving && face === "L" });
     }
@@ -2202,7 +2205,7 @@
   function drawDog(e) {
     const d = e.dog, img = assets["dogs/" + d.id];
     if (!(img && img.naturalWidth)) return;
-    const w = d.cw * DOG_K, h = d.ch * DOG_K, r = DOG_ROWS[e.row][0];
+    const w = d.cw * (d.k || DOG_K), h = d.ch * (d.k || DOG_K), r = DOG_ROWS[e.row][0];
     g.save();
     if (e.flip) {
       g.scale(-1, 1);
@@ -2239,7 +2242,7 @@
       actors.push({ name: e.folk.name, entity: e, draw: drawFolk, box: [-16 * k, -51 * k, 32 * k, 57 * k] });
     }
     for (const e of townDogs()) {
-      const w = e.dog.cw * DOG_K, h = e.dog.ch * DOG_K;
+      const w = e.dog.cw * (e.dog.k || DOG_K), h = e.dog.ch * (e.dog.k || DOG_K);
       actors.push({ name: e.dog.name, entity: e, draw: drawDog, box: [-w / 2, -h, w, h], k: 1 });
     }
     return actors.sort((a, b) => a.entity.y - b.entity.y);
