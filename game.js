@@ -1224,6 +1224,7 @@
   function useCurrentCentralTime() {
     clockMode = "live";
     rideForced = false;
+    gymForced = false;
     timeRunning = true;
     readCentralClock(true);
     syncRoutine();
@@ -1286,7 +1287,9 @@
   let householdState;
   const STROLL = routePath(HM_ROUTES["weekend-stroll"]), STROLL_START = 601, STROLL_END = 1086;
   const STROLL_SPEED = Math.max(1, Math.round((STROLL_END - STROLL_START) * 60 * 16 / STROLL.length)) * STROLL.length / ((STROLL_END - STROLL_START) * 60);
+  let gymForced = false;
   const isWeekend = () => {
+    if (gymForced) return false;
     const wd = centralWeekday();
     return wd === 0 || wd === 6;
   };
@@ -1298,7 +1301,7 @@
     let period = periodAt(simMinute);
     const m = simMinute;
     if (isWeekend() && m >= STROLL_START && m < STROLL_END) period = { id: "stroll", start: STROLL_START, end: STROLL_END, label: "Weekend stroll", detail: "Hayden and Annie are wandering around town together." };
-    const gymDay = !isWeekend() && centralWeekday() !== 3;
+    const gymDay = gymForced || !isWeekend() && centralWeekday() !== 3;
     if (gymDay && m >= ANNIE_GYM.home && m < ANNIE_GYM.dinner) period = { id: "annieGym", start: ANNIE_GYM.home, end: ANNIE_GYM.dinner, label: "Gym hour", detail: "Hayden and Annie are working out at the Gym with Bailey and Dakota." };
     const commuting = period.id === "outbound" || period.id === "return";
     const u = commuting ? (m - period.start) / (period.end - period.start) : 0;
@@ -1840,12 +1843,12 @@
   const RIDER = Object.fromEntries(RIDERS.map((r) => [r.id, r]));
   let rideForced = false;
   function jonesActivity(m) {
-    const wd = centralWeekday(), weekend = wd === 0 || wd === 6;
+    const weekend = isWeekend();
     if (m < 7 * 60 || m >= 21.5 * 60) return "sleep";
     if (m < 8 * 60) return "breakfast";
     if (m >= 19 * 60 && m < 20 * 60) return "dinner";
     if (m >= 20 * 60) return "couch";
-    if (!weekend && m >= 18 * 60) return isRideDay() ? "ride" : "gym";
+    if (!weekend && m >= 18 * 60) return isRideDay() && !gymForced ? "ride" : "gym";
     return "town";
   }
   function centralWeekday() {
@@ -2444,6 +2447,7 @@
   };
   document.querySelectorAll("[data-time]").forEach((button) => button.onclick = () => {
     rideForced = false;
+    gymForced = false;
     setTime(button.dataset.time);
   });
   const footballBtn = document.getElementById("previewFootball");
@@ -2478,8 +2482,23 @@
       syncRoutine();
     }
   };
+  const gymBtn = document.getElementById("previewGym");
+  if (gymBtn) gymBtn.onclick = () => {
+    gymForced = true;
+    rideForced = false;
+    timeSpeed = 1 / 60;
+    const sp = document.getElementById("speedSelect");
+    if (sp) sp.value = String(1 / 60);
+    viewMode = "gym";
+    const vs = document.getElementById("viewSelect");
+    if (vs) vs.value = "gym";
+    setTime(18 * 60 + 10, false);
+    timeRunning = true;
+    refreshUI();
+  };
   const rideBtn = document.getElementById("previewRide");
   if (rideBtn) rideBtn.onclick = () => {
+    gymForced = false;
     rideForced = true;
     timeSpeed = 1 / 60;
     const sp = document.getElementById("speedSelect");
