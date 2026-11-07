@@ -3,7 +3,7 @@
   var btn = document.getElementById("charsToggle"), box = document.getElementById("charsBody");
   if (!btn || !box) return;
   var GROUPS = [
-    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "player_avatar", 52, 84, 104, ["bikes/ride_annie", 83, 103, 2]], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
+    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 0], "annie_portrait", 2], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
     { title: "Ralph, Alisa, Maggie & Sophie", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]], ["Maggie", "dogs/maggie", 58, 53, 66, null, "dogs/maggie_portrait"], ["Sophie", "dogs/sophie", 42, 45, 70, null, "dogs/sophie_portrait"]] },
     { title: "Madi, Blair, Nick, Sadie & Mylo", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]], ["Sadie", "dogs/sadie", 60, 52, 66, null, "dogs/sadie_portrait"], ["Mylo", "dogs/mylo", 43, 42, 70, null, "dogs/mylo_portrait"]] },
     { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 112, ["bikes/ride_jones_f", 74, 101, 1], "portrait_jones_f"], ["Dakota", "npc_jones_m", 64, 96, 120, ["bikes/ride_jones_m", 74, 101, 1], "portrait_jones_m"]] }
@@ -120,7 +120,7 @@
     var d = document.createElement("div");
     d.className = "charDetail";
     var b = p[5], H = 150;
-    var walk = animCanvas(p[1], p[2], p[3], 0, H, p[0] + " walking");
+    var walk = animCanvas(p[1], p[2], p[3], p[7] || 0, H, p[0] + " walking");
     var ride = animCanvas(b[0], b[1], b[2], b[3], H, p[0] + " on the bike");
     d.appendChild(walk);
     d.appendChild(ride);

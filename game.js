@@ -1333,8 +1333,23 @@
     if (!(image == null ? void 0 : image.naturalWidth)) return;
     g.drawImage(image, x, y, w, h);
   }
+  const ANNIE_ROWS = { down: [0, 1], left: [1, 6], right: [2, 6], up: [3, 1], idle: [4, 5] };
+  loadAsset("annie_walk");
+  function drawAnnie(entity, w, h) {
+    const img = assets.annie_walk;
+    if (!(img && img.naturalWidth)) return;
+    const moving = entity.moving !== false && (entity.dir === "left" || entity.dir === "right") ? entity.moving : false;
+    let [row, n] = ANNIE_ROWS[entity.dir] || ANNIE_ROWS.down, f = 0;
+    if (moving) f = Math.floor(entity.phase) % n;
+    const bob = entity.moving && n === 1 ? Math.floor(entity.phase) % 2 : 0;
+    g.drawImage(img, f * 64, row * 96, 64, 96, Math.round(entity.x - w / 2), Math.round(entity.y - h + 6 - bob), w, h);
+  }
   function drawIndoorCharacter(actor, male) {
     var _a2;
+    if (!male) {
+      drawAnnie(actor, 70, 105);
+      return;
+    }
     const source = assets[male ? "companion_avatar" : "player_avatar"];
     if (!(source == null ? void 0 : source.naturalWidth)) return;
     const row = (_a2 = { down: 0, left: 1, right: 2, up: 3 }[actor.dir]) != null ? _a2 : 0;
@@ -1706,7 +1721,7 @@
   const RIDE_LAPS = Math.max(1, Math.round((RIDE_END - RIDE_START) * 38 / RIDE_LOOP.length));
   const RIDE_SPEED = RIDE_LAPS * RIDE_LOOP.length / (RIDE_END - RIDE_START);
   const RIDE_SHEETS = {
-    annie: { cw: 83, ch: 103, k: 0.8, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
+    annie: { cw: 90, ch: 100, dirs: ["right", "left"] },
     hayden: { cw: 83, ch: 99, k: 0.8, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
     alisa: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     ralph: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
@@ -1765,6 +1780,7 @@
     return { x: a.x, y: a.y, dx: b.x - a.x, dy: b.y - a.y };
   }
   function dirOf(dx, dy, dirs) {
+    if (dirs.length === 2) return dx < 0 ? "left" : "right";
     if (dirs.length === 4) return Math.abs(dx) > Math.abs(dy) ? dx > 0 ? "right" : "left" : dy > 0 ? "down" : "up";
     const k = Math.round(Math.atan2(dy, dx) / (Math.PI / 4));
     return { 0: "right", 1: "downright", 2: "down", 3: "downleft", 4: "left", "-4": "left", "-3": "upleft", "-2": "up", "-1": "upright" }[k];
@@ -2158,7 +2174,7 @@
       const k = (sh.k || 1) / 2;
       return [-sh.cw * k / 2, -sh.ch * k, sh.cw * k, sh.ch * k];
     };
-    if (hs.girl.scene === "town") actors.push(hs.girl.ride ? { name: "Annie", entity: hs.girl, draw: drawRider, box: riderBox(hs.girl), k: 1 } : { name: "Annie", entity: hs.girl, draw: drawPlayerAvatar, box: [-17, -35, 34, 45], k: ACTOR_K * ANNIE_MATCH });
+    if (hs.girl.scene === "town") actors.push(hs.girl.ride ? { name: "Annie", entity: hs.girl, draw: drawRider, box: riderBox(hs.girl), k: 1 } : { name: "Annie", entity: hs.girl, draw: (e) => drawAnnie(e, 38, 57), box: [-16, -51, 32, 57] });
     if (hs.boy.scene === "town") actors.push(hs.boy.ride ? { name: "Hayden", entity: hs.boy, draw: drawRider, box: riderBox(hs.boy), k: 1 } : { name: "Hayden", entity: hs.boy, draw: drawCompanion, box: [-15, -40, 30, 50], k: ACTOR_K * HAYDEN_MATCH });
     for (const b of parkedBikes()) actors.push({ name: null, entity: b, draw: drawParkedBike, box: null, k: 1 });
     if (hs.dog.scene === "town") actors.push({ name: "Riley", entity: hs.dog, draw: (e) => drawPet(e, "dog"), box: [-18, -29, 36, 36], k: 0.8 });
