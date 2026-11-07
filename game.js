@@ -30,6 +30,7 @@
     loadAsset(name);
   }
   const ILLUSTRATED = { gym: "assets/interiors/gym.jpg", restaurant: "assets/interiors/restaurant.jpg", gibbons: "assets/interiors/gibbons.jpg", hardaway: "assets/interiors/hardaway.jpg", jones: "assets/interiors/jones.jpg" };
+  if (typeof setTimeout === "function") setTimeout(() => Object.keys(ILLUSTRATED).forEach((id) => illustrated(id)), 1500);
   function illustrated(id) {
     const k = "interior_" + id;
     if (!assets[k]) {
@@ -1289,13 +1290,15 @@
     return wd === 0 || wd === 6;
   };
   const ANNIE_GYM = { leave: 1080, arrive: 1083, home: 1086, out: 1140, dinner: 1145 };
-  const NAILS_GYM = routePath(HM_ROUTES["nails-gym"]), GYM_FARM = routePath(HM_ROUTES["gym-farm"]);
+  const NAILS_GYM = routePath(HM_ROUTES["nails-gym"]), GYM_FARM = routePath(HM_ROUTES["gym-farm"]), RESEARCH_GYM = routePath(HM_ROUTES["research-gym"]);
+  const DOG_PARK = [[1306, 800], [1350, 806], [1392, 798], [1432, 808], [1328, 826], [1372, 830], [1414, 828], [1288, 824]];
+  const dogParkTime = () => isWeekend() && simMinute >= 720 && simMinute < 960;
   function makeRoutineState() {
     let period = periodAt(simMinute);
     const m = simMinute;
     if (isWeekend() && m >= STROLL_START && m < STROLL_END) period = { id: "stroll", start: STROLL_START, end: STROLL_END, label: "Weekend stroll", detail: "Hayden and Annie are wandering around town together." };
     const gymDay = !isWeekend() && centralWeekday() !== 3;
-    if (gymDay && m >= ANNIE_GYM.home && m < ANNIE_GYM.dinner) period = { id: "annieGym", start: ANNIE_GYM.home, end: ANNIE_GYM.dinner, label: "Annie at the Gym", detail: "Annie is working out at the Gym with Bailey and Dakota. Hayden is home at the farmhouse." };
+    if (gymDay && m >= ANNIE_GYM.home && m < ANNIE_GYM.dinner) period = { id: "annieGym", start: ANNIE_GYM.home, end: ANNIE_GYM.dinner, label: "Gym hour", detail: "Hayden and Annie are working out at the Gym with Bailey and Dakota." };
     const commuting = period.id === "outbound" || period.id === "return";
     const u = commuting ? (m - period.start) / (period.end - period.start) : 0;
     const girl = { scene: "farm", x: 384, y: 228, dir: "down", phase: 0, moving: false }, boy = { scene: "farm", x: 410, y: 228, dir: "down", phase: 0, moving: false };
@@ -1318,15 +1321,20 @@
       Object.assign(girl, { scene: "nails", x: 176, y: 240, dir: "down", phase: 0 });
       Object.assign(boy, { scene: "research", x: 595, y: 445, dir: "down", phase: clock * 2 % 4 });
     }
-    const dogOutside = m >= 600 && m < 1080;
-    const dog = dogOutside ? { ...samplePath(dogWalk, clock * 14 % dogWalk.length / dogWalk.length), scene: "town", resting: false } : { scene: "farm", x: period.id === "couch" ? 273 : 452, y: period.id === "couch" ? 535 : 580, dir: "down", phase: clock * 1.6, moving: false, resting: true };
+    const dogOutside = dogParkTime();
+    const dog = dogOutside ? { scene: "town", x: DOG_PARK[0][0], y: DOG_PARK[0][1], dir: "right", phase: 2.5, moving: false, resting: true } : { scene: "farm", x: period.id === "couch" ? 273 : 452, y: period.id === "couch" ? 535 : 580, dir: "down", phase: clock * 1.6, moving: false, resting: true };
     const catRest = m % 90 < 65 || period.id === "sleep";
     const cat = catRest ? { scene: "farm", x: 302, y: 546, dir: "down", phase: clock * 0.8, moving: false, resting: true } : { ...samplePath(catWalk, m * 7 % catWalk.length / catWalk.length), scene: "farm", resting: false };
     if (gymDay && m >= ANNIE_GYM.leave && m < ANNIE_GYM.dinner) {
       const G = ANNIE_GYM;
-      if (m < G.arrive) Object.assign(girl, samplePath(NAILS_GYM, (m - G.leave) / (G.arrive - G.leave)), { scene: "town" });
-      else if (m < G.out) Object.assign(girl, { scene: "gym", x: 0, y: 0, dir: "down", moving: false });
-      else Object.assign(girl, samplePath(GYM_FARM, (m - G.out) / (G.dinner - G.out)), { scene: "town" });
+      for (const [actor, from, side] of [[girl, NAILS_GYM, 0], [boy, RESEARCH_GYM, 9]]) {
+        if (m < G.arrive) Object.assign(actor, samplePath(from, (m - G.leave) / (G.arrive - G.leave)), { scene: "town" });
+        else if (m < G.out) Object.assign(actor, { scene: "gym", x: 0, y: 0, dir: "down", moving: false });
+        else {
+          Object.assign(actor, samplePath(GYM_FARM, (m - G.out) / (G.dinner - G.out)), { scene: "town" });
+          actor.x += side;
+        }
+      }
     }
     for (const [id, actor] of [["girl", girl], ["boy", boy]]) {
       const rs = rideState(id, m * 60);
@@ -1381,13 +1389,14 @@
     const row = (_a2 = { down: 0, left: 1, right: 2, up: 3 }[actor.dir]) != null ? _a2 : 0;
     g.drawImage(source, Math.floor(actor.phase) % 4 * 52, row * 84, 52, 84, actor.x - 32, actor.y - 94, 64, 104);
   }
-  for (const n of ["jones_eat", "jones_couch", "jones_workout", "annie_gym"]) loadAsset(n);
+  for (const n of ["jones_eat", "jones_couch", "jones_workout", "annie_gym", "hayden_legpress"]) loadAsset(n);
   const IK = 0.75;
   function jonesIndoorSprites(id) {
     const act = jonesActivity(simMinute), out = [];
     if (id === "jones" && (act === "breakfast" || act === "dinner")) out.push({ img: "jones_eat", sx: Math.floor(clock * 1.1) % 6 * 170, sy: 0, sw: 170, sh: 150, x: 195, y: 390, w: 182, h: 162, name: "Bailey & Dakota" });
     if (id === "jones" && act === "couch") out.push({ img: "jones_couch", sx: Math.floor(clock * 0.5) % 5 * 150, sy: 0, sw: 150, sh: 110, x: 455, y: 405, w: 210, h: 154, name: "Bailey & Dakota" });
     if (id === "gym" && householdState && householdState.girl.scene === "gym") out.push({ img: "annie_gym", sx: Math.floor(clock * 2.6) % 10 * 80, sy: 0, sw: 80, sh: 100, x: 1040, y: 380, w: 132, h: 165, name: "Annie" });
+    if (id === "gym" && householdState && householdState.boy.scene === "gym") out.push({ img: "hayden_legpress", sx: Math.floor(clock * 2.4) % 8 * 120, sy: 0, sw: 120, sh: 105, x: 700, y: 600, w: 230, h: 201, name: "Hayden" });
     if (id === "gym" && act === "gym") {
       const swap = simMinute >= 18.5 * 60;
       const bench = { x: 712, y: 340, w: 185, h: 185 }, floor = { x: 520, y: 470, w: 175, h: 175 };
@@ -1411,7 +1420,14 @@
     fill(0, 0, 1152, 768, "#10251e");
     if (image) g.drawImage(image, 0, 0, 1152, 768);
     if (image && (id === "jones" || id === "gym")) drawJonesIndoors(id);
-    else text("Opening " + interiors[id].name + "…", 576, 384, 22, "#ffe4ac");
+    if (image) for (const e of houseDogs(id)) {
+      const d = e.dog, k = (d.k || DOG_K) * 6 * IK, w2 = d.cw * k, h = d.ch * k;
+      g.save();
+      g.translate(e.x * IK, e.y * IK);
+      if (e.flip) g.scale(-1, 1);
+      g.drawImage(assets["dogs/" + d.id], e.f * d.cw, 0, d.cw, d.ch, -w2 / 2, -h, w2, h);
+      g.restore();
+    }
     const shade = darknessAt(simMinute) * 0.23;
     if (shade) fill(0, 0, 1152, 768, "rgba(22,29,65," + shade + ")");
     g.font = "bold 20px Georgia";
@@ -1439,7 +1455,6 @@
       const activity = householdState.period.id;
       if (activity === "breakfast" || activity === "dinner") drawGeneratedAction("meal", 286, 100, 205, 185);
       else if (activity === "couch") drawGeneratedAction("couch", 73, 365, 218, 160);
-      else if (activity === "annieGym" && householdState.boy.scene === "farm") drawIndoorCharacter(Object.assign({}, householdState.boy, { x: 600, y: 470 }), true);
       else if (activity === "sleep") {
         drawGeneratedAction("sleep", 482, 366, 188, 237);
         text("z", 650, 361 + Math.sin(clock) * 2, 13, "#fff2cf");
@@ -2183,36 +2198,17 @@
     { id: "apollo", name: "Apollo", leader: "jonesF", lag: 1.2, side: 8, cw: 60, ch: 52, n: 4, k: 0.38 },
     { id: "peanut", name: "Peanut", leader: "jonesF", lag: 1.8, side: -7, cw: 60, ch: 52, n: 4, k: 0.27 }
   ];
-  const DOG_ROWS = { idle: [0, 4], walkR: [1, 5], walkL: [2, 5], sit: [5, 3] }, DOG_K = 0.42;
+  const DOG_ROWS = { idle: [0, 4], walkR: [1, 5], walkL: [2, 5], sit: [5, 3], lay: [6, 4] }, DOG_K = 0.42;
   for (const d of DOGS) loadAsset("dogs/" + d.id);
   const dogFacing = {};
+  const DOG_HOMES = { maggie: ["gibbons", 905, 770], sophie: ["gibbons", 840, 795], sadie: ["hardaway", 790, 720], mylo: ["hardaway", 705, 862], apollo: ["jones", 825, 655], peanut: ["jones", 760, 705] };
   function townDogs() {
-    const m = simMinute;
-    if (m < FOLK_HOURS[0] || m > FOLK_HOURS[1]) return [];
-    const T2 = m * 60, rideEvening = isRideDay() && m >= 17 * 60, out = [];
-    for (const d of DOGS) {
-      const f = TOWNSFOLK.find((x) => x.id === d.leader);
-      if (!f || !f.paths) continue;
-      if (f.id === "jonesF" && jonesActivity(m) !== "town") continue;
-      if (f.id !== "jonesF" && rideEvening) {
-        const rs = rideState(f.id, T2);
-        if (rs && rs.step !== "before") continue;
-        if (homeSince5(f, T2)) continue;
-      }
-      const a = folkAt(f, clock - d.lag), b = folkAt(f, clock - d.lag - 0.15);
-      if (!a) continue;
-      const dx = b ? a.x - b.x : 0, dy = b ? a.y - b.y : 0, moving = Math.hypot(dx, dy) > 0.25;
-      if (Math.abs(dx) > 0.05) dogFacing[d.id] = dx > 0 ? "R" : "L";
-      const face = dogFacing[d.id] || "R";
-      const len = Math.hypot(dx, dy) || 1, ox = moving ? -dy / len * d.side : d.side, oy = moving ? dx / len * d.side * 0.5 : 3;
-      let row = "walk" + face, f2 = Math.floor(clock * 9) % (d.n || DOG_ROWS[row][1]);
-      if (!moving) {
-        row = Math.floor((clock + d.lag * 7) / 6) % 2 ? "sit" : "idle";
-        f2 = row === "sit" ? 2 : Math.floor(clock * 4) % (d.n || 4);
-      }
-      out.push({ dog: d, x: a.x + ox, y: a.y + oy + 2, row, f: f2, flip: !moving && face === "L" });
-    }
-    return out;
+    if (!dogParkTime()) return [];
+    return DOGS.map((d, i) => ({ dog: d, x: DOG_PARK[i + 1][0], y: DOG_PARK[i + 1][1], row: "lay", f: 2 + Math.floor(clock / 7 + i) % 2, flip: i % 2 === 1 }));
+  }
+  function houseDogs(id) {
+    if (dogParkTime()) return [];
+    return DOGS.filter((d) => DOG_HOMES[d.id] && DOG_HOMES[d.id][0] === id).map((d, i) => ({ dog: d, x: DOG_HOMES[d.id][1], y: DOG_HOMES[d.id][2], row: "idle", f: Math.floor(clock * 3 + i) % (d.n || 4), flip: i % 2 === 1 }));
   }
   function drawDog(e) {
     const d = e.dog, img = assets["dogs/" + d.id];
@@ -2285,9 +2281,9 @@
     if (!el) return;
     const id = p.id, dog = householdState.dog, catRest = simMinute % 90 < 65 || id === "sleep";
     const at = { breakfast: "Breakfast at the farmhouse", dinner: "Dinner at the farmhouse", couch: "Snuggled on the couch", sleep: "Asleep at the farmhouse" };
-    const hayden = householdState.boy.rideStatus || at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home", stroll: "Strolling around town with Annie", annieGym: "Home at the farmhouse" }[id];
+    const hayden = householdState.boy.rideStatus || at[id] || { outbound: "Walking to Research", work: "Working at Research", return: "Walking home", stroll: "Strolling around town with Annie", annieGym: "Working out at the Gym" }[id];
     const annie = householdState.girl.rideStatus || at[id] || { outbound: "Walking to the Nail Salon", work: "Working at the Nail Salon", return: "Walking home", stroll: "Strolling around town with Hayden", annieGym: "Working out at the Gym" }[id];
-    const riley = dog.scene === "town" ? "Walking around town" : id === "couch" ? "Resting by the couch" : id === "sleep" ? "Asleep at home" : "Hanging out at home";
+    const riley = dog.scene === "town" ? "Lying down at the dog park" : id === "couch" ? "Resting by the couch" : id === "sleep" ? "Asleep at home" : "Hanging out at home";
     const theo = id === "sleep" ? "Asleep with the family" : catRest ? "Napping at home" : "Wandering the farmhouse";
     const html = [["Hayden", hayden], ["Annie", annie], ["Riley", riley], ["Theo", theo]].map(([n, t]) => "<span><b>".concat(n, "</b>").concat(t, "</span>")).join("");
     if (el._h !== html) {
@@ -2309,7 +2305,7 @@
     slider.setAttribute("aria-valuetext", formatTime(simMinute));
     document.getElementById("routineTitle").textContent = p.label;
     document.getElementById("routineDetail").textContent = p.detail;
-    document.getElementById("petStatus").textContent = "Riley: " + (householdState.dog.scene === "town" ? "walking around town" : "at home") + " • Theo: always at home";
+    document.getElementById("petStatus").textContent = "Riley: " + (householdState.dog.scene === "town" ? "at the dog park" : "at home") + " • Theo: always at home";
     document.getElementById("toggleTime").textContent = clockMode === "live" ? "Pause" : timeRunning ? "Pause" : "Play";
     const sd = document.getElementById("signDate"), st = document.getElementById("signTime");
     if (sd) sd.textContent = clockMode === "live" ? centralDateLabel : "Preview";
@@ -2371,8 +2367,12 @@
     }
     if (scene === "jones" || scene === "gym") {
       for (const s2 of jonesIndoorSprites(scene)) list.push({ name: s2.name, x: s2.x * IK, y: s2.y * IK, w: s2.w * IK, h: s2.h * IK });
-      return list;
     }
+    for (const e of houseDogs(scene)) {
+      const k2 = (e.dog.k || DOG_K) * 6 * IK, w = e.dog.cw * k2, h = e.dog.ch * k2;
+      list.push({ name: e.dog.name, x: e.x * IK - w / 2, y: e.y * IK - h, w, h });
+    }
+    if (scene === "jones" || scene === "gym" || houseDogs(scene).length) return list;
     const k = 640 / 768, room = (x, y, w, h, name) => list.push({ name, x: 256 + x * k, y: 52 + y * k, w: w * k, h: h * k });
     if (scene === "farm") {
       const id = hs.period.id;
@@ -2764,7 +2764,7 @@
         const q = p.points[i], dx = b[0] - q[0], dy = b[1] - q[1], t = Math.max(0, Math.min(1, ((a.x - q[0]) * dx + (a.y - q[1]) * dy) / (dx * dx + dy * dy || 1)));
         return Math.hypot(a.x - q[0] - t * dx, a.y - q[1] - t * dy) <= p.width / 2 + 2;
       }));
-      return [householdState.girl, householdState.boy, householdState.dog, ...townsfolkState()].filter((a) => a.scene === "town" || a.folk && a.folk.paths).every(onPath);
+      return [householdState.girl, householdState.boy, householdState.dog, ...townsfolkState()].filter((a) => a.scene === "town" && !a.resting || a.folk && a.folk.paths).every(onPath);
     },
     get townsfolk() {
       return townsfolkState().map((e) => ({ name: e.folk.name, x: e.x, y: e.y }));

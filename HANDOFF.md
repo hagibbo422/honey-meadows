@@ -47,9 +47,13 @@ Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right 
 
 On Saturdays and Sundays (Central), instead of the work commute and workday (10:01 AM-6:06 PM) they stroll together around the `weekend-stroll` loop (farmhouse, shops, gym, court, park, Gibbons and Jones houses, City Hall), finishing back at the farmhouse door for dinner. Code: `STROLL` / period `stroll` in `game.js`.
 
-## Annie's gym hour
+## Pets
 
-Mon, Tue, Thu and Fri: Annie walks from the Nail Salon to the Gym at 6 PM, works out with Bailey & Dakota (`assets/annie_gym.png`, 10 dumbbell frames, on the green yoga mat), walks home at 7 PM and dinner starts at 7:05. Hayden is home alone meanwhile. Period `annieGym` / `ANNIE_GYM` in `game.js`; routes `nails-gym`, `gym-farm`. Annie's walk and bike sheets are cut by `tools/make-pet-sprites.py`.
+Dogs stay inside their own houses (`DOG_HOMES` in `game.js`), except 12-4 PM on Saturdays and Sundays when every dog lies down together in the dog park (`DOG_PARK`). Theo the cat always stays in the farmhouse.
+
+## Gym hour
+
+Mon, Tue, Thu and Fri: Annie (from the Nail Salon) and Hayden (from Research) walk to the Gym at 6 PM and work out with Bailey & Dakota: Annie curls dumbbells on the green mat (`assets/annie_gym.png`), Hayden does the leg press (`assets/hayden_legpress.png`). They walk home at 7 PM and dinner starts at 7:05. Period `annieGym` / `ANNIE_GYM` in `game.js`; routes `nails-gym`, `gym-farm`. Annie's walk and bike sheets are cut by `tools/make-pet-sprites.py`.
 
 ## Bailey & Dakota's day
 

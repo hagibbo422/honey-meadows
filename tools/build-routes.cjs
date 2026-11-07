@@ -71,6 +71,7 @@ routes['jones-bridge'] = chain(['jones', 'bridgeTop', 'bridgeBottom']);
 // Annie's weekday gym trip (Mon, Tue, Thu, Fri 6-7 PM)
 routes['nails-gym'] = leg('nails', 'gym');
 routes['gym-farm'] = leg('gym', 'farm');
+routes['research-gym'] = leg('research', 'gym');
 routes['weekend-stroll'] = chain(['farm', 'nails', 'restaurant', 'gym', 'court', 'parkEast', 'fountain', 'gibbons', 'jones', 'bridge', 'hall', 'farm']);
 // The painted dirt trail, traced from the artwork by tools/trace-trail.py.
 routes['ride-loop'] = JSON.parse(fs.readFileSync(__dirname + '/ride-loop.json', 'utf8'));
