@@ -39,6 +39,10 @@ While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`
 - Code: the "Thunder pickup game" block in `game.js` (`HOOPS`, `hoopsState`, `drawHoops`). Preview from Settings → Preview → 🏀 Thunder game (also turns the court lights on).
 - Sprites: `assets/hoops/okc_*.png` (rows run, dribble, pass, shoot), `assets/hoops/opp_*.png` (rows shuffle, block, steal), `assets/hoops/ball.png`, cut with `tools/make-hoops-sprites.py`.
 
+## Neighbours' dogs
+
+Maggie (brown) and Sophie (small tan) belong to the Gibbons and trail Alisa & Ralph; Sadie (gold) and Mylo (small grey) belong to the Hardaways and trail Madi, Blair & Nick. They follow the family's route a little behind, sit or idle when the family stops, and stay home at night and during the Wednesday ride. Code: `DOGS` / `townDogs` in `game.js`. Sprites `assets/dogs/<name>.png` (rows idle, walkR, walkL, runR, runL, sit, lay, getup, bark) and `<name>_portrait.png`, cut with `tools/make-dog-sprites.py`.
+
 ## Wednesday bike ride
 
 Every Wednesday (Central time) everyone walks across the bridge to their parked bike on the south trail, arriving at different times (Annie 5:50, Hayden 5:54, Alisa & Ralph 5:58, Nick, Madi & Blair 6:02). At 6:05 PM they all ride laps of the dirt trail around the map, park at 6:45 PM and walk home. Blair rides in Madi's trailer.

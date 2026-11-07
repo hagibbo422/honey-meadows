@@ -2095,6 +2095,53 @@
     g.fillText("GO POKES!", 0, 78);
     g.restore();
   }
+  const DOGS = [
+    { id: "maggie", name: "Maggie", leader: "sun", lag: 1.1, side: 7, cw: 58, ch: 53 },
+    { id: "sophie", name: "Sophie", leader: "sun", lag: 1.7, side: -6, cw: 42, ch: 45 },
+    { id: "sadie", name: "Sadie", leader: "long", lag: 1.3, side: 8, cw: 60, ch: 52 },
+    { id: "mylo", name: "Mylo", leader: "long", lag: 1.9, side: -7, cw: 43, ch: 42 }
+  ];
+  const DOG_ROWS = { idle: [0, 4], walkR: [1, 5], walkL: [2, 5], sit: [5, 3] }, DOG_K = 0.42;
+  for (const d of DOGS) loadAsset("dogs/" + d.id);
+  const dogFacing = {};
+  function townDogs() {
+    const m = simMinute;
+    if (m < FOLK_HOURS[0] || m > FOLK_HOURS[1]) return [];
+    const T2 = m * 60, rideEvening = isRideDay() && m >= 17 * 60, out = [];
+    for (const d of DOGS) {
+      const f = TOWNSFOLK.find((x) => x.id === d.leader);
+      if (!f || !f.paths) continue;
+      if (rideEvening) {
+        const rs = rideState(f.id, T2);
+        if (rs && rs.step !== "before") continue;
+        if (homeSince5(f, T2)) continue;
+      }
+      const a = folkAt(f, clock - d.lag), b = folkAt(f, clock - d.lag - 0.15);
+      if (!a) continue;
+      const dx = b ? a.x - b.x : 0, dy = b ? a.y - b.y : 0, moving = Math.hypot(dx, dy) > 0.25;
+      if (Math.abs(dx) > 0.05) dogFacing[d.id] = dx > 0 ? "R" : "L";
+      const face = dogFacing[d.id] || "R";
+      const len = Math.hypot(dx, dy) || 1, ox = moving ? -dy / len * d.side : d.side, oy = moving ? dx / len * d.side * 0.5 : 3;
+      let row = "walk" + face, f2 = Math.floor(clock * 9) % DOG_ROWS[row][1];
+      if (!moving) {
+        row = Math.floor((clock + d.lag * 7) / 6) % 2 ? "sit" : "idle";
+        f2 = row === "sit" ? 2 : Math.floor(clock * 4) % 4;
+      }
+      out.push({ dog: d, x: a.x + ox, y: a.y + oy + 2, row, f: f2, flip: !moving && face === "L" });
+    }
+    return out;
+  }
+  function drawDog(e) {
+    const d = e.dog, img = assets["dogs/" + d.id];
+    if (!(img && img.naturalWidth)) return;
+    const w = d.cw * DOG_K, h = d.ch * DOG_K, r = DOG_ROWS[e.row][0];
+    g.save();
+    if (e.flip) {
+      g.scale(-1, 1);
+    }
+    g.drawImage(img, e.f * d.cw, r * d.ch, d.cw, d.ch, -w / 2, -h, w, h);
+    g.restore();
+  }
   function drawFolk(e) {
     const img = assets[e.folk.sprite];
     if (!(img && img.naturalWidth)) return;
@@ -2122,6 +2169,10 @@
       }
       const k = e.folk.scale || 1;
       actors.push({ name: e.folk.name, entity: e, draw: drawFolk, box: [-16 * k, -51 * k, 32 * k, 57 * k] });
+    }
+    for (const e of townDogs()) {
+      const w = e.dog.cw * DOG_K, h = e.dog.ch * DOG_K;
+      actors.push({ name: e.dog.name, entity: e, draw: drawDog, box: [-w / 2, -h, w, h], k: 1 });
     }
     return actors.sort((a, b) => a.entity.y - b.entity.y);
   }
@@ -2514,6 +2565,9 @@
     }
   });
   window.HM_DEBUG = {
+    get dogs() {
+      return townDogs().map((e) => ({ name: e.dog.name, x: e.x, y: e.y, row: e.row }));
+    },
     flashTouchdown() {
       tdUntil = clock + TD_SECONDS;
     },
