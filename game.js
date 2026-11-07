@@ -29,7 +29,7 @@
   for (const name of ["player_avatar", "companion_avatar", "room_headquarters", "room_farm", "room_research", "room_nails"]) {
     loadAsset(name);
   }
-  const TOWN_SCALE = 1.15;
+  const TOWN_SCALE = 1.3;
   const ILLUSTRATED = { gym: "assets/interiors/gym.jpg", restaurant: "assets/interiors/restaurant.jpg", gibbons: "assets/interiors/gibbons.jpg", hardaway: "assets/interiors/hardaway.jpg", jones: "assets/interiors/jones.jpg" };
   if (typeof setTimeout === "function") setTimeout(() => Object.keys(ILLUSTRATED).forEach((id) => illustrated(id)), 1500);
   function illustrated(id) {
