@@ -45,7 +45,7 @@ Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right 
 
 ## Bailey & Dakota's day
 
-Breakfast at home 7-8 AM and dinner 7-8 PM (table animation over the Jones dining table), couch 8-9:30 PM, asleep otherwise. Weekdays they are out in town 8 AM-6 PM and work out at the Gym 6-7 PM (dumbbells and bench press, swapping at 6:30; on Wednesdays the bike ride replaces the workout). Weekends they roam town 8 AM-7 PM. Code: `jonesActivity`, `jonesIndoorSprites` in `game.js`. Sprites `assets/jones_eat.png`, `jones_couch.png`, `jones_workout.png`; Hayden's new look (`companion_avatar.png`, `bikes/ride_hayden.png`, `hayden_portrait.png`) and Annie's admin portrait, cut with `tools/make-batch5-sprites.py`.
+Breakfast at home 7-8 AM and dinner 7-8 PM (table animation over the Jones dining table), couch 8-9:30 PM, asleep otherwise. Weekdays they are out in town 8 AM-6 PM and work out at the Gym 6-7 PM (dumbbells and bench press, swapping at 6:30; on Wednesdays the bike ride replaces the workout). Weekends they roam town 8 AM-7 PM. Code: `jonesActivity`, `jonesIndoorSprites` in `game.js`. Sprites `assets/jones_eat.png`, `jones_couch.png`, `jones_workout.png`; Hayden's new look (`companion_avatar.png`, `bikes/ride_hayden.png`, `hayden_portrait2.png`) and Annie's admin portrait, cut with `tools/make-batch5-sprites.py`.
 
 ## Neighbours' dogs
 

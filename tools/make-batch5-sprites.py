@@ -1,7 +1,7 @@
 # Cuts the Nov 6 uploads into game sprites:
 #   Hayden sheet  -> assets/companion_avatar.png (4x4, 52x84 cells; rows down,left,right,up)
 #                    assets/bikes/ride_hayden.png (90x100 cells; rows right,left,down,up; 4 frames)
-#   Hayden single -> assets/hayden_portrait.png
+#   Hayden single -> assets/hayden_portrait2.png
 #   Eat together  -> assets/jones_eat.png (6 frames, 170x150 cells)
 #   Jones sheet   -> assets/jones_workout.png (rows: Bailey dumbbells, Bailey bench, Dakota dumbbells,
 #                    Dakota bench; 6 cols, 120x120 cells) and assets/jones_couch.png (5 frames, 150x110)
@@ -69,7 +69,7 @@ keep = ndimage.binary_fill_holes(ndimage.binary_closing(keep, iterations=4))
 ys, xs = np.where(keep)
 crop = im[ys.min():ys.max() + 1, xs.min():xs.max() + 1].copy()
 crop[..., 3] = np.where(keep[ys.min():ys.max() + 1, xs.min():xs.max() + 1], 255, 0)
-Image.fromarray(crop).save(f'{OUT}/hayden_portrait.png', optimize=True)
+Image.fromarray(crop).save(f'{OUT}/hayden_portrait2.png', optimize=True)
 def portrait(path, dest):
     im, fg = load(path)
     lab, n = ndimage.label(fg)
