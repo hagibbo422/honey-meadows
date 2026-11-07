@@ -6,7 +6,7 @@
     { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "player_avatar", 52, 84, 104, ["bikes/ride_annie", 83, 103, 2]], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
     { title: "Ralph & Alisa", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]]] },
     { title: "Madi, Blair & Nick", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]]] },
-    { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 108, ["bikes/ride_jones_f", 74, 101, 1]], ["Dakota", "npc_jones_m", 64, 96, 112, ["bikes/ride_jones_m", 74, 101, 1]]] }
+    { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 112, ["bikes/ride_jones_f", 74, 101, 1], "portrait_jones_f"], ["Dakota", "npc_jones_m", 64, 96, 120, ["bikes/ride_jones_m", 74, 101, 1], "portrait_jones_m"]] }
   ];
   var built = false;
   function card(p) {
@@ -15,15 +15,16 @@
     var cv = document.createElement("canvas");
     var img = new Image();
     img.onload = function() {
-      var bx = 0, by = 0, bw = p[2], bh = p[3];
+      var fw = p[6] ? img.naturalWidth : p[2], fh = p[6] ? img.naturalHeight : p[3];
+      var bx = 0, by = 0, bw = fw, bh = fh;
       try {
         var t = document.createElement("canvas");
-        t.width = p[2];
-        t.height = p[3];
+        t.width = fw;
+        t.height = fh;
         var tg = t.getContext("2d");
-        tg.drawImage(img, 0, 0, p[2], p[3], 0, 0, p[2], p[3]);
-        var d = tg.getImageData(0, 0, p[2], p[3]).data, x0 = p[2], y0 = p[3], x1 = -1, y1 = -1;
-        for (var y = 0; y < p[3]; y++) for (var x = 0; x < p[2]; x++) if (d[(y * p[2] + x) * 4 + 3] > 40) {
+        tg.drawImage(img, 0, 0, fw, fh, 0, 0, fw, fh);
+        var d = tg.getImageData(0, 0, fw, fh).data, x0 = fw, y0 = fh, x1 = -1, y1 = -1;
+        for (var y = 0; y < fh; y++) for (var x = 0; x < fw; x++) if (d[(y * fw + x) * 4 + 3] > 40) {
           if (x < x0) x0 = x;
           if (x > x1) x1 = x;
           if (y < y0) y0 = y;
@@ -43,10 +44,10 @@
       cv.style.width = w + "px";
       cv.style.height = h + "px";
       var g = cv.getContext("2d");
-      g.imageSmoothingEnabled = false;
+      g.imageSmoothingEnabled = !!p[6];
       g.drawImage(img, bx, by, bw, bh, 0, 0, w, h);
     };
-    img.src = "assets/" + p[1] + ".png";
+    img.src = "assets/" + (p[6] || p[1]) + ".png";
     var cap = document.createElement("figcaption");
     cap.textContent = p[0];
     var art = document.createElement("div");

@@ -93,3 +93,14 @@ sh = Image.open(p)
 f0, f3 = sh.crop((0, 0, 74, 101)), sh.crop((222, 0, 296, 101))
 sh.paste(f0, (74, 0)); sh.paste(f3, (148, 0))
 sh.save(p, optimize=True)
+# Full-size standing portraits (left column) for the Settings → Characters panel.
+for who, (py0, py1) in (('f', (20, 490)), ('m', (505, 1010))):
+    m = fg[py0:py1, 0:178]
+    lab, n = ndimage.label(m)
+    sizes = ndimage.sum(m, lab, range(1, n + 1))
+    keep = lab == 1 + int(np.argmax(sizes))
+    keep = ndimage.binary_dilation(keep, iterations=2) & ndimage.binary_fill_holes(ndimage.binary_closing(gm[py0:py1, 0:178] > 0.25, iterations=2))
+    ys, xs = np.where(keep)
+    crop = im[py0 + ys.min():py0 + ys.max() + 1, xs.min():xs.max() + 1].copy()
+    crop[..., 3] = np.where(keep[ys.min():ys.max() + 1, xs.min():xs.max() + 1], 255, 0)
+    Image.fromarray(crop).save(f'{OUT}/portrait_jones_{who}.png', optimize=True)
