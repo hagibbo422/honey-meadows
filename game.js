@@ -29,6 +29,7 @@
   for (const name of ["player_avatar", "companion_avatar", "room_headquarters", "room_farm", "room_research", "room_nails"]) {
     loadAsset(name);
   }
+  const TOWN_SCALE = 1.15;
   const ILLUSTRATED = { gym: "assets/interiors/gym.jpg", restaurant: "assets/interiors/restaurant.jpg", gibbons: "assets/interiors/gibbons.jpg", hardaway: "assets/interiors/hardaway.jpg", jones: "assets/interiors/jones.jpg" };
   if (typeof setTimeout === "function") setTimeout(() => Object.keys(ILLUSTRATED).forEach((id) => illustrated(id)), 1500);
   function illustrated(id) {
@@ -1905,7 +1906,7 @@
     okc: [["okc_2", 57, 83], ["okc_7", 58, 84], ["okc_5", 58, 90]],
     opp: [["opp_1", 59, 88], ["opp_22", 58, 87], ["opp_5", 60, 87]],
     rows: { run: 0, dribble: 1, pass: 2, shoot: 3, shuffle: 0, block: 1, steal: 2 },
-    K: 0.42,
+    K: 0.42 * TOWN_SCALE,
     P: 8.6,
     X0: 1126,
     X1: 1328,
@@ -2024,7 +2025,7 @@
       db37: { cw: 45, ch: 55, rows: { idle: [0, 4], run: [1, 4], defend: [2, 4] } },
       db41: { cw: 47, ch: 58, rows: { idle: [0, 4], run: [1, 4], defend: [2, 4] } }
     },
-    K: 0.42,
+    K: 0.42 * TOWN_SCALE,
     P: 9,
     GL0: 1117,
     GL1: 1364,
@@ -2270,7 +2271,7 @@
     for (const a of townActors()) {
       g.save();
       g.translate(a.entity.x, a.entity.y);
-      g.scale(a.k || ACTOR_K, a.k || ACTOR_K);
+      g.scale((a.k || ACTOR_K) * TOWN_SCALE, (a.k || ACTOR_K) * TOWN_SCALE);
       a.draw(Object.assign({}, a.entity, { x: 0, y: 0 }));
       g.restore();
     }
@@ -2360,7 +2361,7 @@
       if (!T2) return list;
       for (const a of townActors()) {
         if (!a.box) continue;
-        const ak = a.k || ACTOR_K, [bx, by, bw, bh] = a.box, [x, y] = T2.toScreen(a.entity.x + bx * ak, a.entity.y + by * ak), z = T2.camera.z * ak;
+        const ak = (a.k || ACTOR_K) * TOWN_SCALE, [bx, by, bw, bh] = a.box, [x, y] = T2.toScreen(a.entity.x + bx * ak, a.entity.y + by * ak), z = T2.camera.z * ak;
         list.push({ name: a.name, x, y, w: bw * z, h: bh * z });
       }
       return list;
