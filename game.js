@@ -1333,15 +1333,15 @@
     if (!(image == null ? void 0 : image.naturalWidth)) return;
     g.drawImage(image, x, y, w, h);
   }
-  const ANNIE_ROWS = { down: [0, 1], left: [1, 6], right: [2, 6], up: [3, 1], idle: [4, 5] };
+  const ANNIE_ROWS = { down: [0, 7], left: [1, 6], right: [2, 6], up: [3, 7], idle: [4, 5] };
   loadAsset("annie_walk");
   function drawAnnie(entity, w, h) {
     const img = assets.annie_walk;
     if (!(img && img.naturalWidth)) return;
-    const moving = entity.moving !== false && (entity.dir === "left" || entity.dir === "right") ? entity.moving : false;
+    const moving = !!entity.moving;
     let [row, n] = ANNIE_ROWS[entity.dir] || ANNIE_ROWS.down, f = 0;
     if (moving) f = Math.floor(entity.phase) % n;
-    const bob = entity.moving && n === 1 ? Math.floor(entity.phase) % 2 : 0;
+    const bob = 0;
     g.drawImage(img, f * 64, row * 96, 64, 96, Math.round(entity.x - w / 2), Math.round(entity.y - h + 6 - bob), w, h);
   }
   function drawIndoorCharacter(actor, male) {
@@ -1721,7 +1721,7 @@
   const RIDE_LAPS = Math.max(1, Math.round((RIDE_END - RIDE_START) * 38 / RIDE_LOOP.length));
   const RIDE_SPEED = RIDE_LAPS * RIDE_LOOP.length / (RIDE_END - RIDE_START);
   const RIDE_SHEETS = {
-    annie: { cw: 90, ch: 100, dirs: ["right", "left"] },
+    annie: { cw: 90, ch: 100, frames: 7, rows: { right: [0, 4], left: [1, 4], down: [2, 7], up: [3, 7] }, dirs: ["down", "right", "up", "left"] },
     hayden: { cw: 83, ch: 99, k: 0.8, dirs: ["down", "downright", "right", "upright", "up", "upleft", "left", "downleft"] },
     alisa: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
     ralph: { cw: 66, ch: 101, dirs: ["down", "right", "up", "left"] },
@@ -1796,7 +1796,7 @@
       const status = "On the Wednesday bike ride";
       if (!r.sheet) return { step: "ride", status, hidden: true };
       const p = loopPoint(r.s + RIDE_SPEED * (T2 - RIDE_START)), sh = RIDE_SHEETS[r.sheet];
-      return { step: "ride", status, x: p.x, y: p.y + 9, dir: "down", ride: { sheet: r.sheet, dir: dirOf(p.dx, p.dy, sh.dirs), frame: Math.floor((T2 - RIDE_START) * RIDE_SPEED / 11) % 4 } };
+      return { step: "ride", status, x: p.x, y: p.y + 9, dir: "down", ride: { sheet: r.sheet, dir: dirOf(p.dx, p.dy, sh.dirs), frame: Math.floor((T2 - RIDE_START) * RIDE_SPEED / 11) % 4, t: T2 - RIDE_START } };
     }
     if (T2 < r.backT) return { step: "wait", status: "Parking the bikes", x: r.standAt[0], y: r.standAt[1], dir: "down", moving: false };
     return { step: "walk", status: "Walking home from the bike ride", ...samplePath(r.homePath, (T2 - r.backT) / (r.homeT - r.backT)) };
@@ -1805,8 +1805,9 @@
   function drawRider(e) {
     const sh = RIDE_SHEETS[e.ride.sheet], img = assets["bikes/ride_" + e.ride.sheet];
     if (!sh || !(img && img.naturalWidth)) return;
-    const row = Math.max(0, sh.dirs.indexOf(e.ride.dir)), k = (sh.k || 1) / 2, w = sh.cw * k, h = sh.ch * k;
-    g.drawImage(img, e.ride.frame * sh.cw, row * sh.ch, sh.cw, sh.ch, e.x - w / 2, e.y - h, w, h);
+    const rr = sh.rows && sh.rows[e.ride.dir], row = rr ? rr[0] : Math.max(0, sh.dirs.indexOf(e.ride.dir)), k = (sh.k || 1) / 2, w = sh.cw * k, h = sh.ch * k;
+    const frame = rr ? Math.floor(e.ride.t * RIDE_SPEED / 11) % rr[1] : e.ride.frame;
+    g.drawImage(img, frame * sh.cw, row * sh.ch, sh.cw, sh.ch, e.x - w / 2, e.y - h, w, h);
   }
   function drawParkedBike(e) {
     const img = assets["bikes/bike_" + e.bike], sz = BIKE_SIZE[e.bike];

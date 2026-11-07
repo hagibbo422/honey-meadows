@@ -2,12 +2,14 @@
 #   assets/annie_walk.png     64x96 cells; rows down(1), left(6), right(6), up(1), idle(5)
 #   assets/bikes/ride_annie.png   cells 90x100; rows right(4), left(4)
 #   assets/annie_portrait.png full standing picture
-# Usage: python3 tools/make-annie-sprites.py <sheet.png> assets
+# Usage: python3 tools/make-annie-sprites.py <sheet.png> assets [<up-down sheet.png>]
+# The optional second sheet supplies 7-frame walk/bike animations for down and up.
 import sys, json
 import numpy as np
 from PIL import Image
 from scipy import ndimage
 src, OUT = sys.argv[1:3]
+src2 = sys.argv[3] if len(sys.argv) > 3 else None
 a = np.array(Image.open(src).convert('RGBA'))
 fg = a[..., 3] >= 240
 fg = ndimage.binary_opening(fg, iterations=1)
@@ -41,6 +43,29 @@ def sheet(rows, cw, ch, target_h, path):
             if g.width > cw: g = g.resize((cw, round(g.height * cw / g.width)), Image.LANCZOS)
             sh.alpha_composite(g, (c * cw + (cw - g.width) // 2, r * ch + ch - 1 - g.height))
     sh.save(path, optimize=True)
+UD = None
+if src2:
+    b = np.array(Image.open(src2).convert('RGBA'))
+    ROWS2 = [(16, 132), (155, 268), (284, 415), (429, 559), (605, 726), (747, 869), (889, 1038), (1056, 1212)]
+    COLS2 = [(421, 515), (530, 623), (636, 729), (745, 836), (851, 943), (957, 1050), (1064, 1160)]
+    def cell2(y0, y1, x0, x1, bike):
+        al = b[y0:y1, x0:x1, 3]
+        m = ndimage.binary_opening(al >= 240, iterations=1) if not bike else al >= 60
+        lab, n = ndimage.label(m, structure=np.ones((3, 3)))
+        sizes = ndimage.sum(m, lab, range(1, n + 1))
+        keep = np.isin(lab, 1 + np.where(sizes > (40 if bike else 0.3 * sizes.max()))[0])
+        ys, xs = np.where(keep)
+        crop = b[y0 + ys.min():y0 + ys.max() + 1, x0 + xs.min():x0 + xs.max() + 1].copy()
+        kk = keep[ys.min():ys.max() + 1, xs.min():xs.max() + 1].copy()
+        if bike:  # clear the dark 'sticker' halo around the wheels below the waist
+            r, g, bb = (crop[..., i].astype(int) for i in range(3))
+            mx = np.maximum(np.maximum(r, g), bb)
+            halo = (mx > 26) & (mx < 88) & (r >= bb)
+            halo[:int(crop.shape[0] * 0.55)] = False
+            kk &= ~halo
+        crop[..., 3] = np.where(kk, 255, 0)
+        return Image.fromarray(crop)
+    UD = {name: [cell2(*ROWS2[ri], x0, x1, ri >= 4) for x0, x1 in COLS2] for ri, name in enumerate(['wR', 'wL', 'wD', 'wU', 'bR', 'bL', 'bD', 'bU'])}
 st = F['static']  # front, side (right), back, side (left)
 # walking rows: scale so the walking frames are ~94px like the neighbours' 64x96 sheets
 walk_rows = [[st[0]], F['walkL'], F['walkR'], [st[2]], F['idle']]
@@ -48,6 +73,12 @@ walk_rows = [[st[0]], F['walkL'], F['walkR'], [st[2]], F['idle']]
 wh = max(f.height for f in F['walkR'])
 walk_rows[0] = [st[0].resize((round(st[0].width * wh / st[0].height), wh), Image.LANCZOS)]
 walk_rows[3] = [st[2].resize((round(st[2].width * wh / st[2].height), wh), Image.LANCZOS)]
+if UD:
+    # match the up/down frames to the first sheet's size using each sheet's walk-right height
+    k = wh / max(f.height for f in UD['wR'])
+    fit = lambda fr, kk: [f.resize((max(1, round(f.width * kk)), max(1, round(f.height * kk))), Image.LANCZOS) for f in fr]
+    walk_rows[0] = fit(UD['wD'], k)
+    walk_rows[3] = fit(UD['wU'], k)
 sheet(walk_rows, 64, 96, 94, f'{OUT}/annie_walk.png')
 # Bikes: thin wheel outlines need the un-opened mask; split each row into 4 frames at column gaps.
 raw = a[..., 3] >= 60
@@ -87,7 +118,11 @@ def bike_row(y0, y1, x0=335, n=4):
         crop[..., 3] = np.where(kk, 255, 0)
         out.append(Image.fromarray(crop))
     return out
-sheet([bike_row(*BANDS['bikeR']), bike_row(*BANDS['bikeL'])], 90, 100, 98, f'{OUT}/bikes/ride_annie.png')
+bike_rows = [bike_row(*BANDS['bikeR']), bike_row(*BANDS['bikeL'])]
+if UD:
+    kb = max(f.height for f in bike_rows[0]) / max(f.height for f in UD['bR'])
+    bike_rows += [fit(UD['bD'], kb), fit(UD['bU'], kb)]
+sheet(bike_rows, 90, 100, 98, f'{OUT}/bikes/ride_annie.png')
 lab, n = ndimage.label(fg[30:650, 0:300])
 sizes = ndimage.sum(fg[30:650, 0:300], lab, range(1, n + 1))
 i = 1 + int(np.argmax(sizes)); ys, xs = np.where(lab == i)

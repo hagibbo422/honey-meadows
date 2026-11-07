@@ -3,7 +3,7 @@
   var btn = document.getElementById("charsToggle"), box = document.getElementById("charsBody");
   if (!btn || !box) return;
   var GROUPS = [
-    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 0], "annie_portrait", 2], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
+    { title: "The Family", people: [["Hayden", "companion_avatar", 52, 84, 112, ["bikes/ride_hayden", 83, 99, 2]], ["Annie", "annie_walk", 64, 96, 112, ["bikes/ride_annie", 90, 100, 2], "annie_portrait", 0], ["Riley", "dog_sprite", 72, 72, 62], ["Theo", "cat_sprite", 72, 72, 54]] },
     { title: "Ralph, Alisa, Maggie & Sophie", people: [["Ralph", "npc_blue", 64, 96, 112, ["bikes/ride_ralph", 66, 101, 1]], ["Alisa", "npc_sun", 64, 96, 108, ["bikes/ride_alisa", 66, 101, 1]], ["Maggie", "dogs/maggie", 58, 53, 66, null, "dogs/maggie_portrait"], ["Sophie", "dogs/sophie", 42, 45, 70, null, "dogs/sophie_portrait"]] },
     { title: "Madi, Blair, Nick, Sadie & Mylo", people: [["Madi", "npc_long", 64, 96, 108, ["bikes/ride_madi", 72, 103, 1]], ["Blair", "npc_kid", 64, 96, 80], ["Nick", "npc_beard", 64, 96, 112, ["bikes/ride_nick", 66, 100, 1]], ["Sadie", "dogs/sadie", 60, 52, 66, null, "dogs/sadie_portrait"], ["Mylo", "dogs/mylo", 43, 42, 70, null, "dogs/mylo_portrait"]] },
     { title: "Bailey & Dakota", people: [["Bailey", "npc_jones_f", 64, 96, 112, ["bikes/ride_jones_f", 74, 101, 1], "portrait_jones_f"], ["Dakota", "npc_jones_m", 64, 96, 120, ["bikes/ride_jones_m", 74, 101, 1], "portrait_jones_m"]] }
@@ -65,16 +65,18 @@
     cv.width = 1;
     cv.height = h;
     var img = new Image();
+    var nf = 4;
     img.onload = function() {
+      nf = Math.max(1, Math.floor(img.naturalWidth / cw));
       box2 = { x0: 0, y0: 0, x1: cw, y1: ch };
       try {
         var t = document.createElement("canvas");
-        t.width = cw * 4;
+        t.width = cw * nf;
         t.height = ch;
         var tg = t.getContext("2d");
-        tg.drawImage(img, 0, row * ch, cw * 4, ch, 0, 0, cw * 4, ch);
-        var d = tg.getImageData(0, 0, cw * 4, ch).data, x0 = cw, y0 = ch, x1 = -1, y1 = -1;
-        for (var y = 0; y < ch; y++) for (var x = 0; x < cw * 4; x++) if (d[(y * cw * 4 + x) * 4 + 3] > 40) {
+        tg.drawImage(img, 0, row * ch, cw * nf, ch, 0, 0, cw * nf, ch);
+        var d = tg.getImageData(0, 0, cw * nf, ch).data, x0 = cw, y0 = ch, x1 = -1, y1 = -1;
+        for (var y = 0; y < ch; y++) for (var x = 0; x < cw * nf; x++) if (d[(y * cw * nf + x) * 4 + 3] > 40) {
           var lx = x % cw;
           if (lx < x0) x0 = lx;
           if (lx > x1) x1 = lx;
@@ -95,7 +97,7 @@
       var g = cv.getContext("2d"), bw = box2.x1 - box2.x0, bh = box2.y1 - box2.y0;
       g.imageSmoothingEnabled = false;
       g.clearRect(0, 0, cv.width, cv.height);
-      g.drawImage(img, f % 4 * cw + box2.x0, row * ch + box2.y0, bw, bh, 0, 0, cv.width, cv.height);
+      g.drawImage(img, f % nf * cw + box2.x0, row * ch + box2.y0, bw, bh, 0, 0, cv.width, cv.height);
     };
     var cap = document.createElement("figcaption");
     cap.textContent = label;

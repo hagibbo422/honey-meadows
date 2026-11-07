@@ -41,7 +41,7 @@ While the Thunder feed says a game is live (`ThunderFeed.current.state === "in"`
 
 ## Annie's sprite (Nov 2026)
 
-Annie uses `assets/annie_walk.png` (64x96 cells; rows down, left ×6, right ×6, up, idle ×5), `assets/bikes/ride_annie.png` (90x100 cells; rows right, left) and `assets/annie_portrait.png`, cut with `tools/make-annie-sprites.py`. `drawAnnie` in `game.js` draws her in town and indoors. The old `player_avatar.png` and the farmhouse meal/couch/sleep pictures still show the earlier look.
+Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right ×6, up ×7, idle ×5), `assets/bikes/ride_annie.png` (90x100 cells; rows right ×4, left ×4, down ×7, up ×7) and `assets/annie_portrait.png`, cut with `tools/make-annie-sprites.py <main sheet> assets <up-down sheet>`. `drawAnnie` in `game.js` draws her in town and indoors. The old `player_avatar.png` and the farmhouse meal/couch/sleep pictures still show the earlier look.
 
 ## Neighbours' dogs
 
