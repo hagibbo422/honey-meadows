@@ -1400,11 +1400,10 @@
     if (id === "jones" && (act === "breakfast" || act === "dinner")) out.push({ img: "jones_eat", sx: Math.floor(clock * 1.1) % 6 * 170, sy: 0, sw: 170, sh: 150, x: 195, y: 390, w: 182, h: 162, name: "Bailey & Dakota" });
     if (id === "jones" && act === "couch") out.push({ img: "jones_couch", sx: Math.floor(clock * 0.5) % 5 * 150, sy: 0, sw: 150, sh: 110, x: 455, y: 405, w: 210, h: 154, name: "Bailey & Dakota" });
     if (id === "gym" && householdState && householdState.girl.scene === "gym") out.push({ img: "annie_gym", sx: Math.floor(clock * 2.6) % 10 * 80, sy: 0, sw: 80, sh: 100, x: 1040, y: 380, w: 132, h: 165, name: "Annie" });
-    if (id === "gym" && householdState && householdState.boy.scene === "gym") out.push({ img: "hayden_legpress", sx: Math.floor(clock * 2.4) % 8 * 120, sy: 0, sw: 120, sh: 105, x: 700, y: 600, w: 230, h: 201, name: "Hayden" });
+    if (id === "gym" && householdState && householdState.boy.scene === "gym") out.push({ img: "hayden_legpress", sx: Math.floor(clock * 2.4) % 8 * 120, sy: 0, sw: 120, sh: 105, x: 225, y: 245, w: 195, h: 171, name: "Hayden" });
     if (id === "gym" && act === "gym") {
-      const swap = simMinute >= 18.5 * 60;
-      const bench = { x: 712, y: 340, w: 185, h: 185 }, floor = { x: 520, y: 470, w: 175, h: 175 };
-      const who = [["Bailey", swap ? 1 : 0], ["Dakota", swap ? 2 : 3]];
+      const bench = { x: 660, y: 330, w: 185, h: 185 }, floor = { x: 1112, y: 378, w: 165, h: 165 };
+      const who = [["Bailey", 0], ["Dakota", 3]];
       for (const [name, row] of who) {
         const benchRow = row === 1 || row === 3, n = benchRow ? 5 : 6, at = benchRow ? bench : floor;
         out.push({ img: "jones_workout", sx: Math.floor(clock * (benchRow ? 2 : 2.4)) % n * 120, sy: row * 120, sw: 120, sh: 120, x: at.x, y: at.y, w: at.w, h: at.h, name });

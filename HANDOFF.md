@@ -53,7 +53,7 @@ Dogs stay inside their own houses (`DOG_HOMES` in `game.js`), except 12-4 PM on 
 
 ## Gym hour
 
-Mon, Tue, Thu and Fri: Annie (from the Nail Salon) and Hayden (from Research) walk to the Gym at 6 PM and work out with Bailey & Dakota: Annie curls dumbbells on the green mat (`assets/annie_gym.png`), Hayden does the leg press (`assets/hayden_legpress.png`). They walk home at 7 PM and dinner starts at 7:05. Period `annieGym` / `ANNIE_GYM` in `game.js`; routes `nails-gym`, `gym-farm`. Annie's walk and bike sheets are cut by `tools/make-pet-sprites.py`.
+Mon, Tue, Thu and Fri: Annie (from the Nail Salon) and Hayden (from Research) walk to the Gym at 6 PM and work out with Bailey & Dakota: Annie curls dumbbells on the green mat (`assets/annie_gym.png`), Hayden does the leg press in the top-left (`assets/hayden_legpress.png`), Bailey curls on the pink mat, Dakota bench-presses mid-floor. They walk home at 7 PM and dinner starts at 7:05. Period `annieGym` / `ANNIE_GYM` in `game.js`; routes `nails-gym`, `gym-farm`. Annie's walk and bike sheets are cut by `tools/make-pet-sprites.py`.
 
 ## Bailey & Dakota's day
 
