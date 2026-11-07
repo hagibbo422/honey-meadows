@@ -47,6 +47,11 @@ Annie uses `assets/annie_walk.png` (64x96 cells; rows down ×7, left ×6, right 
 
 On Saturdays and Sundays (Central), instead of the work commute and workday (10:01 AM-6:06 PM) they stroll together around the `weekend-stroll` loop (farmhouse, shops, gym, court, park, Gibbons and Jones houses, City Hall), finishing back at the farmhouse door for dinner. Code: `STROLL` / period `stroll` in `game.js`.
 
+## Walking area and depth
+
+- Walkable area: paint `tools/walk-mask.png` (white = walkable, 1536x1024), then run `python3 tools/mask-to-paths.py` (writes `paths` in `map-data.js`) and `node tools/build-routes.cjs` (rebuilds every route; waypoints off the paths snap to the nearest walkable spot).
+- Depth: buildings, trees and lamp posts in `map-data.js` have an outline and a base `depth`. `drawScheduledTown` sorts characters and those objects by base y and redraws an object from the map art over any character standing behind it (`HMTown.occluders`, `drawOccluder` in `town.js`).
+
 ## Pets
 
 Dogs stay inside their own houses (`DOG_HOMES` in `game.js`), except 12-4 PM on Saturdays and Sundays when every dog lies down together in the dog park (`DOG_PARK`). Theo the cat always stays in the farmhouse.

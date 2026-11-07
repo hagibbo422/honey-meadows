@@ -2270,7 +2270,23 @@
     T2.drawBoards(g, env, st);
     drawHoops();
     drawFootball();
-    for (const a of townActors()) {
+    const actors = townActors(), items = [];
+    for (const a of actors) {
+      const k = (a.k || ACTOR_K) * TOWN_SCALE, bx = a.box || [-30, -60, 60, 70];
+      a.rect = [a.entity.x + bx[0] * k, a.entity.y + bx[1] * k, a.entity.x + (bx[0] + bx[2]) * k, a.entity.y + (bx[1] + bx[3]) * k];
+      items.push({ y: a.entity.y, actor: a });
+    }
+    for (const o of T2.occluders || []) {
+      const hit = actors.some((a) => a.entity.y < o.depth && a.rect[2] > o.box[0] && a.rect[0] < o.box[2] && a.rect[3] > o.box[1] && a.rect[1] < o.box[3]);
+      if (hit) items.push({ y: o.depth, occ: o });
+    }
+    items.sort((p, q) => p.y - q.y || (p.occ ? 1 : 0) - (q.occ ? 1 : 0));
+    for (const it of items) {
+      if (it.occ) {
+        T2.drawOccluder(g, it.occ);
+        continue;
+      }
+      const a = it.actor;
       g.save();
       g.translate(a.entity.x, a.entity.y);
       g.scale((a.k || ACTOR_K) * TOWN_SCALE, (a.k || ACTOR_K) * TOWN_SCALE);

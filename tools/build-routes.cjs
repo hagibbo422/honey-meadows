@@ -22,6 +22,14 @@ const P = {
   dogPark: [1400, 652], plaza: [600, 340], hallWest: [451, 578], bridge: [664, 760], northEast: [964, 218],
   pond: [420, 447]
 };
+// Waypoints off the walkable paths (after walk-mask edits) snap to the nearest walkable spot.
+for (const k of Object.keys(P)) {
+  if (nav.nearest(P[k], 6)) continue;
+  const n = nav.nearest(P[k], 140);
+  if (!n) throw new Error('Waypoint ' + k + ' is nowhere near a path');
+  console.log('snap', k, P[k], '->', n.map(Math.round));
+  P[k] = n.map(Math.round);
+}
 
 // Line-of-sight smoothing so routes are diagonal strokes, not 3px staircases.
 function simplify(pts) {

@@ -495,7 +495,27 @@
     g.translate(-cam.x, -cam.y);
     g.imageSmoothingEnabled = true;
   }
+  const OCCLUDERS = [
+    ...MAP.buildings.map((b) => ({ id: b.id, polygon: b.polygon, depth: b.depth })),
+    ...(MAP.trees || []).map((t) => ({ id: t.id, polygon: t.polygon, depth: t.depth })),
+    ...(MAP.props || []).map((p) => ({ id: p.id, polygon: p.polygon, depth: p.depth }))
+  ];
+  OCCLUDERS.forEach((o) => {
+    const xs = o.polygon.map((p) => p[0]), ys = o.polygon.map((p) => p[1]);
+    o.box = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  });
+  let lastLight = null;
+  function drawOccluder(g, o) {
+    if (!base) return;
+    g.save();
+    polyPath(g, o.polygon);
+    g.clip();
+    g.drawImage(base, o.box[0] - 2, o.box[1] - 2, o.box[2] - o.box[0] + 4, o.box[3] - o.box[1] + 4, o.box[0] - 2, o.box[1] - 2, o.box[2] - o.box[0] + 4, o.box[3] - o.box[1] + 4);
+    g.restore();
+    if (o.id === "hardaway" && lastLight) drawHouseholdLabel(g, lastLight);
+  }
   function drawBoards(g, env, st) {
+    lastLight = st;
     drawHouseholdLabel(g, st);
     drawBoard(g, FIELD_BOARD, fieldData());
     const c = env.court || {};
@@ -598,6 +618,8 @@
     drawGround,
     beginWorld,
     drawBoards,
+    occluders: OCCLUDERS,
+    drawOccluder,
     endWorld,
     hit,
     toWorld,
